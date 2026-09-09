@@ -1,10 +1,20 @@
-{ config, ... }:
+{ config, inputs, ... }:
 let
   username = config.waterSeven.username;
 in
 {
   flake.modules.darwin.platform-darwin = {
+    imports = [ inputs.nix-homebrew.darwinModules.nix-homebrew ];
+
     nix.enable = true;
+
+    nix-homebrew = {
+      enable = true;
+      enableRosetta = false;
+      user = username;
+      autoMigrate = true;
+    };
+
     system.primaryUser = username;
   };
 

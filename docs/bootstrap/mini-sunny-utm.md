@@ -34,8 +34,9 @@ Install Apple's Command Line Tools if `git` requests them:
 xcode-select --install
 ```
 
-Install Homebrew from <https://brew.sh>. Bootstrap requires it for declared
-applications that are unavailable from nixpkgs.
+Homebrew must not be installed manually. The Darwin platform activates its
+pinned installation through `nix-homebrew`; nix-darwin then manages the
+declared casks.
 
 ## Transfer and activate the selected revision
 

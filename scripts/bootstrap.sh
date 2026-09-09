@@ -193,15 +193,6 @@ if [[ $PLATFORM == darwin ]]; then
   phase "security preflight"
   fdesetup status | grep -q 'FileVault is On' || fail "enable FileVault and preserve its recovery key before bootstrap"
 
-  phase "Homebrew gate"
-  if ! command -v brew >/dev/null; then
-    printf 'Homebrew is required for applications unavailable from nixpkgs.\n'
-    printf 'Install it from https://brew.sh, then press Enter to continue.\n'
-    open 'https://brew.sh'
-    read -r
-    command -v brew >/dev/null || fail "Homebrew is still unavailable"
-  fi
-
   phase "build $HOST"
   RESULT=$(mktemp -d "${TMPDIR:-/tmp}/water-seven-darwin.XXXXXX")/result
   nix build "$SOURCE#darwinConfigurations.$HOST.system" --out-link "$RESULT"

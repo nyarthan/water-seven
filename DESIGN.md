@@ -394,6 +394,7 @@ The original discussion placed a custom Nix package immediately behind nixpkgs; 
 
 On macOS:
 
+- `nix-homebrew` installs and pins Homebrew itself; nix-darwin manages the declared formulae, taps, and casks.
 - Explicit activation removes unlisted Homebrew packages using uninstall cleanup, not destructive zap cleanup.
 - Disable application self-update where practical.
 - Where self-update cannot be controlled, declare application presence and classify version convergence as best-effort.
