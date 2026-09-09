@@ -26,6 +26,12 @@ in
 
       programs.bash.enable = true;
       environment.shells = [ pkgs.bashInteractive ];
+
+      # Setup Assistant owns the administrator account, so it must not be in
+      # nix-darwin's knownUsers. Enforce only the declared login shell.
+      system.activationScripts.postActivation.text = ''
+        /usr/bin/dscl . -create /Users/${username} UserShell /run/current-system/sw/bin/bash
+      '';
     };
 
     homeManager.shared-workstation = { pkgs, ... }: {

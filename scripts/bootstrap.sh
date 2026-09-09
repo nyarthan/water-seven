@@ -39,6 +39,19 @@ validate_install_disk_size() {
     || fail "$disk on $location is smaller than 16 GiB and may be installation media"
 }
 
+prepare_darwin_shell_files() {
+  local file backup
+  for file in /etc/bashrc /etc/zshrc; do
+    [[ -f $file && ! -L $file ]] || continue
+    grep -q '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' "$file" || continue
+
+    backup=$file.before-nix-darwin
+    [[ ! -e $backup ]] || fail "$backup already exists; inspect it before replacing $file"
+    printf 'Preserving the Nix-installer-modified %s as %s.\n' "$file" "$backup"
+    sudo mv "$file" "$backup"
+  done
+}
+
 read_luks_secret() {
   local first second
   umask 077
@@ -197,12 +210,16 @@ if [[ $PLATFORM == darwin ]]; then
   RESULT=$(mktemp -d "${TMPDIR:-/tmp}/water-seven-darwin.XXXXXX")/result
   nix build "$SOURCE#darwinConfigurations.$HOST.system" --out-link "$RESULT"
 
+  phase "prepare first nix-darwin activation"
+  prepare_darwin_shell_files
+
   phase "activate $HOST"
   sudo "$RESULT/sw/bin/darwin-rebuild" switch --flake "$SOURCE#$HOST"
 
   phase "post-activation checks"
   [[ $(scutil --get HostName) == "$HOST" ]] || fail "declared host name was not activated"
-  dscl . -read /Users/jannis UserShell | grep -q '/bash' || fail "jannis does not have the declared Bash shell"
+  [[ $(dscl . -read /Users/jannis UserShell) == "UserShell: /run/current-system/sw/bin/bash" ]] \
+    || fail "jannis does not have the declared Bash shell"
 
   printf '\n%s converged successfully. Log out and back in if prompted.\n' "$HOST"
   exit 0

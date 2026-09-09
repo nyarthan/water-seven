@@ -52,10 +52,13 @@ cd ~/Projects/water-seven
 ./install mini-sunny
 ```
 
-The bootstrap builds `darwinConfigurations.mini-sunny`, activates it through
+The bootstrap builds `darwinConfigurations.mini-sunny`, preserves shell files
+modified by the official Nix installer, activates the result through
 nix-darwin, integrates Home Manager, and changes the guest identity to
-`mini-sunny`. macOS may request administrator credentials or privacy grants.
-Never place those credentials in the checkout.
+`mini-sunny`. It backs up only files containing the expected Nix installer
+marker and leaves unrelated custom files for manual review. macOS may request
+administrator credentials or privacy grants. Never place those credentials in
+the checkout.
 
 ## Smoke test
 
