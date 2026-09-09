@@ -1,0 +1,31 @@
+#!/bin/sh
+set -eu
+
+[ "$(uname -s)" = Darwin ] || {
+  echo "This pre-Nix entrypoint is only for macOS." >&2
+  exit 1
+}
+[ "$(id -un)" = jannis ] || {
+  echo "The expected macOS administrator is jannis." >&2
+  exit 1
+}
+
+if ! command -v nix >/dev/null 2>&1; then
+  installer=$(mktemp -t water-seven-nix-installer)
+  trap 'rm -f "$installer"' EXIT HUP INT TERM
+  curl --fail --location --proto '=https' --tlsv1.2 \
+    https://nixos.org/nix/install --output "$installer"
+  sh "$installer" --daemon
+  . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+fi
+
+projects_dir=${XDG_PROJECTS_DIR:-$HOME/Projects}
+checkout=$projects_dir/water-seven
+mkdir -p "$projects_dir"
+
+if [ ! -d "$checkout/.git" ]; then
+  git clone https://github.com/nyarthan/water-seven.git "$checkout"
+fi
+
+cd "$checkout"
+exec nix run .#bootstrap -- baratie

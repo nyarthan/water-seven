@@ -63,6 +63,7 @@ in
             content = {
               type = "luks";
               name = "crypted";
+              passwordFile = "/tmp/water-seven-luks.key";
               settings.allowDiscards = true;
               content = {
                 type = "filesystem";

@@ -8,6 +8,7 @@ in
     nixos.shared-workstation = { pkgs, ... }: {
       users.users.${username} = {
         isNormalUser = true;
+        uid = 1000;
         description = "Jannis";
         shell = pkgs.bashInteractive;
         extraGroups = [ "wheel" ];
