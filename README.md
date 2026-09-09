@@ -3,6 +3,7 @@
 Declarative personal workstation configuration for:
 
 - `mini-merry` — `aarch64-linux` NixOS VM, `egghead` role
+- `mini-sunny` — `aarch64-darwin` macOS VM, `egghead` role
 - `baratie` — `aarch64-darwin` work notebook
 - `striker` — `x86_64-linux` private notebook
 
@@ -27,9 +28,16 @@ test fixtures must live outside `modules/`.
 nix fmt
 nix flake check --all-systems --no-build
 nix build .#checks.aarch64-darwin.host-baratie
+nix build .#checks.aarch64-darwin.host-mini-sunny
 nix develop
 ```
 
-Host builds must run on a compatible native runner or builder. Bootstrap and
-activation commands have not been implemented yet; do not activate these
-configurations directly.
+Host builds must run on a compatible native runner or builder. Use the guided
+bootstrap app for activation:
+
+```console
+nix run .#bootstrap -- <host>
+```
+
+See [`docs/bootstrap/`](docs/bootstrap/) for platform-specific preparation and
+validation.

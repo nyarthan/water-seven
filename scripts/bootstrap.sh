@@ -104,7 +104,7 @@ done
 
 case $HOST in
   mini-merry | striker) PLATFORM=nixos ;;
-  baratie) PLATFORM=darwin ;;
+  baratie | mini-sunny) PLATFORM=darwin ;;
   *) fail "unknown Water Seven host: $HOST" ;;
 esac
 
@@ -202,15 +202,15 @@ if [[ $PLATFORM == darwin ]]; then
     command -v brew >/dev/null || fail "Homebrew is still unavailable"
   fi
 
-  phase "build baratie"
+  phase "build $HOST"
   RESULT=$(mktemp -d "${TMPDIR:-/tmp}/water-seven-darwin.XXXXXX")/result
   nix build "$SOURCE#darwinConfigurations.$HOST.system" --out-link "$RESULT"
 
-  phase "activate baratie"
+  phase "activate $HOST"
   sudo "$RESULT/sw/bin/darwin-rebuild" switch --flake "$SOURCE#$HOST"
 
   phase "post-activation checks"
-  [[ $(scutil --get HostName) == baratie ]] || fail "declared host name was not activated"
+  [[ $(scutil --get HostName) == "$HOST" ]] || fail "declared host name was not activated"
   dscl . -read /Users/jannis UserShell | grep -q '/bash' || fail "jannis does not have the declared Bash shell"
 
   printf '\n%s converged successfully. Log out and back in if prompted.\n' "$HOST"

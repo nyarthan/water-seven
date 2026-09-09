@@ -38,9 +38,10 @@
           lib.attrNames config.waterSeven.hosts == [
             "baratie"
             "mini-merry"
+            "mini-sunny"
             "striker"
           ]
-        ) "Water Seven's initial fleet must contain baratie, mini-merry, and striker";
+        ) "Water Seven's fleet must contain baratie, mini-merry, mini-sunny, and striker";
         pkgs.runCommand "water-seven-fleet-schema" { } "touch $out";
 
       requiredActions = lib.attrNames (

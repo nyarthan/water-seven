@@ -10,6 +10,15 @@ set -eu
   exit 1
 }
 
+host=${1:-baratie}
+case $host in
+  baratie | mini-sunny) ;;
+  *)
+    echo "Unknown macOS host: $host" >&2
+    exit 1
+    ;;
+esac
+
 if ! command -v nix >/dev/null 2>&1; then
   installer=$(mktemp -t water-seven-nix-installer)
   trap 'rm -f "$installer"' EXIT HUP INT TERM
@@ -28,4 +37,4 @@ if [ ! -d "$checkout/.git" ]; then
 fi
 
 cd "$checkout"
-exec nix run .#bootstrap -- baratie
+exec nix run .#bootstrap -- "$host"

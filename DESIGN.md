@@ -22,6 +22,7 @@ The initial fleet is:
 | Host | Platform | Role |
 |---|---|---|
 | `mini-merry` | `aarch64-linux` NixOS VM hosted on the Mac | Complete test workstation; `egghead` role |
+| `mini-sunny` | `aarch64-darwin` macOS VM hosted on the Mac | Disposable Darwin test workstation; `egghead` role |
 | `baratie` | `aarch64-darwin` MacBook | Work-oriented workstation |
 | `striker` | `x86_64-linux` NixOS notebook | Private-oriented workstation |
 
@@ -617,13 +618,14 @@ The foundation is complete when all of the following work:
 2. `mini-merry` installs locally from a standard ISO.
 3. `mini-merry` installs through the remote path.
 4. `mini-merry` boots a complete Hyprland graphical session.
-5. The Mac activates successfully from Water Seven.
-6. `striker` installs and boots from its declared Disko configuration.
-7. Editing native Ghostty, Bash, tmux, and Neovim files requires no rebuild.
-8. Shared desktop actions use the agreed physical layers on both platforms.
-9. SOPS retrieval, host authorization, and runtime files work without plaintext leakage.
-10. Guided bootstrap resumes safely after interruption.
-11. Coordinated Git/Nix rollback restores a previous deployed revision.
+5. `mini-sunny` activates through nix-darwin and Home Manager in a macOS VM.
+6. `baratie` activates successfully from Water Seven.
+7. `striker` installs and boots from its declared Disko configuration.
+8. Editing native Ghostty, Bash, tmux, and Neovim files requires no rebuild.
+9. Shared desktop actions use the agreed physical layers on both platforms.
+10. SOPS retrieval, host authorization, and runtime files work without plaintext leakage.
+11. Guided bootstrap resumes safely after interruption.
+12. Coordinated Git/Nix rollback restores a previous deployed revision.
 
 ## Explicitly deferred work
 

@@ -1,4 +1,7 @@
 {
-  flake.modules.nixos.role-egghead = { };
-  flake.modules.homeManager.role-egghead = { };
+  flake.modules = {
+    nixos.role-egghead = { };
+    darwin.role-egghead = { };
+    homeManager.role-egghead = { };
+  };
 }
