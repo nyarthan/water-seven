@@ -66,9 +66,11 @@ nix run .#bootstrap -- mini-merry --target root@<installer-address>
 ```
 
 Before rebooting, bootstrap leaves the installer environment running long
-enough to set `jannis`'s independent login password interactively. The
-installed configuration disables inbound SSH, so installer credentials are
-temporary. A successful remote install is recorded under
+enough to transfer the selected Git checkout and set `jannis`'s independent
+login password interactively. The checkout supplies native configuration files
+referenced by Home Manager's out-of-store links. The installed configuration
+disables inbound SSH, so installer credentials are temporary. A successful
+remote install is recorded under
 `$XDG_STATE_HOME/water-seven/bootstrap`; delete that marker only when
 intentionally repeating the destructive remote exercise.
 

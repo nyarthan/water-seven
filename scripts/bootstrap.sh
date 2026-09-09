@@ -63,6 +63,9 @@ cleanup() {
   if [[ -n ${REVISION_WORKTREE:-} && -n ${REPOSITORY:-} ]]; then
     git -C "$REPOSITORY" worktree remove --force "$REVISION_WORKTREE" >/dev/null 2>&1 || true
   fi
+  if [[ -n ${CHECKOUT_TRANSFER:-} ]]; then
+    rm -rf -- "$CHECKOUT_TRANSFER"
+  fi
 }
 trap cleanup EXIT INT TERM
 
@@ -157,6 +160,16 @@ if [[ -n $TARGET ]]; then
     --target-host "$TARGET" \
     --ssh-option IgnoreUnknown=UseKeychain \
     --disk-encryption-keys /tmp/water-seven-luks.key "$LUKS_SECRET_FILE"
+
+  phase "install authoritative checkout"
+  CHECKOUT_TRANSFER=$(mktemp -d "${TMPDIR:-/tmp}/water-seven-checkout.XXXXXX")
+  git clone --quiet --no-hardlinks "$REPOSITORY" "$CHECKOUT_TRANSFER/water-seven"
+  git -C "$CHECKOUT_TRANSFER/water-seven" checkout --quiet --detach "$DEPLOY_REVISION"
+  ssh -o IgnoreUnknown=UseKeychain "$TARGET" \
+    "rm -rf /mnt/home/jannis/Projects/water-seven && install -d -m 0755 -o 1000 -g 100 /mnt/home/jannis/Projects"
+  tar -C "$CHECKOUT_TRANSFER" -cf - water-seven \
+    | ssh -o IgnoreUnknown=UseKeychain "$TARGET" \
+      "tar -xf - -C /mnt/home/jannis/Projects && chown -R 1000:100 /mnt/home/jannis/Projects/water-seven"
 
   phase "set the login password"
   printf 'Set the independent login password for jannis.\n'
