@@ -10,7 +10,7 @@ alias ll='eza --group-directories-first --long --git'
 alias cat='bat --paging=never'
 
 plain-shell() {
-  WATER_SEVEN_PLAIN_SHELL=1 exec bash --login
+  WATER_SEVEN_PLAIN_SHELL=1 exec "$BASH" --login "$@"
 }
 
 command -v starship >/dev/null && eval "$(starship init bash)"
