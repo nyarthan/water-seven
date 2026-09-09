@@ -10,7 +10,7 @@ in
       session = pkgs.writeShellApplication {
         name = "start-water-seven-hyprland";
         text = ''
-          export HYPRLAND_CONFIG=/home/${username}/.config/hypr/hyprland.conf
+          export HYPRLAND_CONFIG=/home/${username}/.config/hypr/hyprland.lua
           exec ${pkgs.hyprland}/bin/start-hyprland "$@"
         '';
       };
@@ -71,8 +71,8 @@ in
 
   flake.modules.homeManager.platform-nixos = { config, pkgs, ... }: {
     xdg.configFile = {
-      "hypr/hyprland.conf".source =
-        config.lib.file.mkOutOfStoreSymlink "${checkout}/native/hypr/hyprland.conf";
+      "hypr/hyprland.lua".source =
+        config.lib.file.mkOutOfStoreSymlink "${checkout}/native/hypr/hyprland.lua";
       "fuzzel/fuzzel.ini".source =
         config.lib.file.mkOutOfStoreSymlink "${checkout}/native/fuzzel/fuzzel.ini";
       "hypr/hypridle.conf".text = ''
@@ -166,10 +166,11 @@ in
           color: #8aadf4;
         }
       '';
-      "water-seven/generated/hyprland.conf".text = ''
-        # Generated Nix paths. Shared action bindings are imported separately.
-        source = ~/.config/water-seven/generated/hyprland-bindings.conf
-        exec-once = ${lib.getExe pkgs.hyprpolkitagent}
+      "hypr/water_seven/paths.lua".text = ''
+        -- Generated Nix paths. Do not edit.
+        hl.on("hyprland.start", function()
+            hl.exec_cmd("${lib.getExe pkgs.hyprpolkitagent}")
+        end)
       '';
     };
   };

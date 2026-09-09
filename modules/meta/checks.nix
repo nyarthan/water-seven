@@ -103,6 +103,12 @@
         keybind = ctrl+shift+e=unbind
         keybind = ctrl+shift+o=unbind
       '';
+      hyprlandPaths =
+        pkgs.writeText "water-seven-hyprland-paths.lua"
+          home.xdg.configFile."hypr/water_seven/paths.lua".text;
+      hyprlandBindings =
+        pkgs.writeText "water-seven-hyprland-bindings.lua"
+          home.xdg.configFile."hypr/water_seven/bindings.lua".text;
       nativeConfig =
         pkgs.runCommand "water-seven-native-config"
           {
@@ -111,7 +117,10 @@
               home.programs.tmux.package
               pkgs.bash
             ]
-            ++ lib.optionals pkgs.stdenv.isLinux [ pkgs.ghostty ];
+            ++ lib.optionals pkgs.stdenv.isLinux [
+              pkgs.ghostty
+              pkgs.hyprland
+            ];
             inherit source;
           }
           ''
@@ -120,12 +129,14 @@
             export XDG_CONFIG_HOME="$HOME/.config"
             export XDG_DATA_HOME="$HOME/.local/share"
             export XDG_STATE_HOME="$HOME/.local/state"
+            export XDG_RUNTIME_DIR="$TMPDIR/runtime"
             mkdir -p \
               "$XDG_CACHE_HOME" \
               "$XDG_CONFIG_HOME/nvim" \
               "$XDG_CONFIG_HOME/water-seven/generated" \
               "$XDG_DATA_HOME" \
-              "$XDG_STATE_HOME"
+              "$XDG_STATE_HOME" \
+              "$XDG_RUNTIME_DIR"
 
             bash -n "$source/native/bash/bashrc"
 
@@ -143,6 +154,12 @@
               cp "$source/native/ghostty/config" "$XDG_CONFIG_HOME/ghostty/config"
               cp "${ghosttyFacts}" "$XDG_CONFIG_HOME/water-seven/generated/ghostty.conf"
               ghostty +validate-config --config-file="$XDG_CONFIG_HOME/ghostty/config"
+
+              mkdir -p "$XDG_CONFIG_HOME/hypr/water_seven"
+              cp "$source/native/hypr/hyprland.lua" "$XDG_CONFIG_HOME/hypr/hyprland.lua"
+              cp "${hyprlandPaths}" "$XDG_CONFIG_HOME/hypr/water_seven/paths.lua"
+              cp "${hyprlandBindings}" "$XDG_CONFIG_HOME/hypr/water_seven/bindings.lua"
+              Hyprland --verify-config --config "$XDG_CONFIG_HOME/hypr/hyprland.lua"
             ''}
 
             touch "$out"

@@ -3,14 +3,14 @@ let
   desktop = config.waterSeven.ux.desktop;
 
   directionalCommands = {
-    focus-left = "movefocus, l";
-    focus-down = "movefocus, d";
-    focus-up = "movefocus, u";
-    focus-right = "movefocus, r";
-    move-window-left = "movewindow, l";
-    move-window-down = "movewindow, d";
-    move-window-up = "movewindow, u";
-    move-window-right = "movewindow, r";
+    focus-left = ''hl.dsp.focus({ direction = "left" })'';
+    focus-down = ''hl.dsp.focus({ direction = "down" })'';
+    focus-up = ''hl.dsp.focus({ direction = "up" })'';
+    focus-right = ''hl.dsp.focus({ direction = "right" })'';
+    move-window-left = ''hl.dsp.window.move({ direction = "left" })'';
+    move-window-down = ''hl.dsp.window.move({ direction = "down" })'';
+    move-window-up = ''hl.dsp.window.move({ direction = "up" })'';
+    move-window-right = ''hl.dsp.window.move({ direction = "right" })'';
   };
 
   workspaceCommands = builtins.listToAttrs (
@@ -22,11 +22,11 @@ let
       [
         {
           name = "select-workspace-${workspace}";
-          value = "workspace, ${workspace}";
+          value = "hl.dsp.focus({ workspace = ${workspace} })";
         }
         {
           name = "move-to-workspace-${workspace}";
-          value = "movetoworkspace, ${workspace}";
+          value = "hl.dsp.window.move({ workspace = ${workspace} })";
         }
       ]
     ) (lib.range 1 9)
@@ -36,17 +36,17 @@ let
     directionalCommands
     // workspaceCommands
     // {
-      toggle-floating = "togglefloating";
-      toggle-maximize = "fullscreen, 1";
-      open-launcher = "exec, fuzzel";
+      toggle-floating = ''hl.dsp.window.float({ action = "toggle" })'';
+      toggle-maximize = ''hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" })'';
+      open-launcher = ''hl.dsp.exec_cmd("fuzzel")'';
     };
 
   renderBinding =
     action: binding:
     let
-      modifiers = "SUPER" + lib.optionalString binding.shift " SHIFT";
+      modifiers = "SUPER" + lib.optionalString binding.shift " + SHIFT";
     in
-    "bind = ${modifiers}, ${binding.key}, ${commands.${action}}";
+    ''hl.bind("${modifiers} + ${binding.key}", ${commands.${action}})'';
 
   renderedBindings = lib.concatStringsSep "\n" (lib.mapAttrsToList renderBinding desktop.actions);
 in
@@ -54,8 +54,8 @@ in
   waterSeven.ux.desktop.adapters.hyprland = commands;
 
   flake.modules.homeManager.platform-nixos = {
-    xdg.configFile."water-seven/generated/hyprland-bindings.conf".text = ''
-      # Generated from the Water Seven UX contract. Do not edit.
+    xdg.configFile."hypr/water_seven/bindings.lua".text = ''
+      -- Generated from the Water Seven UX contract. Do not edit.
       ${renderedBindings}
     '';
   };
