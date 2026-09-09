@@ -9,6 +9,14 @@
     { pkgs, system, ... }:
     let
       hosts = lib.filterAttrs (_: host: host.system == system) config.waterSeven.hosts;
+      representativeHostName = lib.head (lib.attrNames hosts);
+      representativeHost = hosts.${representativeHostName};
+      representativeSystem =
+        if representativeHost.platform == "nixos" then
+          config.flake.nixosConfigurations.${representativeHostName}
+        else
+          config.flake.darwinConfigurations.${representativeHostName};
+      home = representativeSystem.config.home-manager.users.${config.waterSeven.username};
       source = lib.cleanSource ../..;
 
       # Stable statix currently fails its own build on macOS. Keep this
@@ -34,6 +42,25 @@
           ]
         ) "Water Seven's initial fleet must contain baratie, mini-merry, and striker";
         pkgs.runCommand "water-seven-fleet-schema" { } "touch $out";
+
+      requiredActions = lib.attrNames (
+        lib.filterAttrs (_: action: action.support == "required") config.waterSeven.ux.desktop.actions
+      );
+      adapters = config.waterSeven.ux.desktop.adapters;
+      missingActions = lib.mapAttrs (
+        _: commands: lib.subtractLists (lib.attrNames commands) requiredActions
+      ) adapters;
+      completeAdapters = lib.all (missing: missing == [ ]) (lib.attrValues missingActions);
+      uxContract =
+        assert lib.assertMsg (
+          lib.attrNames adapters == [
+            "aerospace"
+            "hyprland"
+          ]
+        ) "The desktop UX contract requires Aerospace and Hyprland adapters";
+        assert lib.assertMsg completeAdapters
+          "Required desktop actions missing from adapters: ${builtins.toJSON missingActions}";
+        pkgs.runCommand "water-seven-ux-contract" { } "touch $out";
 
       formatting =
         pkgs.runCommand "water-seven-formatting"
@@ -63,12 +90,71 @@
             statix check "$source"
             touch "$out"
           '';
+
+      neovimFacts =
+        pkgs.writeText "water-seven-neovim.lua"
+          home.xdg.configFile."water-seven/generated/neovim.lua".text;
+      tmuxFacts =
+        pkgs.writeText "water-seven-tmux.conf"
+          home.xdg.configFile."water-seven/generated/tmux.conf".text;
+      ghosttyFacts = pkgs.writeText "water-seven-ghostty.conf" ''
+        config-file = ${source}/native/ghostty/linux.conf
+        keybind = ctrl+shift+t=unbind
+        keybind = ctrl+shift+e=unbind
+        keybind = ctrl+shift+o=unbind
+      '';
+      nativeConfig =
+        pkgs.runCommand "water-seven-native-config"
+          {
+            nativeBuildInputs = [
+              home.programs.neovim.finalPackage
+              home.programs.tmux.package
+              pkgs.bash
+            ]
+            ++ lib.optionals pkgs.stdenv.isLinux [ pkgs.ghostty ];
+            inherit source;
+          }
+          ''
+            export HOME="$TMPDIR/home"
+            export XDG_CACHE_HOME="$HOME/.cache"
+            export XDG_CONFIG_HOME="$HOME/.config"
+            export XDG_DATA_HOME="$HOME/.local/share"
+            export XDG_STATE_HOME="$HOME/.local/state"
+            mkdir -p \
+              "$XDG_CACHE_HOME" \
+              "$XDG_CONFIG_HOME/nvim" \
+              "$XDG_CONFIG_HOME/water-seven/generated" \
+              "$XDG_DATA_HOME" \
+              "$XDG_STATE_HOME"
+
+            bash -n "$source/native/bash/bashrc"
+
+            cp "$source/native/nvim/init.lua" "$XDG_CONFIG_HOME/nvim/init.lua"
+            cp "${neovimFacts}" "$XDG_CONFIG_HOME/water-seven/generated/neovim.lua"
+            nvim --headless '+quitall'
+
+            cp "${tmuxFacts}" "$XDG_CONFIG_HOME/water-seven/generated/tmux.conf"
+            tmux -L water-seven-check -f "$source/native/tmux/tmux.conf" new-session -d
+            tmux -L water-seven-check list-sessions >/dev/null
+            tmux -L water-seven-check kill-server
+
+            ${lib.optionalString pkgs.stdenv.isLinux ''
+              mkdir -p "$XDG_CONFIG_HOME/ghostty"
+              cp "$source/native/ghostty/config" "$XDG_CONFIG_HOME/ghostty/config"
+              cp "${ghosttyFacts}" "$XDG_CONFIG_HOME/water-seven/generated/ghostty.conf"
+              ghostty +validate-config --config-file="$XDG_CONFIG_HOME/ghostty/config"
+            ''}
+
+            touch "$out"
+          '';
     in
     {
       checks = hostChecks // {
         fleet-schema = fleetSchema;
         inherit formatting;
+        native-config = nativeConfig;
         nix-lint = nixLint;
+        ux-contract = uxContract;
       };
 
       formatter = pkgs.nixfmt-tree;

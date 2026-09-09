@@ -2,6 +2,7 @@
 let
   allowedUnfreePackages = [
     "brave"
+    "google-chrome"
   ];
 
   packagePolicy = {

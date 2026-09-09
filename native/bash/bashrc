@@ -1,0 +1,25 @@
+# Authoritative Water Seven interactive Bash configuration.
+
+[[ -r "$HOME/.config/water-seven/generated/bash.sh" ]] \
+  && source "$HOME/.config/water-seven/generated/bash.sh"
+
+shopt -s autocd checkwinsize cmdhist histappend
+
+alias ls='eza --group-directories-first'
+alias ll='eza --group-directories-first --long --git'
+alias cat='bat --paging=never'
+
+plain-shell() {
+  WATER_SEVEN_PLAIN_SHELL=1 exec bash --login
+}
+
+command -v starship >/dev/null && eval "$(starship init bash)"
+command -v zoxide >/dev/null && eval "$(zoxide init bash)"
+command -v fzf >/dev/null && eval "$(fzf --bash)"
+command -v direnv >/dev/null && eval "$(direnv hook bash)"
+command -v atuin >/dev/null && eval "$(atuin init bash --disable-up-arrow)"
+command -v mise >/dev/null && eval "$(mise activate bash)"
+
+if [[ $- == *i* && -z ${TMUX:-} && ${TERM_PROGRAM:-} == ghostty && -z ${WATER_SEVEN_PLAIN_SHELL:-} ]]; then
+  exec tmux new-session -A -s main
+fi

@@ -1,0 +1,13 @@
+# Authoritative Water Seven Ghostty configuration.
+font-family = Iosevka
+font-size = 14
+background = 111111
+foreground = dddddd
+cursor-style = block
+cursor-style-blink = false
+window-padding-x = 10
+window-padding-y = 8
+confirm-close-surface = false
+shell-integration = detect
+
+config-file = ?~/.config/water-seven/generated/ghostty.conf

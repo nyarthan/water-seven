@@ -9,7 +9,14 @@ in
       networkmanager.enable = true;
     };
 
-    services.openssh.enable = false;
+    services = {
+      logind.settings.Login = {
+        HandleLidSwitch = "suspend";
+        HandleLidSwitchDocked = "ignore";
+        HandleLidSwitchExternalPower = "suspend";
+      };
+      openssh.enable = false;
+    };
 
     users = {
       # Passwords are independent bootstrap secrets and are set outside the
