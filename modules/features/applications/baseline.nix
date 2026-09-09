@@ -9,9 +9,9 @@
 
     darwin.shared-workstation = { pkgs, ... }: {
       fonts.packages = [ pkgs.iosevka ];
-      homebrew.casks = [
-        "bitwarden"
-        "brave-browser"
+      environment.systemPackages = with pkgs; [
+        bitwarden-desktop
+        brave
       ];
     };
 

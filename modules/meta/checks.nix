@@ -17,6 +17,10 @@
         else
           config.flake.darwinConfigurations.${representativeHostName};
       home = representativeSystem.config.home-manager.users.${config.waterSeven.username};
+      darwinPackageNames = map (
+        package: package.pname or (lib.getName package)
+      ) representativeSystem.config.environment.systemPackages;
+      darwinCaskNames = map (cask: cask.name) representativeSystem.config.homebrew.casks;
       source = lib.cleanSource ../..;
 
       # Stable statix currently fails its own build on macOS. Keep this
@@ -50,6 +54,18 @@
             && representativeSystem.config.waterSeven.bootstrap.permissionSteps != [ ]
           )
         ) "Darwin hosts must declare a complete shell locale and manual permission guidance";
+        assert lib.assertMsg (
+          representativeHost.platform != "darwin"
+          || (
+            lib.subtractLists darwinPackageNames [
+              "aerospace"
+              "bitwarden-desktop"
+              "brave"
+              "raycast"
+            ] == [ ]
+            && darwinCaskNames == [ "ghostty" ]
+          )
+        ) "Darwin applications must prefer nixpkgs; Ghostty is the only approved Homebrew fallback";
         pkgs.runCommand "water-seven-fleet-schema" { } "touch $out";
 
       requiredActions = lib.attrNames (

@@ -13,6 +13,16 @@ in
       enableRosetta = false;
       user = username;
       autoMigrate = true;
+      mutableTaps = false;
+    };
+
+    homebrew = {
+      enable = true;
+      onActivation = {
+        autoUpdate = false;
+        cleanup = "uninstall";
+        upgrade = false;
+      };
     };
 
     system.primaryUser = username;

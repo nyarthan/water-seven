@@ -385,12 +385,14 @@ Use the first viable source in this order:
 
 1. Stable nixpkgs package
 2. Explicit nixpkgs-unstable exception when stable is inadequate
-3. Project-owned custom Nix package when nixpkgs does not provide it
-4. Declaratively managed Homebrew cask
-5. Declaratively requested App Store application
-6. Documented vendor/manual installation
+3. Declaratively managed Homebrew cask
+4. Declaratively requested App Store application
+5. Documented vendor/manual installation
 
-The original discussion placed a custom Nix package immediately behind nixpkgs; an unstable nixpkgs exception is still a nixpkgs source and must be explicit.
+Stable and explicitly justified unstable packages are both the preferred
+nixpkgs tier. Do not select Homebrew merely because an application is commonly
+installed as a cask. Project-owned package expressions are exceptional and
+require a documented reason not to use the normal source order.
 
 On macOS:
 

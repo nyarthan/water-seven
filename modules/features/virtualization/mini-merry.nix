@@ -1,5 +1,5 @@
 {
-  flake.modules.darwin.host-baratie = {
-    homebrew.casks = [ "utm" ];
+  flake.modules.darwin.host-baratie = { pkgs, ... }: {
+    environment.systemPackages = [ pkgs.utm ];
   };
 }

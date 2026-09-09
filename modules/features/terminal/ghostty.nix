@@ -18,6 +18,7 @@ in
       environment.systemPackages = [ pkgs.ghostty ];
     };
 
+    # The pinned nixpkgs Ghostty package does not support Darwin.
     darwin.platform-darwin = {
       homebrew.casks = [ "ghostty" ];
     };

@@ -3,6 +3,7 @@ let
   allowedUnfreePackages = [
     "brave"
     "google-chrome"
+    "raycast"
   ];
 
   packagePolicy = {
