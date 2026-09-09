@@ -42,6 +42,14 @@
             "striker"
           ]
         ) "Water Seven's fleet must contain baratie, mini-merry, mini-sunny, and striker";
+        assert lib.assertMsg (
+          representativeHost.platform != "darwin"
+          || (
+            home.home.sessionVariables.LANG == "en_US.UTF-8"
+            && home.home.sessionVariables.LC_CTYPE == "en_US.UTF-8"
+            && representativeSystem.config.waterSeven.bootstrap.permissionSteps != [ ]
+          )
+        ) "Darwin hosts must declare a complete shell locale and manual permission guidance";
         pkgs.runCommand "water-seven-fleet-schema" { } "touch $out";
 
       requiredActions = lib.attrNames (

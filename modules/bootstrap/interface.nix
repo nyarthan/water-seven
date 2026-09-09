@@ -38,7 +38,15 @@ in
     environment.systemPackages = [ (bootstrapFor pkgs) ];
   };
 
-  flake.modules.darwin.shared-workstation = { pkgs, ... }: {
-    environment.systemPackages = [ (bootstrapFor pkgs) ];
-  };
+  flake.modules.darwin.shared-workstation =
+    { pkgs, ... }:
+    {
+      options.waterSeven.bootstrap.permissionSteps = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        description = "Interactive macOS permission steps reported after bootstrap.";
+      };
+
+      config.environment.systemPackages = [ (bootstrapFor pkgs) ];
+    };
 }

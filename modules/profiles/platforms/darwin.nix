@@ -19,6 +19,12 @@ in
   };
 
   flake.modules.homeManager.platform-darwin = {
-    home.homeDirectory = "/Users/${username}";
+    home = {
+      homeDirectory = "/Users/${username}";
+      sessionVariables = {
+        LANG = "en_US.UTF-8";
+        LC_CTYPE = "en_US.UTF-8";
+      };
+    };
   };
 }

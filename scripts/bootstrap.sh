@@ -221,6 +221,17 @@ if [[ $PLATFORM == darwin ]]; then
   [[ $(dscl . -read /Users/jannis UserShell) == "UserShell: /run/current-system/sw/bin/bash" ]] \
     || fail "jannis does not have the declared Bash shell"
 
+  PERMISSION_STEPS=$(nix eval --raw \
+    "$SOURCE#darwinConfigurations.$HOST.config.waterSeven.bootstrap.permissionSteps" \
+    --apply 'steps: builtins.concatStringsSep "\n" steps')
+  if [[ -n $PERMISSION_STEPS ]]; then
+    printf '\nManual macOS consent:\n'
+    while IFS= read -r step; do
+      printf '  - %s\n' "$step"
+    done <<<"$PERMISSION_STEPS"
+    printf '  If no prompt appears, open System Settings → Privacy & Security.\n'
+  fi
+
   printf '\n%s converged successfully. Log out and back in if prompted.\n' "$HOST"
   exit 0
 fi
