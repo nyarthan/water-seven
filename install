@@ -37,4 +37,7 @@ if [ ! -d "$checkout/.git" ]; then
 fi
 
 cd "$checkout"
+NIX_CONFIG="${NIX_CONFIG:-}
+extra-experimental-features = nix-command flakes"
+export NIX_CONFIG
 exec nix run .#bootstrap -- "$host"
