@@ -13,7 +13,9 @@ NixOS installation and workstation state are declarative.
 5. Create a 64 GiB or larger VirtIO disk.
 6. Use shared/NAT networking with a VirtIO network device.
 7. Use a VirtIO GPU/display with 3D acceleration when UTM offers it.
-8. Attach the ARM64 ISO as removable installation media and boot it.
+8. Add a serial device using UTM's built-in terminal. The declared kernel uses
+   `hvc0` for the LUKS prompt and boot diagnostics under Apple virtualization.
+9. Attach the ARM64 ISO as removable installation media and boot it.
 
 Inside the installer, verify the target disk before continuing:
 
@@ -63,7 +65,9 @@ From `baratie`, in a clean Water Seven checkout:
 nix run .#bootstrap -- mini-merry --target root@<installer-address>
 ```
 
-The installed configuration disables inbound SSH, so installer credentials are
+Before rebooting, bootstrap leaves the installer environment running long
+enough to set `jannis`'s independent login password interactively. The
+installed configuration disables inbound SSH, so installer credentials are
 temporary. A successful remote install is recorded under
 `$XDG_STATE_HOME/water-seven/bootstrap`; delete that marker only when
 intentionally repeating the destructive remote exercise.

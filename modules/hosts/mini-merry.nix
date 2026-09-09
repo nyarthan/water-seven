@@ -34,6 +34,11 @@ in
         "virtio_blk"
         "virtio_pci"
         "virtio_scsi"
+        "virtio_gpu"
+      ];
+      kernelParams = [
+        "console=tty0"
+        "console=hvc0"
       ];
       loader = {
         efi.canTouchEfiVariables = true;

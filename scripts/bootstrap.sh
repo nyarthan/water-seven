@@ -141,10 +141,19 @@ if [[ -n $TARGET ]]; then
 
   phase "remote NixOS installation"
   nixos-anywhere \
+    --phases kexec,disko,install \
     --flake "$SOURCE#$HOST" \
     --target-host "$TARGET" \
     --ssh-option IgnoreUnknown=UseKeychain \
     --disk-encryption-keys /tmp/water-seven-luks.key "$LUKS_SECRET_FILE"
+
+  phase "set the login password"
+  printf 'Set the independent login password for jannis.\n'
+  ssh -t -o IgnoreUnknown=UseKeychain "$TARGET" \
+    "nixos-enter --root /mnt -c 'passwd jannis'"
+
+  phase "reboot installed NixOS"
+  ssh -o IgnoreUnknown=UseKeychain "$TARGET" systemctl reboot || true
   mkdir -p "$STATE_HOME"
   touch "$REMOTE_MARKER"
 
