@@ -31,6 +31,14 @@ confirm_erasure() {
   [[ $answer == "$host" ]] || fail "erasure was not authorized"
 }
 
+validate_install_disk_size() {
+  local disk=$1 location=$2 size=$3
+  local minimum_size=$((16 * 1024 * 1024 * 1024))
+  [[ $size =~ ^[0-9]+$ ]] || fail "could not determine the size of $disk on $location"
+  ((size >= minimum_size)) \
+    || fail "$disk on $location is smaller than 16 GiB and may be installation media"
+}
+
 read_luks_secret() {
   local first second
   umask 077
@@ -132,6 +140,9 @@ if [[ -n $TARGET ]]; then
     || fail "$HOST does not yet have a complete Disko configuration"
   ssh -o IgnoreUnknown=UseKeychain "$TARGET" test -b "$DISK" \
     || fail "$DISK is not a block device on $TARGET"
+  DISK_SIZE=$(ssh -o IgnoreUnknown=UseKeychain "$TARGET" \
+    lsblk --bytes --nodeps --noheadings --output SIZE "$DISK" | tr -d '[:space:]')
+  validate_install_disk_size "$DISK" "$TARGET" "$DISK_SIZE"
   ssh -o IgnoreUnknown=UseKeychain "$TARGET" \
     lsblk -o NAME,PATH,SIZE,TYPE,FSTYPE,MOUNTPOINTS "$DISK"
 
@@ -201,6 +212,8 @@ phase "preflight"
 DISK=$(nix eval --raw "$SOURCE#nixosConfigurations.$HOST.config.disko.devices.disk.system.device" 2>/dev/null) \
   || fail "$HOST does not yet have a complete Disko configuration"
 [[ -b $DISK ]] || fail "$DISK is not a block device"
+DISK_SIZE=$(lsblk --bytes --nodeps --noheadings --output SIZE "$DISK" | tr -d '[:space:]')
+validate_install_disk_size "$DISK" "this machine" "$DISK_SIZE"
 lsblk -o NAME,PATH,SIZE,TYPE,FSTYPE,MOUNTPOINTS "$DISK"
 
 LOCAL_LUKS_PATH=/tmp/water-seven-luks.key
