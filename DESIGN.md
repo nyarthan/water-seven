@@ -21,7 +21,7 @@ The initial fleet is:
 
 | Host | Platform | Role |
 |---|---|---|
-| `mini-merry` | `aarch64-linux` NixOS VM hosted on the Mac | Complete test workstation; role name still open |
+| `mini-merry` | `aarch64-linux` NixOS VM hosted on the Mac | Complete test workstation; `egghead` role |
 | `baratie` | `aarch64-darwin` MacBook | Work-oriented workstation |
 | `striker` | `x86_64-linux` NixOS notebook | Private-oriented workstation |
 
@@ -403,7 +403,7 @@ The UX contract does not depend on package source.
 
 ## Accounts and host security
 
-Use the same fixed Unix username on both notebooks. The macOS account is created manually during Setup Assistant and verified by bootstrap; NixOS creates it declaratively.
+Use the fixed Unix username `jannis` on both notebooks. The macOS account is created manually during Setup Assistant and verified by bootstrap; NixOS creates it declaratively.
 
 Declare account existence, groups, shell, home, and privileges. Passwords and disk-unlock credentials remain bootstrap secrets and are independent per machine.
 
@@ -558,7 +558,7 @@ Routine activation is non-destructive and does not repeat these gates.
 
 The VM envelope—CPU, memory, firmware, disk, networking, and hypervisor definition—should become declarative where practical, but that is deferred from the first bootstrapping work. Manual VM creation is acceptable initially.
 
-The test role needs a One Piece-derived name. `shakedown` was rejected because it is not a One Piece reference. A current recommendation is **`egghead`**, reflecting an experimental/test environment; confirm or replace this before encoding the role name.
+The test role is **`egghead`**, reflecting an experimental/test environment. `shakedown` was rejected because it is not a One Piece reference.
 
 ## Activation and rollback
 
@@ -627,7 +627,6 @@ The foundation is complete when all of the following work:
 
 ## Explicitly deferred work
 
-- Exact One Piece name for the VM test role (`egghead` proposed)
 - Declarative VM envelope/hypervisor selection
 - Offline recovery ISO and package closure
 - Secure Boot/Lanzaboote
