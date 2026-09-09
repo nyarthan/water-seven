@@ -130,8 +130,10 @@ if [[ -n $TARGET ]]; then
   phase "preflight"
   DISK=$(nix eval --raw "$SOURCE#nixosConfigurations.$HOST.config.disko.devices.disk.system.device" 2>/dev/null) \
     || fail "$HOST does not yet have a complete Disko configuration"
-  ssh "$TARGET" test -b "$DISK" || fail "$DISK is not a block device on $TARGET"
-  ssh "$TARGET" lsblk -o NAME,PATH,SIZE,TYPE,FSTYPE,MOUNTPOINTS "$DISK"
+  ssh -o IgnoreUnknown=UseKeychain "$TARGET" test -b "$DISK" \
+    || fail "$DISK is not a block device on $TARGET"
+  ssh -o IgnoreUnknown=UseKeychain "$TARGET" \
+    lsblk -o NAME,PATH,SIZE,TYPE,FSTYPE,MOUNTPOINTS "$DISK"
 
   phase "destructive authorization"
   confirm_erasure "$HOST" "$DISK" "$TARGET"
@@ -141,6 +143,7 @@ if [[ -n $TARGET ]]; then
   nixos-anywhere \
     --flake "$SOURCE#$HOST" \
     --target-host "$TARGET" \
+    --ssh-option IgnoreUnknown=UseKeychain \
     --disk-encryption-keys /tmp/water-seven-luks.key "$LUKS_SECRET_FILE"
   mkdir -p "$STATE_HOME"
   touch "$REMOTE_MARKER"
