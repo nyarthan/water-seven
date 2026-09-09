@@ -4,58 +4,70 @@ let
   checkout = "/home/${username}/${config.waterSeven.projectsDirectory}/water-seven";
 in
 {
-  flake.modules.nixos.platform-nixos = { pkgs, ... }: {
-    programs = {
-      dconf.enable = true;
-      hyprland = {
-        enable = true;
-        withUWSM = true;
+  flake.modules.nixos.platform-nixos =
+    { pkgs, ... }:
+    let
+      session = pkgs.writeShellApplication {
+        name = "start-water-seven-hyprland";
+        text = ''
+          export HYPRLAND_CONFIG=/home/${username}/.config/hypr/hyprland.conf
+          exec ${pkgs.hyprland}/bin/start-hyprland "$@"
+        '';
       };
-      hyprlock.enable = true;
-    };
-
-    services = {
-      dbus.enable = true;
-      displayManager.defaultSession = "hyprland-uwsm";
-      greetd = {
-        enable = true;
-        settings.default_session = {
-          command = "${lib.getExe pkgs.tuigreet} --time --remember --cmd start-hyprland";
-          user = "greeter";
+    in
+    {
+      programs = {
+        dconf.enable = true;
+        hyprland = {
+          enable = true;
+          withUWSM = true;
         };
+        hyprlock.enable = true;
       };
-      pipewire = {
-        enable = true;
-        alsa.enable = true;
-        pulse.enable = true;
+
+      services = {
+        dbus.enable = true;
+        displayManager.defaultSession = "hyprland-uwsm";
+        greetd = {
+          enable = true;
+          settings.default_session = {
+            command = "${lib.getExe pkgs.tuigreet} --time --remember --cmd ${lib.getExe session}";
+            user = "greeter";
+          };
+        };
+        pipewire = {
+          enable = true;
+          alsa.enable = true;
+          pulse.enable = true;
+        };
+        upower.enable = true;
       };
-      upower.enable = true;
+
+      security = {
+        polkit.enable = true;
+        rtkit.enable = true;
+      };
+
+      hardware.graphics.enable = true;
+
+      fonts.packages = [ pkgs.iosevka ];
+
+      environment.systemPackages = with pkgs; [
+        session
+        brightnessctl
+        fuzzel
+        grim
+        hypridle
+        hyprpolkitagent
+        networkmanagerapplet
+        playerctl
+        slurp
+        swaybg
+        waybar
+        wireplumber
+        wl-clipboard
+      ];
     };
-
-    security = {
-      polkit.enable = true;
-      rtkit.enable = true;
-    };
-
-    hardware.graphics.enable = true;
-
-    fonts.packages = [ pkgs.iosevka ];
-
-    environment.systemPackages = with pkgs; [
-      brightnessctl
-      fuzzel
-      grim
-      hypridle
-      hyprpolkitagent
-      networkmanagerapplet
-      playerctl
-      slurp
-      swaybg
-      waybar
-      wireplumber
-      wl-clipboard
-    ];
-  };
 
   flake.modules.homeManager.platform-nixos = { config, pkgs, ... }: {
     xdg.configFile = {
