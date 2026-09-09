@@ -62,7 +62,15 @@ the checkout.
 
 ## Smoke test
 
-Open a new login session after activation, then verify:
+UTM's exclusive input capture does not take precedence over global event taps
+installed by AeroSpace on the physical host. Disable host AeroSpace while
+exercising guest key bindings:
+
+```console
+aerospace enable off
+```
+
+Open a new guest login session after activation, then verify:
 
 ```console
 scutil --get ComputerName
@@ -82,6 +90,12 @@ All three names must be `mini-sunny`, and the checkout must be clean. Then:
 6. Edit a checkout-backed native file and verify native reload behavior without
    rebuilding.
 7. Reboot and confirm FileVault unlock, login, and application startup.
+
+Re-enable AeroSpace on the physical host after testing:
+
+```console
+aerospace enable on
+```
 
 Keep `mini-sunny` free of real secrets unless a later host-specific policy
 explicitly grants them.
