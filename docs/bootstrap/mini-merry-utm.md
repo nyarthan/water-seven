@@ -82,7 +82,7 @@ After removing the ISO and rebooting:
 2. Sign in as `jannis` through greetd.
 3. Confirm Hyprland, Waybar, wallpaper, audio controls, locking, and Fuzzel.
 4. Open Ghostty and confirm it enters tmux session `main`.
-5. Run `plain-shell` and confirm it opens Bash without tmux.
+5. Run `bash --noprofile --norc` and confirm a clean diagnostic Bash starts.
 6. Exercise desktop focus, movement, workspaces, floating, maximize, and the
    launcher.
 7. Edit the checkout-backed Bash, tmux, Neovim, Ghostty, Fuzzel, or Hyprland

@@ -315,7 +315,7 @@ Ghostty owns OS windows and terminal rendering. tmux exclusively owns terminal p
 ### tmux
 
 - Every ordinary Ghostty terminal automatically enters a local tmux session named `main`.
-- Provide an explicit plain-shell escape hatch.
+- Use Bash's native `--noprofile --norc` flags when a clean diagnostic shell is needed.
 - Closing Ghostty leaves the tmux session alive.
 - Session resurrection across reboot is deferred but likely desirable later.
 - Retain the default Control-B prefix for uncommon actions.

@@ -85,7 +85,7 @@ All three names must be `mini-sunny`, and the checkout must be clean. Then:
 2. Confirm AeroSpace starts and exercise the shared focus, movement, workspace,
    floating, maximize, and launcher bindings.
 3. Open Ghostty and confirm it enters tmux session `main`.
-4. Run `plain-shell` and confirm it opens Bash without tmux.
+4. Run `bash --noprofile --norc` and confirm a clean diagnostic Bash starts.
 5. Start Neovim and confirm its configuration loads without errors.
 6. Edit a checkout-backed native file and verify native reload behavior without
    rebuilding.

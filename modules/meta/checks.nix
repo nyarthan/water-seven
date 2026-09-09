@@ -165,20 +165,6 @@
               "$XDG_RUNTIME_DIR"
 
             bash -n "$source/native/bash/bashrc"
-            mkdir -p "$TMPDIR/fake-bin"
-            cat > "$TMPDIR/fake-bin/bash" <<'EOF'
-            #!/bin/sh
-            exit 99
-            EOF
-            chmod +x "$TMPDIR/fake-bin/bash"
-            cat > "$TMPDIR/test-plain-shell" <<'EOF'
-            source "$1"
-            plain-shell -c 'test "$BASH" != "$TMPDIR/fake-bin/bash"'
-            EOF
-            PATH="$TMPDIR/fake-bin:$PATH" WATER_SEVEN_PLAIN_SHELL=1 \
-              ${lib.getExe pkgs.bash} --noprofile --norc \
-                "$TMPDIR/test-plain-shell" "$source/native/bash/bashrc"
-
             cp "$source/native/nvim/init.lua" "$XDG_CONFIG_HOME/nvim/init.lua"
             cp "${neovimFacts}" "$XDG_CONFIG_HOME/water-seven/generated/neovim.lua"
             nvim --headless '+quitall'
