@@ -64,6 +64,7 @@
               "raycast"
             ] == [ ]
             && darwinCaskNames == [ "ghostty" ]
+            && lib.all (cask: cask.args.no_quarantine or false) representativeSystem.config.homebrew.casks
           )
         ) "Darwin applications must prefer nixpkgs; Ghostty is the only approved Homebrew fallback";
         pkgs.runCommand "water-seven-fleet-schema" { } "touch $out";

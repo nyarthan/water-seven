@@ -18,9 +18,15 @@ in
       environment.systemPackages = [ pkgs.ghostty ];
     };
 
-    # The pinned nixpkgs Ghostty package does not support Darwin.
+    # The pinned nixpkgs Ghostty package does not support Darwin. Suppress
+    # quarantine only for this declaratively trusted fallback, never globally.
     darwin.platform-darwin = {
-      homebrew.casks = [ "ghostty" ];
+      homebrew.casks = [
+        {
+          name = "ghostty";
+          args.no_quarantine = true;
+        }
+      ];
     };
 
     homeManager = {
