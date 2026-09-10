@@ -11,7 +11,7 @@ in
         name = "start-water-seven-hyprland";
         text = ''
           export HYPRLAND_CONFIG=/home/${username}/.config/hypr/hyprland.lua
-          exec ${pkgs.hyprland}/bin/start-hyprland "$@"
+          exec ${lib.getExe pkgs.uwsm} start -- hyprland.desktop "$@"
         '';
       };
     in
