@@ -650,6 +650,7 @@ The foundation is complete when all of the following work:
 - Declarative browser profiles, groups, and containers
 - Full communication/office/media/gaming application inventory
 - Automated dependency-update pull requests
+- Scheduled Git maintenance and repository registration; maintenance stays manual until a dashboard can expose run history and statistics
 - Third-party binary cache
 
 A deferred feature becomes active work only when a concrete workflow requires it or the existing design blocks implementation.
