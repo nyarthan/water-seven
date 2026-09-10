@@ -17,6 +17,7 @@
           ];
       };
       headroom-ai = unstable.callPackage ../../../packages/headroom-ai.nix { };
+      linearis = pkgs.callPackage ../../../packages/linearis.nix { };
       tokentracker-cli = pkgs.callPackage ../../../packages/tokentracker-cli.nix { };
     in
     {
@@ -30,6 +31,7 @@
         headroom-ai
         hyperfine
         lazygit
+        linearis
         tokentracker-cli
         turbo
         uv

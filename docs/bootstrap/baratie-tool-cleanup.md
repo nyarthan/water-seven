@@ -21,7 +21,7 @@ Water Seven currently declares BWS, Claude Code, Headroom, OpenCode, and TokenTr
 
 Once the checks above pass:
 
-- Remove the global npm installs of `@anthropic-ai/claude-code`, `opencode-ai`, and `tokentracker-cli`; their replacements are Nix-owned.
+- Remove the global npm installs of `@anthropic-ai/claude-code`, `linearis`, `opencode-ai`, and `tokentracker-cli`; their replacements are Nix-owned.
 - Remove the rejected global npm installs `ccstatusline` and `eas-cli`.
 - Remove `@opencode-ai/cli` if its legacy `lildax` command is no longer needed.
 - Remove the uv tool `headroom-ai`; its replacement is Nix-owned.
@@ -36,7 +36,6 @@ Preserve application data and configuration while removing executable installati
 Do not delete these until their separate migration decisions are complete:
 
 - `@earendil-works/pi-coding-agent`, the custom pi fork.
-- `linearis` and its `linear`/`linearis` commands.
 - Unreferenced mise installation caches. Preserve them through initial activation; prune only after representative project-owned toolchains have been exercised.
 - The standalone `nixd` Nix profile entry; first confirm that no editor or project still selects it. Water Seven itself uses `nil`.
 
