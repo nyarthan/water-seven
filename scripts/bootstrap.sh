@@ -130,6 +130,7 @@ esac
 
 REPOSITORY=$(git rev-parse --show-toplevel 2>/dev/null) || fail "run bootstrap from the Water Seven checkout"
 [[ -z $(git -C "$REPOSITORY" status --porcelain) ]] || fail "bootstrap requires a clean Git worktree"
+ORIGIN_URL=$(git -C "$REPOSITORY" remote get-url origin 2>/dev/null || true)
 
 if [[ -n $REVISION ]]; then
   git -C "$REPOSITORY" rev-parse --verify "${REVISION}^{commit}" >/dev/null
@@ -184,6 +185,9 @@ if [[ -n $TARGET ]]; then
   phase "install authoritative checkout"
   CHECKOUT_TRANSFER=$(mktemp -d "${TMPDIR:-/tmp}/water-seven-checkout.XXXXXX")
   git clone --quiet --no-hardlinks "$REPOSITORY" "$CHECKOUT_TRANSFER/water-seven"
+  if [[ -n $ORIGIN_URL ]]; then
+    git -C "$CHECKOUT_TRANSFER/water-seven" remote set-url origin "$ORIGIN_URL"
+  fi
   git -C "$CHECKOUT_TRANSFER/water-seven" checkout --quiet --detach "$DEPLOY_REVISION"
   ssh -o IgnoreUnknown=UseKeychain "$TARGET" \
     "rm -rf /mnt/home/jannis/Projects/water-seven && install -d -m 0755 -o 1000 -g 100 /mnt/home/jannis/Projects"
@@ -296,6 +300,9 @@ else
   phase "install authoritative checkout"
   install -d -m 0755 -o 1000 -g 100 /mnt/home/jannis/Projects
   git clone --no-hardlinks "$REPOSITORY" /mnt/home/jannis/Projects/water-seven
+  if [[ -n $ORIGIN_URL ]]; then
+    git -C /mnt/home/jannis/Projects/water-seven remote set-url origin "$ORIGIN_URL"
+  fi
   git -C /mnt/home/jannis/Projects/water-seven checkout --detach "$DEPLOY_REVISION"
   chown -R 1000:100 /mnt/home/jannis/Projects/water-seven
 fi
