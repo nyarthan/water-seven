@@ -144,6 +144,7 @@
       tmuxFacts =
         pkgs.writeText "water-seven-tmux.conf"
           home.xdg.configFile."water-seven/generated/tmux.conf".text;
+      gitConfig = home.xdg.configFile."git/config".source;
       ghosttyFacts = pkgs.writeText "water-seven-ghostty.conf" ''
         config-file = ${source}/native/ghostty/linux.conf
         keybind = ctrl+shift+t=unbind
@@ -160,6 +161,7 @@
         pkgs.runCommand "water-seven-native-config"
           {
             nativeBuildInputs = [
+              home.programs.git.package
               home.programs.neovim.finalPackage
               home.programs.tmux.package
               pkgs.bash
@@ -186,6 +188,13 @@
               "$XDG_RUNTIME_DIR"
 
             bash -n "$source/native/bash/bashrc"
+            test "$(git config --file ${gitConfig} --get init.defaultBranch)" = main
+            test "$(git config --file ${gitConfig} --get pull.rebase)" = true
+            test "$(git config --file ${gitConfig} --get push.default)" = simple
+            test "$(git config --file ${gitConfig} --get rebase.updateRefs)" = true
+            test "$(git config --file ${gitConfig} --get merge.conflictStyle)" = zdiff3
+            test "$(git config --file ${gitConfig} --get diff.algorithm)" = histogram
+
             cp "$source/native/nvim/init.lua" "$XDG_CONFIG_HOME/nvim/init.lua"
             cp "${neovimFacts}" "$XDG_CONFIG_HOME/water-seven/generated/neovim.lua"
             nvim --headless '+quitall'

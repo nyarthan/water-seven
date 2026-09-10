@@ -34,12 +34,11 @@ in
       '';
     };
 
-    homeManager.shared-workstation = { pkgs, ... }: {
+    homeManager.shared-workstation = {
       home = {
         inherit username;
         stateVersion = "26.05";
         sessionVariables.XDG_PROJECTS_DIR = "$HOME/${projectsDirectory}";
-        packages = [ pkgs.git ];
       };
 
       programs.home-manager.enable = true;
