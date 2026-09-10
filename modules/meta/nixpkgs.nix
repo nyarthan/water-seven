@@ -3,6 +3,8 @@ let
   allowedUnfreePackages = [
     "brave"
     "google-chrome"
+    "mos"
+    "obsidian"
     "raycast"
   ];
 

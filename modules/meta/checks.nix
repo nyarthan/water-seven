@@ -20,6 +20,7 @@
       darwinPackageNames = map (
         package: package.pname or (lib.getName package)
       ) representativeSystem.config.environment.systemPackages;
+      darwinBrewNames = map (brew: brew.name) representativeSystem.config.homebrew.brews;
       darwinCaskNames = map (cask: cask.name) representativeSystem.config.homebrew.casks;
       deploymentReadyHostNames = lib.attrNames (
         lib.filterAttrs (_: host: host.deploymentReady) config.waterSeven.hosts
@@ -63,19 +64,22 @@
             && representativeSystem.config.waterSeven.bootstrap.permissionSteps != [ ]
           )
         ) "Darwin hosts must declare a complete shell locale and manual permission guidance";
-        assert lib.assertMsg (
-          representativeHost.platform != "darwin"
-          || (
-            lib.subtractLists darwinPackageNames [
-              "aerospace"
-              "bitwarden-desktop"
-              "brave"
-              "raycast"
-            ] == [ ]
-            && darwinCaskNames == [ "ghostty" ]
-            && lib.all (cask: cask.args.no_quarantine or false) representativeSystem.config.homebrew.casks
+        assert lib.assertMsg
+          (
+            representativeHost.platform != "darwin"
+            || (
+              lib.subtractLists darwinPackageNames [
+                "aerospace"
+                "bitwarden-desktop"
+                "brave"
+                "raycast"
+              ] == [ ]
+              && darwinBrewNames == lib.optionals (representativeHost.role == "work") [ "mole" ]
+              && darwinCaskNames == [ "ghostty" ]
+              && lib.all (cask: cask.args.no_quarantine or false) representativeSystem.config.homebrew.casks
+            )
           )
-        ) "Darwin applications must prefer nixpkgs; Ghostty is the only approved Homebrew fallback";
+          "Darwin applications must prefer nixpkgs; Ghostty and broken-on-Darwin Mole are the only approved Homebrew fallbacks";
         pkgs.runCommand "water-seven-fleet-schema" { } "touch $out";
 
       requiredActions = lib.attrNames (
