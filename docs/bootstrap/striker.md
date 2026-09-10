@@ -46,8 +46,10 @@ Remove the USB drive and reboot. Then verify:
 2. `jannis` can log in with the independent account password.
 3. Greetd launches the Hyprland session.
 4. `nmtui` can reconnect Wi-Fi; installer network credentials are not migrated.
-5. Ghostty, tmux, Neovim, audio, brightness controls, suspend/resume, touchpad, TrackPoint, Wi-Fi, and Bluetooth work.
+5. Ghostty, tmux, Neovim, audio, brightness controls, touchpad, TrackPoint, and Wi-Fi work.
 6. `systemctl --failed` reports no failed units.
 7. `linearis --version` reports the private-role package version without requiring access to private authentication state.
+
+Core first-boot validation has passed. Bluetooth and suspend/resume testing are explicitly deferred and do not block deployment readiness.
 
 Keep Secure Boot disabled for the initial installation. Enabling it with Lanzaboote remains separate deferred work.
