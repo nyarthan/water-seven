@@ -60,8 +60,9 @@
           deploymentReadyHostNames == [
             "mini-merry"
             "mini-sunny"
+            "striker"
           ]
-        ) "Only validated disposable hosts may be deployment-ready during migration";
+        ) "Only reviewed hosts may be deployment-ready during migration";
         assert lib.assertMsg (
           representativeHost.platform != "darwin"
           || (
@@ -196,6 +197,7 @@
               "$XDG_RUNTIME_DIR"
 
             bash -n "$source/native/bash/bashrc"
+            bash -n "$source/scripts/bootstrap.sh"
             bash -n "$source/scripts/check-darwin-default-browser.sh"
             test "$(git config --file ${gitConfig} --get init.defaultBranch)" = main
             test "$(git config --file ${gitConfig} --get pull.rebase)" = true

@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, inputs, ... }:
 let
   modules = config.flake.modules;
 in
@@ -7,7 +7,7 @@ in
     platform = "nixos";
     system = "x86_64-linux";
     role = "private";
-    deploymentReady = false;
+    deploymentReady = true;
 
     os.imports = [
       modules.nixos.shared-workstation
@@ -24,23 +24,80 @@ in
     ];
   };
 
-  # Hardware and Disko facts will be added from the physical notebook before
-  # its first installation. The root filesystem and UEFI loader below establish
-  # architecture-independent boot invariants without guessing a physical disk.
-  flake.modules.nixos.host-striker = {
-    networking.hostName = "striker";
-    system.stateVersion = "26.05";
+  flake.modules.nixos.host-striker =
+    { config, lib, ... }:
+    {
+      imports = [ inputs.disko.nixosModules.disko ];
 
-    boot.loader = {
-      efi.canTouchEfiVariables = true;
-      systemd-boot.enable = true;
-    };
+      networking.hostName = "striker";
+      system.stateVersion = "26.05";
 
-    fileSystems."/" = {
-      device = "/dev/mapper/crypted";
-      fsType = "ext4";
+      boot = {
+        initrd.availableKernelModules = [
+          "xhci_pci"
+          "thunderbolt"
+          "nvme"
+          "uas"
+          "sd_mod"
+        ];
+        kernelModules = [ "kvm-intel" ];
+        loader = {
+          efi.canTouchEfiVariables = true;
+          systemd-boot.enable = true;
+        };
+      };
+
+      disko.devices.disk.system = {
+        type = "disk";
+        device = "/dev/nvme0n1";
+        content = {
+          type = "gpt";
+          partitions = {
+            esp = {
+              size = "1G";
+              type = "EF00";
+              content = {
+                type = "filesystem";
+                format = "vfat";
+                mountpoint = "/boot";
+                mountOptions = [ "umask=0077" ];
+              };
+            };
+
+            encrypted = {
+              size = "100%";
+              content = {
+                type = "luks";
+                name = "crypted";
+                passwordFile = "/tmp/water-seven-luks.key";
+                settings.allowDiscards = true;
+                content = {
+                  type = "filesystem";
+                  format = "ext4";
+                  mountpoint = "/";
+                };
+              };
+            };
+          };
+        };
+      };
+
+      hardware = {
+        bluetooth.enable = true;
+        cpu.intel = {
+          npu.enable = true;
+          updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+        };
+        enableRedistributableFirmware = true;
+      };
+
+      services = {
+        fstrim.enable = true;
+        fwupd.enable = true;
+        power-profiles-daemon.enable = true;
+        thermald.enable = true;
+      };
     };
-  };
 
   flake.modules.homeManager.host-striker = { };
 }

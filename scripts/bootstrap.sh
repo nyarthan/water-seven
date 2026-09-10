@@ -255,11 +255,19 @@ DISK_SIZE=$(lsblk --bytes --nodeps --noheadings --output SIZE "$DISK" | tr -d '[
 validate_install_disk_size "$DISK" "this machine" "$DISK_SIZE"
 lsblk -o NAME,PATH,SIZE,TYPE,FSTYPE,MOUNTPOINTS "$DISK"
 
+phase "build $HOST before erasure"
+nix build "$SOURCE#nixosConfigurations.$HOST.config.system.build.toplevel" --no-link
+
+ENCRYPTED_PARTITION=$(
+  nix eval --raw \
+    "$SOURCE#nixosConfigurations.$HOST.config.disko.devices.disk.system.content.partitions.encrypted.device"
+)
 LOCAL_LUKS_PATH=/tmp/water-seven-luks.key
 if mountpoint -q /mnt && [[ -e /dev/mapper/crypted ]]; then
   phase "partition, encrypt, and mount (already complete)"
-elif lsblk -nrpo FSTYPE "$DISK" | grep -qx crypto_LUKS; then
-  phase "remount existing encrypted installation"
+elif [[ -b $ENCRYPTED_PARTITION ]] \
+  && [[ $(lsblk -nrpo FSTYPE "$ENCRYPTED_PARTITION") == crypto_LUKS ]]; then
+  phase "remount existing Water Seven installation"
   read_luks_secret
   install -m 0600 "$LUKS_SECRET_FILE" "$LOCAL_LUKS_PATH"
   disko --mode mount --flake "$SOURCE#$HOST"
