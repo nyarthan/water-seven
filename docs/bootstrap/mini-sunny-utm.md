@@ -82,14 +82,22 @@ git -C ~/Projects/water-seven status --short --branch
 All three names must be `mini-sunny`, and the checkout must be clean. Then:
 
 1. Grant the requested Accessibility permissions to AeroSpace and Raycast.
-2. Confirm AeroSpace starts and exercise the shared focus, movement, workspace,
+2. Open Brave, choose **Set Brave as default browser**, and approve the macOS
+   prompt. LaunchServices ignores defaults-only handler declarations, and macOS
+   does not permit this consent to be bypassed. Verify the effective handler:
+
+   ```console
+   ./scripts/check-darwin-default-browser.sh
+   ```
+
+3. Confirm AeroSpace starts and exercise the shared focus, movement, workspace,
    floating, maximize, and launcher bindings.
-3. Open Ghostty and confirm it enters tmux session `main`.
-4. Run `bash --noprofile --norc` and confirm a clean diagnostic Bash starts.
-5. Start Neovim and confirm its configuration loads without errors.
-6. Edit a checkout-backed native file and verify native reload behavior without
+4. Open Ghostty and confirm it enters tmux session `main`.
+5. Run `bash --noprofile --norc` and confirm a clean diagnostic Bash starts.
+6. Start Neovim and confirm its configuration loads without errors.
+7. Edit a checkout-backed native file and verify native reload behavior without
    rebuilding.
-7. Reboot and confirm FileVault unlock, login, and application startup.
+8. Reboot and confirm FileVault unlock, login, and application startup.
 
 Re-enable AeroSpace on the physical host after testing:
 

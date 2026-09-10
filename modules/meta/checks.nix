@@ -19,8 +19,13 @@
       home = representativeSystem.config.home-manager.users.${config.waterSeven.username};
       darwinSystemPackages = representativeSystem.config.environment.systemPackages;
       darwinPackageNames = map (package: package.pname or (lib.getName package)) darwinSystemPackages;
-      browserHandlers =
-        representativeSystem.config.system.defaults.CustomUserPreferences."com.apple.LaunchServices/com.apple.launchservices.secure".LSHandlers;
+      browserHandlers = lib.attrByPath [
+        "system"
+        "defaults"
+        "CustomUserPreferences"
+        "com.apple.LaunchServices/com.apple.launchservices.secure"
+        "LSHandlers"
+      ] null representativeSystem.config;
       darwinBrewNames = map (brew: brew.name) representativeSystem.config.homebrew.brews;
       darwinCaskNames = map (cask: cask.name) representativeSystem.config.homebrew.casks;
       deploymentReadyHostNames = lib.attrNames (
@@ -83,11 +88,13 @@
                 package:
                 (package.pname or (lib.getName package)) == "raycast" && lib.versionAtLeast package.version "2.0"
               ) darwinSystemPackages
-              && builtins.length browserHandlers == 4
-              && lib.all (handler: handler.LSHandlerRoleAll == "com.brave.Browser") browserHandlers
+              && browserHandlers == null
+              && lib.any (
+                step: lib.hasInfix "Brave" step && lib.hasInfix "approve the macOS prompt" step
+              ) representativeSystem.config.waterSeven.bootstrap.followUpSteps
             )
           )
-          "Darwin applications must prefer nixpkgs; Ghostty and broken-on-Darwin Mole are the only approved Homebrew fallbacks";
+          "Darwin applications must prefer nixpkgs, avoid ineffective LaunchServices plist handlers, and document interactive browser consent; Ghostty and broken-on-Darwin Mole are the only approved Homebrew fallbacks";
         pkgs.runCommand "water-seven-fleet-schema" { } "touch $out";
 
       requiredActions = lib.attrNames (
@@ -188,6 +195,7 @@
               "$XDG_RUNTIME_DIR"
 
             bash -n "$source/native/bash/bashrc"
+            bash -n "$source/scripts/check-darwin-default-browser.sh"
             test "$(git config --file ${gitConfig} --get init.defaultBranch)" = main
             test "$(git config --file ${gitConfig} --get pull.rebase)" = true
             test "$(git config --file ${gitConfig} --get push.default)" = simple

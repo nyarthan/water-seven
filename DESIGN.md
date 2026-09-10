@@ -377,7 +377,7 @@ Use dark appearance where supported. Keep native OS widget themes platform-speci
 
 Use Iosevka as the shared terminal/editor monospace font. Native system UI fonts remain platform defaults.
 
-File managers, screenshots, and clipboard behavior remain platform-native initially. Browser profiles, groups/containers, history, and application accounts remain application-owned mutable state. Declarative browser profile/container management may be investigated later.
+File managers, screenshots, and clipboard behavior remain platform-native initially. Browser profiles, groups/containers, history, and application accounts remain application-owned mutable state. Declarative browser profile/container management may be investigated later. On macOS, changing the effective default browser requires interactive user approval: Water Seven installs Brave, guides that consent, and verifies the live LaunchServices handler rather than writing an ineffective `LSHandlers` preference.
 
 ## Package acquisition
 

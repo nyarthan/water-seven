@@ -9,7 +9,7 @@
 
     darwin.shared-workstation = { pkgs, ... }: {
       waterSeven.bootstrap.followUpSteps = [
-        "Brave: confirm it is the default browser if macOS does not accept the declared handlers automatically."
+        "Brave: open it, choose 'Set Brave as default browser', and approve the macOS prompt; this consent cannot be applied through defaults."
       ];
 
       fonts.packages = [ pkgs.iosevka ];
@@ -17,15 +17,6 @@
         bitwarden-desktop
         brave
       ];
-
-      system.defaults.CustomUserPreferences."com.apple.LaunchServices/com.apple.launchservices.secure" = {
-        LSHandlers = map (handler: handler // { LSHandlerRoleAll = "com.brave.Browser"; }) [
-          { LSHandlerContentType = "com.apple.default-app.web-browser"; }
-          { LSHandlerContentType = "public.html"; }
-          { LSHandlerURLScheme = "http"; }
-          { LSHandlerURLScheme = "https"; }
-        ];
-      };
     };
 
     homeManager.shared-workstation = { pkgs, ... }: {
