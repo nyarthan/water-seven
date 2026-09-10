@@ -30,6 +30,7 @@ In the installer as root:
 ```console
 git clone https://github.com/nyarthan/water-seven.git /root/Projects/water-seven
 cd /root/Projects/water-seven
+export NIX_CONFIG="experimental-features = nix-command flakes"
 nix run .#bootstrap -- striker
 ```
 
