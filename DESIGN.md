@@ -443,47 +443,97 @@ Erase-on-boot impermanence is deferred. First prove reliable recovery from a bla
 
 Tailscale is deferred until remote access or VM connectivity becomes a real workflow.
 
-## Secrets
+## Credential security
 
-Commit SOPS-encrypted secret files to the public repository. Ciphertext, filenames, recipient public keys, and metadata are public; plaintext and age private identities are not.
+Water Seven uses separate credential authorities and revocation domains rather than one universal vault. Host roles provide defaults, but they are not security boundaries: a relying party such as GitHub may span personal and work contexts while its individual credentials retain distinct ownership and revocation.
+
+The full rationale, platform findings, and rollout sequence are in [Credential and secret security architecture](docs/research/credential-security-architecture.md) and [ADR 0001](docs/adr/0001-separate-credential-authorities.md).
+
+### Authorities
+
+- Personal Bitwarden owns human-oriented personal credentials and selected recovery records.
+- Work Bitwarden owns human-oriented work credentials and company recovery records.
+- STACKIT Secrets Manager owns work application and team secrets that need central API access and versioning.
+- Issuing services own OAuth, browser-login, and generated CLI credentials; local copies are renewable application state.
+- SOPS owns delivery of only selected static, machine-consumed, personal-scope secrets.
+- FileVault and each LUKS2 volume own their independent disk credentials.
+- macOS Keychain and a Linux Secret Service implementation are local credential brokers, not authorities or universal backups.
+
+No work secret or work-secret ciphertext enters the public repository unless company policy later authorizes the exact publication model. Account overlap does not relax this rule.
+
+Bitwarden desktop/browser clients may hold both accounts through native account switching. CLI use keeps separate personal and work state directories and process-local sessions. `BW_SESSION`, STACKIT access tokens, OAuth tokens, and equivalent session material are never declarative secrets.
+
+### YubiKey policy
+
+The current hardware is one YubiKey 5 NFC with USB-C. Acquire a second YubiKey 5C NFC as an independently enrolled backup before making hardware presence mandatory. The keys contain separate credentials; they are not clones.
+
+Privileged YubiKey operations require PIN plus physical touch. Use purpose-specific credentials:
+
+- FIDO2 web credentials for each relying party;
+- separate FIDO2 OpenSSH credentials for SSH authentication and Git signing;
+- separately scoped FIDO2 credentials for NixOS login and sudo;
+- per-volume FIDO2 enrollment for LUKS2; and
+- one retired PIV slot per key for a SOPS operator age identity.
+
+Record firmware before selecting an OpenSSH key type. Prefer resident `ed25519-sk` credentials with `verify-required` on firmware 5.2.3 or newer; use `ecdsa-sk` as the compatibility fallback. Public keys and local key handles are metadata; private key material remains on the token.
+
+Provision `age-plugin-yubikey` before any other PIV use because it changes default global PIV administration. Use PIN-once and touch-always for operator decryption. The primary YubiKey, backup YubiKey, and offline recovery identity are independent SOPS recipients.
+
+Do not initially add YubiKey PIV login to macOS. `baratie` keeps FileVault password/recovery-key unlock and Secure Enclave/Touch ID sudo with password fallback. Reconsider smart-card login only after two keys exist and enrollment, reboot, loss, and unlink recovery have passed on disposable Apple-silicon hardware.
+
+### Disk encryption
+
+Every disk credential is unique and independent of the Unix login password.
+
+`striker` will retain a high-entropy LUKS2 recovery passphrase and separately enroll both YubiKeys with client PIN and user presence. The recovery passphrase remains valid even when no token is available. Do not add TPM-only unlock until Secure Boot and measured-boot policy are designed.
+
+VMs retain independent passphrases and never depend on USB passthrough for recovery. A VM that receives a real secret has credential-bearing snapshots and exports.
+
+FileVault remains macOS-native. Preserve its personal recovery key in personal Bitwarden and the offline recovery kit; never expose it through Nix evaluation, output, or logs.
+
+### Declarative delivery with SOPS
+
+SOPS ciphertext, filenames, recipients, and change metadata are public. Include only values for which that disclosure is acceptable.
+
+Each authorized host receives a unique generated age identity protected by its encrypted disk. Each SOPS file may additionally grant the primary YubiKey, backup YubiKey, and offline break-glass identity. Host identities permit unattended activation and are replaceable on reinstall rather than backed up.
 
 Rules:
 
-- Filenames reveal as little sensitive information as practical.
-- Plaintext never enters Git history, Nix store paths, logs, command arguments, or the clipboard.
-- Secret requirements, owners, permissions, and target paths are declared publicly.
+- Plaintext never enters Git history, Nix store paths, logs, command arguments, shell traces, or the clipboard.
+- Secret requirements, owners, permissions, and runtime paths are declared publicly.
 - Missing required secrets fail activation early and clearly.
-- Decrypted values are exposed as protected runtime files.
-- Process-local environment variables are derived at launch only when an application cannot consume a file.
-- Evaluation and CI do not require decryption.
+- `sops-nix` exposes least-privilege, non-persistent runtime files.
+- Process-local environment variables are derived only when an application cannot consume a file.
+- Evaluation, builds, and CI do not require decryption.
+- Hardware-token decryption is for editing, rekeying, and recovery; routine host activation uses the host recipient.
 
-### Personal age identity
+Do not put password-manager sessions, OAuth state, GitHub CLI sessions, disk recovery credentials, YubiKey administration secrets, renewable Linearis tokens, or any work material in SOPS. `mini-merry` may decrypt only explicitly granted files through its host recipient; its snapshots and exported disks are then sensitive. Keep `mini-sunny` free of real credentials by default.
 
-The two physical notebooks initially share one personal age recovery identity. Store it in Bitwarden and keep one tested encrypted offline recovery copy on removable media.
+### Local and renewable credentials
 
-Install it at:
+Applications use Keychain on macOS and Secret Service on Linux when supported. Otherwise, a mode-`0600` application-owned file on the encrypted volume is acceptable. A FIDO-only Linux login cannot automatically provide a login-keyring password; prompt to unlock the keyring rather than storing that password to bypass the prompt.
 
-```text
-~/.config/sops/age/keys.txt
-```
+Browser-generated and OAuth CLI credentials remain application-owned mutable state. Back up the authority and recovery method, not access tokens: reauthenticate or reissue them after loss. STACKIT work secrets are fetched explicitly at application launch or login and must not make every system rebuild depend on work SSO or network availability.
 
-with mode `0600`.
+### Git identity and signing
 
-Bootstrap retrieval:
+Use SSH-format Git commit and tag signatures from a dedicated resident FIDO2 signing credential, distinct from SSH authentication. Register primary and backup signing keys independently. Keep author name and email in private personal/work includes restored from the corresponding Bitwarden account or created interactively. Host role chooses a default; conditional includes override repositories that cross that default.
 
-1. Nix provides `bitwarden-cli`.
-2. Run interactive Bitwarden login and MFA when necessary.
-3. Unlock the vault for the bootstrap process only.
-4. Retrieve the `AGE-SECRET-KEY-...` value from the password field of a dedicated vault item.
-5. Write it atomically without logs, shell tracing, clipboard use, or readable temporary files.
-6. Derive its public key and decrypt a fixture as validation.
-7. Clear the session and run `bw lock` in cleanup on success or failure.
+Do not enable signing until the backup key exists, both keys are registered, clean-machine recovery has been tested, and the active private Git include selects the intended identity and signer.
 
-### Host-specific recipients
+### Recovery and revocation
 
-Grant secrets per host and per file. Each SOPS file can retain the personal key as a recovery recipient while adding host keys for runtime use.
+The blank-machine recovery route must not require another configured Water Seven host or one available cloud account. Maintain:
 
-`mini-merry` receives real secrets but uses a host-specific age identity rather than the shared personal identity. It can decrypt only explicitly granted files. Its snapshots and exported disks are credential-bearing sensitive artifacts.
+1. the separately stored backup YubiKey;
+2. personal Bitwarden as the convenient online source;
+3. a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, a SOPS break-glass identity, and the personal credential-registration inventory.
+
+Keep work credential inventory and recovery material only in work Bitwarden or another company-approved system.
+
+Do not enforce hardware-backed LUKS, login, sudo, or operator decryption while only one YubiKey exists. Before enforcement, test primary key, backup key, and recovery-only paths independently.
+
+A lost key triggers removal of every registered credential in its inventory, removal of its SOPS recipient, replacement-key provisioning, and recovery retesting. A compromised host triggers revocation of its sessions and generated tokens, rotation of every static secret it could decrypt, removal of its host recipient, and generation of a new host identity after reinstall.
 
 ## Bootstrap
 
