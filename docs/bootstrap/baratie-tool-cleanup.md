@@ -21,7 +21,8 @@ Water Seven currently declares BWS, Claude Code, Headroom, OpenCode, and TokenTr
 
 Once the checks above pass:
 
-- Remove the global npm installs of `@anthropic-ai/claude-code`, `linearis`, `opencode-ai`, and `tokentracker-cli`; their replacements are Nix-owned.
+- Remove the global npm installs of `@anthropic-ai/claude-code`, `opencode-ai`, and `tokentracker-cli`; their replacements are Nix-owned.
+- Remove the global npm install of `linearis`; it is intentionally private-role software and is not needed on `baratie`. Preserve `~/.linearis/token` unless its private state is explicitly retired.
 - Remove the rejected global npm installs `ccstatusline` and `eas-cli`.
 - Remove `@opencode-ai/cli` if its legacy `lildax` command is no longer needed.
 - Remove the uv tool `headroom-ai`; its replacement is Nix-owned.

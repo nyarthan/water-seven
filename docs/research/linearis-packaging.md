@@ -14,7 +14,7 @@ The published artifact omits its lock file. Water Seven therefore keeps a minima
 
 ## Decision impact
 
-The work role receives Nix-owned `linear` and `linearis` commands. Authentication remains private mutable application state in `~/.linearis/token`; it is neither read nor copied into the Nix store. After `baratie` activates and the Nix-owned commands are verified, the duplicate global npm installation can be removed.
+The private role receives Nix-owned `linear` and `linearis` commands; the work role intentionally does not. Authentication remains private mutable application state in `~/.linearis/token`; it is neither read nor copied into the Nix store. The old global npm installation on `baratie` can be removed during cleanup because that host does not need Linearis.
 
 [^npm]: [npm registry metadata for `linearis` 2026.8.0](https://registry.npmjs.org/linearis/2026.8.0)
 [^prepare]: [Linearis `v2026.8.0` preparation script](https://github.com/linearis-oss/linearis/blob/v2026.8.0/scripts/prepare.mjs)
