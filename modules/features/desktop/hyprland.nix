@@ -57,7 +57,6 @@ in
         brightnessctl
         fuzzel
         grim
-        hypridle
         hyprpolkitagent
         networkmanagerapplet
         playerctl
@@ -70,29 +69,34 @@ in
     };
 
   flake.modules.homeManager.platform-nixos = { config, pkgs, ... }: {
+    services.hypridle = {
+      enable = true;
+      settings = {
+        general = {
+          lock_cmd = "pidof hyprlock || hyprlock";
+          before_sleep_cmd = "loginctl lock-session";
+          after_sleep_cmd = "hyprctl dispatch dpms on";
+        };
+
+        listener = [
+          {
+            timeout = 600;
+            on-timeout = "loginctl lock-session";
+          }
+          {
+            timeout = 660;
+            on-timeout = "hyprctl dispatch dpms off";
+            on-resume = "hyprctl dispatch dpms on";
+          }
+        ];
+      };
+    };
+
     xdg.configFile = {
       "hypr/hyprland.lua".source =
         config.lib.file.mkOutOfStoreSymlink "${checkout}/native/hypr/hyprland.lua";
       "fuzzel/fuzzel.ini".source =
         config.lib.file.mkOutOfStoreSymlink "${checkout}/native/fuzzel/fuzzel.ini";
-      "hypr/hypridle.conf".text = ''
-        general {
-          lock_cmd = pidof hyprlock || hyprlock
-          before_sleep_cmd = loginctl lock-session
-          after_sleep_cmd = hyprctl dispatch dpms on
-        }
-
-        listener {
-          timeout = 600
-          on-timeout = loginctl lock-session
-        }
-
-        listener {
-          timeout = 660
-          on-timeout = hyprctl dispatch dpms off
-          on-resume = hyprctl dispatch dpms on
-        }
-      '';
       "hypr/hyprlock.conf".text = ''
         general {
           hide_cursor = true

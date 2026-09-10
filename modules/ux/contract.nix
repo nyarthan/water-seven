@@ -52,5 +52,18 @@ in
       open-launcher = {
         key = "SPACE";
       };
+      open-terminal = {
+        key = "RETURN";
+      };
+      close-window = {
+        key = "Q";
+      };
+      lock-session = {
+        key = "ESCAPE";
+      };
+      logout-session = {
+        key = "ESCAPE";
+        shift = true;
+      };
     };
 }

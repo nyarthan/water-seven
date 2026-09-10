@@ -39,6 +39,10 @@ let
       toggle-floating = ''hl.dsp.window.float({ action = "toggle" })'';
       toggle-maximize = ''hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" })'';
       open-launcher = ''hl.dsp.exec_cmd("fuzzel")'';
+      open-terminal = ''hl.dsp.exec_cmd("ghostty")'';
+      close-window = "hl.dsp.window.close()";
+      lock-session = ''hl.dsp.exec_cmd("loginctl lock-session")'';
+      logout-session = "hl.dsp.exit()";
     };
 
   renderBinding =

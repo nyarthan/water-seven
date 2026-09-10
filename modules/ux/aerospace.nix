@@ -39,6 +39,10 @@ let
       toggle-floating = "layout floating tiling";
       toggle-maximize = "fullscreen";
       open-launcher = "exec-and-forget open -a Raycast";
+      open-terminal = "exec-and-forget open -na Ghostty";
+      close-window = "close";
+      lock-session = "exec-and-forget pmset displaysleepnow";
+      logout-session = "exec-and-forget osascript -e 'tell application \"System Events\" to log out'";
     };
 
   renderKey = binding: "alt-${lib.optionalString binding.shift "shift-"}${lib.toLower binding.key}";

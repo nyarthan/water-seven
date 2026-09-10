@@ -212,6 +212,10 @@ The initial contract exposes bindings for:
 - Toggle floating
 - Toggle maximize
 - Open the launcher
+- Open a terminal
+- Close the focused window
+- Lock the session
+- Log out of the session
 
 Starting binding shape:
 
@@ -222,6 +226,10 @@ Starting binding shape:
 - Desktop-F: floating toggle
 - Desktop-Shift-F: maximize toggle
 - Desktop-Space: launcher
+- Desktop-Return: terminal
+- Desktop-Q: close focused window
+- Desktop-Escape: lock session
+- Desktop-Shift-Escape: log out
 
 True/native fullscreen is distinct from maximize and remains a separate platform-native action initially.
 
