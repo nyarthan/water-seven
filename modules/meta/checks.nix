@@ -17,9 +17,10 @@
         else
           config.flake.darwinConfigurations.${representativeHostName};
       home = representativeSystem.config.home-manager.users.${config.waterSeven.username};
-      darwinPackageNames = map (
-        package: package.pname or (lib.getName package)
-      ) representativeSystem.config.environment.systemPackages;
+      darwinSystemPackages = representativeSystem.config.environment.systemPackages;
+      darwinPackageNames = map (package: package.pname or (lib.getName package)) darwinSystemPackages;
+      browserHandlers =
+        representativeSystem.config.system.defaults.CustomUserPreferences."com.apple.LaunchServices/com.apple.launchservices.secure".LSHandlers;
       darwinBrewNames = map (brew: brew.name) representativeSystem.config.homebrew.brews;
       darwinCaskNames = map (cask: cask.name) representativeSystem.config.homebrew.casks;
       deploymentReadyHostNames = lib.attrNames (
@@ -61,7 +62,7 @@
           || (
             home.home.sessionVariables.LANG == "en_US.UTF-8"
             && home.home.sessionVariables.LC_CTYPE == "en_US.UTF-8"
-            && representativeSystem.config.waterSeven.bootstrap.permissionSteps != [ ]
+            && representativeSystem.config.waterSeven.bootstrap.followUpSteps != [ ]
           )
         ) "Darwin hosts must declare a complete shell locale and manual permission guidance";
         assert lib.assertMsg
@@ -77,6 +78,13 @@
               && darwinBrewNames == lib.optionals (representativeHost.role == "work") [ "mole" ]
               && darwinCaskNames == [ "ghostty" ]
               && lib.all (cask: cask.args.no_quarantine or false) representativeSystem.config.homebrew.casks
+              && representativeSystem.config.system.defaults.LaunchServices.LSQuarantine
+              && lib.any (
+                package:
+                (package.pname or (lib.getName package)) == "raycast" && lib.versionAtLeast package.version "2.0"
+              ) darwinSystemPackages
+              && builtins.length browserHandlers == 4
+              && lib.all (handler: handler.LSHandlerRoleAll == "com.brave.Browser") browserHandlers
             )
           )
           "Darwin applications must prefer nixpkgs; Ghostty and broken-on-Darwin Mole are the only approved Homebrew fallbacks";

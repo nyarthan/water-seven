@@ -25,6 +25,16 @@ in
   };
 
   flake.modules.darwin.host-baratie = {
+    nix = {
+      linux-builder.enable = true;
+      settings.trusted-users = [ "jannis" ];
+    };
+
+    security.pam.services.sudo_local = {
+      reattach = true;
+      touchIdAuth = true;
+    };
+
     networking = {
       computerName = "baratie";
       hostName = "baratie";

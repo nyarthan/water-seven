@@ -52,10 +52,10 @@ in
   flake.modules.darwin.shared-workstation =
     { pkgs, ... }:
     {
-      options.waterSeven.bootstrap.permissionSteps = lib.mkOption {
+      options.waterSeven.bootstrap.followUpSteps = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [ ];
-        description = "Interactive macOS permission steps reported after bootstrap.";
+        description = "Interactive macOS follow-up steps reported after bootstrap.";
       };
 
       config.environment.systemPackages = [ (bootstrapFor pkgs) ];
