@@ -17,8 +17,11 @@
         else
           config.flake.darwinConfigurations.${representativeHostName};
       home = representativeSystem.config.home-manager.users.${config.waterSeven.username};
-      darwinSystemPackages = representativeSystem.config.environment.systemPackages;
-      darwinPackageNames = map (package: package.pname or (lib.getName package)) darwinSystemPackages;
+      systemPackages = representativeSystem.config.environment.systemPackages;
+      darwinPackageNames = map (package: package.pname or (lib.getName package)) systemPackages;
+      nixosBravePackage = lib.findFirst (
+        package: (package.pname or (lib.getName package)) == "brave"
+      ) null systemPackages;
       browserHandlers = lib.attrByPath [
         "system"
         "defaults"
@@ -88,7 +91,7 @@
               && lib.any (
                 package:
                 (package.pname or (lib.getName package)) == "raycast" && lib.versionAtLeast package.version "2.0"
-              ) darwinSystemPackages
+              ) systemPackages
               && browserHandlers == null
               && lib.any (
                 step: lib.hasInfix "Brave" step && lib.hasInfix "approve the macOS prompt" step
@@ -96,6 +99,23 @@
             )
           )
           "Darwin applications must prefer nixpkgs, avoid ineffective LaunchServices plist handlers, and document interactive browser consent; Ghostty and broken-on-Darwin Mole are the only approved Homebrew fallbacks";
+        assert lib.assertMsg (
+          representativeHost.platform != "nixos"
+          || (
+            home.xdg.mimeApps.enable
+            && home.xdg.mimeApps.defaultApplications."text/html" == [ "brave-browser.desktop" ]
+            &&
+              home.xdg.mimeApps.defaultApplications."x-scheme-handler/http" == [
+                "brave-browser.desktop"
+              ]
+            &&
+              home.xdg.mimeApps.defaultApplications."x-scheme-handler/https" == [
+                "brave-browser.desktop"
+              ]
+            && nixosBravePackage != null
+            && lib.hasInfix "--no-default-browser-check" (nixosBravePackage.drvAttrs.preFixup or "")
+          )
+        ) "NixOS must register Brave for web content and suppress its redundant default-browser prompt";
         pkgs.runCommand "water-seven-fleet-schema" { } "touch $out";
 
       requiredActions = lib.attrNames (
