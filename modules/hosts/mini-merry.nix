@@ -7,6 +7,7 @@ in
     platform = "nixos";
     system = "aarch64-linux";
     role = "egghead";
+    deploymentReady = true;
 
     os.imports = [
       modules.nixos.shared-workstation

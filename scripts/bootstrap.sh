@@ -121,6 +121,13 @@ case $HOST in
   *) fail "unknown Water Seven host: $HOST" ;;
 esac
 
+case " ${WATER_SEVEN_DEPLOYMENT_READY_HOSTS:-} " in
+  *" $HOST "*) ;;
+  *)
+    fail "$HOST is not marked deployment-ready; finish its migration review before enabling bootstrap"
+    ;;
+esac
+
 REPOSITORY=$(git rev-parse --show-toplevel 2>/dev/null) || fail "run bootstrap from the Water Seven checkout"
 [[ -z $(git -C "$REPOSITORY" status --porcelain) ]] || fail "bootstrap requires a clean Git worktree"
 

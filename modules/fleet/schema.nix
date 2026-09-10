@@ -54,6 +54,11 @@ in
                 ];
               };
 
+              deploymentReady = mkOption {
+                type = types.bool;
+                description = "Whether guided bootstrap may activate or install this host.";
+              };
+
               os = mkOption {
                 type = types.deferredModule;
                 description = "The fully composed NixOS or nix-darwin module.";

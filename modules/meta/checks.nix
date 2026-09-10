@@ -21,6 +21,9 @@
         package: package.pname or (lib.getName package)
       ) representativeSystem.config.environment.systemPackages;
       darwinCaskNames = map (cask: cask.name) representativeSystem.config.homebrew.casks;
+      deploymentReadyHostNames = lib.attrNames (
+        lib.filterAttrs (_: host: host.deploymentReady) config.waterSeven.hosts
+      );
       source = lib.cleanSource ../..;
 
       # Stable statix currently fails its own build on macOS. Keep this
@@ -46,6 +49,12 @@
             "striker"
           ]
         ) "Water Seven's fleet must contain baratie, mini-merry, mini-sunny, and striker";
+        assert lib.assertMsg (
+          deploymentReadyHostNames == [
+            "mini-merry"
+            "mini-sunny"
+          ]
+        ) "Only validated disposable hosts may be deployment-ready during migration";
         assert lib.assertMsg (
           representativeHost.platform != "darwin"
           || (

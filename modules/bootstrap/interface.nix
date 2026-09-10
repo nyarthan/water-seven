@@ -1,7 +1,15 @@
-{ lib, withSystem, ... }:
+{
+  config,
+  lib,
+  withSystem,
+  ...
+}:
 let
   bootstrapFor =
     pkgs: withSystem pkgs.stdenv.hostPlatform.system ({ config, ... }: config.packages.bootstrap);
+  deploymentReadyHosts = lib.attrNames (
+    lib.filterAttrs (_: host: host.deploymentReady) config.waterSeven.hosts
+  );
 in
 {
   perSystem =
@@ -21,7 +29,10 @@ in
           pkgs.disko
           pkgs.util-linux
         ];
-        text = builtins.readFile ../../scripts/bootstrap.sh;
+        text = ''
+          WATER_SEVEN_DEPLOYMENT_READY_HOSTS=${lib.escapeShellArg (lib.concatStringsSep " " deploymentReadyHosts)}
+          ${builtins.readFile ../../scripts/bootstrap.sh}
+        '';
       };
     in
     {
