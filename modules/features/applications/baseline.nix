@@ -1,11 +1,9 @@
 {
   flake.modules = {
     nixos.shared-workstation = { pkgs, ... }: {
-      environment.systemPackages = [
-        pkgs.bitwarden-desktop
-        (pkgs.brave.override {
-          commandLineArgs = "--no-default-browser-check";
-        })
+      environment.systemPackages = with pkgs; [
+        bitwarden-desktop
+        brave
       ];
     };
 
