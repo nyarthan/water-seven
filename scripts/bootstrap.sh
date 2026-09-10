@@ -54,8 +54,7 @@ prepare_darwin_shell_files() {
 
 read_luks_secret() {
   local first second
-  umask 077
-  LUKS_SECRET_FILE=$(mktemp "${TMPDIR:-/tmp}/water-seven-luks.XXXXXX")
+  LUKS_SECRET_FILE=$(umask 077; mktemp "${TMPDIR:-/tmp}/water-seven-luks.XXXXXX")
   read -r -s -p 'LUKS passphrase: ' first
   printf '\n'
   read -r -s -p 'Repeat LUKS passphrase: ' second
