@@ -344,7 +344,7 @@ Shared shell conveniences initially include:
 
 Shell history uses the same tool/configuration but does not synchronize between machines initially.
 
-Mise is installed and activated as a compatibility mechanism for projects that declare it. Prefer Nix development shells in projects under personal control. One project owns its toolchain; do not combine Nix and mise ownership for the same tools.
+Mise is installed and activated as a compatibility mechanism for projects that declare it. Its Home Manager-owned global tool table is intentionally empty. Prefer Nix development shells in projects under personal control. One project owns its toolchain; do not combine Nix and mise ownership for the same tools.
 
 Direnv activation requires `direnv allow` once per checkout. After trust is granted, entering a supported project activates its declared environment automatically. Projects without environment declarations are left alone.
 

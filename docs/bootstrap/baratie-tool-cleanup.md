@@ -27,7 +27,7 @@ Once the checks above pass:
 - Remove the uv tool `headroom-ai`; its replacement is Nix-owned.
 - Remove the standalone files or links `~/.local/bin/bws`, `~/.local/bin/claude`, and `~/.local/bin/tokensave`. Remove `~/.local/share/claude/versions` only after confirming it contains executable versions rather than user configuration.
 - Remove the dangling `~/.local/bin/awslocal` and `~/.local/bin/awslocal.bat` links.
-- Remove all mise-managed ACLI and Aube versions; both tools were explicitly rejected from the migrated workstation.
+- Confirm `~/.config/mise/config.toml` is Home Manager-owned and its global `[tools]` table is empty. Activation removes the old global ACLI and Aube declarations; remove their installed versions only after representative project toolchains pass.
 
 Preserve application data and configuration while removing executable installations. In particular, this checklist does not authorize deletion of `~/.claude`, TokenTracker runtime data, or Headroom runtime data.
 
@@ -37,7 +37,7 @@ Do not delete these until their separate migration decisions are complete:
 
 - `@earendil-works/pi-coding-agent`, the custom pi fork.
 - `linearis` and its `linear`/`linearis` commands.
-- The remaining mise tool inventory.
+- Unreferenced mise installation caches. Preserve them through initial activation; prune only after representative project-owned toolchains have been exercised.
 - The standalone `nixd` Nix profile entry; first confirm that no editor or project still selects it. Water Seven itself uses `nil`.
 
 The npm prefix can be removed only after every remaining package is either migrated or explicitly rejected.

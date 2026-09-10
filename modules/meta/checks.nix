@@ -152,6 +152,7 @@
         pkgs.writeText "water-seven-tmux.conf"
           home.xdg.configFile."water-seven/generated/tmux.conf".text;
       gitConfig = home.xdg.configFile."git/config".source;
+      miseConfig = home.xdg.configFile."mise/config.toml".source;
       ghosttyFacts = pkgs.writeText "water-seven-ghostty.conf" ''
         config-file = ${source}/native/ghostty/linux.conf
         keybind = ctrl+shift+t=unbind
@@ -202,6 +203,9 @@
             test "$(git config --file ${gitConfig} --get rebase.updateRefs)" = true
             test "$(git config --file ${gitConfig} --get merge.conflictStyle)" = zdiff3
             test "$(git config --file ${gitConfig} --get diff.algorithm)" = histogram
+
+            grep -Fx '[tools]' ${miseConfig}
+            ! grep -F '=' ${miseConfig}
 
             cp "$source/native/nvim/init.lua" "$XDG_CONFIG_HOME/nvim/init.lua"
             cp "${neovimFacts}" "$XDG_CONFIG_HOME/water-seven/generated/neovim.lua"

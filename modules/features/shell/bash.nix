@@ -18,7 +18,6 @@ in
           fzf
           jq
           less
-          mise
           ripgrep
         ];
         sessionVariables = {
@@ -49,6 +48,10 @@ in
           enableBashIntegration = false;
           nix-direnv.enable = true;
         };
+        mise = {
+          enable = true;
+          enableBashIntegration = false;
+        };
         starship = {
           enable = true;
           enableBashIntegration = false;
@@ -59,9 +62,20 @@ in
         };
       };
 
-      xdg.configFile."water-seven/generated/bash.sh".text = ''
-        # Generated environment facts. Do not edit.
-        export XDG_PROJECTS_DIR="${config.home.homeDirectory}/${projectsDirectory}"
-      '';
+      xdg.configFile = {
+        "mise/config.toml" = {
+          force = true;
+          text = ''
+            # Global tools are intentionally empty. Project configuration owns
+            # project toolchains and their exact versions.
+            [tools]
+          '';
+        };
+
+        "water-seven/generated/bash.sh".text = ''
+          # Generated environment facts. Do not edit.
+          export XDG_PROJECTS_DIR="${config.home.homeDirectory}/${projectsDirectory}"
+        '';
+      };
     };
 }
