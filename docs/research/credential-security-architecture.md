@@ -14,7 +14,7 @@ The recommended blank-machine recovery path is:
 2. Keep the backup key away from the daily key.
 3. Maintain a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, a SOPS break-glass identity, and the personal credential-registration inventory.
 4. Make personal Bitwarden available as the convenient online recovery source, but do not make it the only route.
-5. Do not make the current single YubiKey mandatory for disk unlock, login, sudo, or secret decryption. Enforce hardware-backed paths only after the backup key and every fallback have been tested.
+5. Defer all Water Seven YubiKey integration while only one key exists. Provision or enforce hardware-backed paths only after the backup key is available and every fallback can be tested.
 
 This avoids three single points of failure: one physical key, an already working workstation, and availability of one cloud account.
 
@@ -126,9 +126,9 @@ Keep author name/email out of the public Nix configuration. Restore private pers
 
 Maintain a private credential registry with, for each hardware credential: token nickname and serial, application/purpose, relying party, public-key fingerprint or credential label, creation date, recovery path, and revocation URL/procedure. Partition it by authority: keep personal entries in personal Bitwarden with an offline copy, and work entries only in work Bitwarden or another company-approved system. Publish neither YubiKey serials nor work relying-party details in this repository.
 
-Provision in this order:
+YubiKey-dependent implementation is deferred until the second key is available. Then provision in this order:
 
-1. Inventory YubiKey firmware and existing applications without resetting anything.
+1. Inventory both YubiKeys' firmware and existing applications without resetting anything.
 2. Acquire the backup YubiKey.
 3. Set non-default FIDO2 and PIV administration credentials and record break-glass material offline.
 4. Create distinct credentials on both keys and register both with every relying party.
@@ -141,13 +141,13 @@ For a lost key, use the backup key or disk recovery secret, then remove every cr
 
 ## Implementation sequence
 
-1. Add inventory/check tooling only; do not mutate the current YubiKey.
-2. Acquire and provision the backup and offline recovery kit.
-3. Add platform credential-store support and introduce account-specific wrappers only for demonstrated workflows.
+1. Add platform credential-store support and introduce account-specific wrappers only for demonstrated workflows.
+2. Acquire the backup YubiKey and prepare the offline recovery kit before any YubiKey integration.
+3. Inventory and provision both keys together.
 4. Introduce SOPS with a non-sensitive fixture, host recipients, both YubiKey recipients, and the offline recipient.
 5. Provision dedicated SSH authentication and Git signing credentials, then enable private Git identity/signing configuration.
 6. Enroll and test both YubiKeys for `striker` LUKS2.
-7. Add NixOS login and sudo credentials additively; enforce only after console and recovery tests.
+7. Add one NixOS local-authentication credential per host/key for login and sudo; enforce only after console and recovery tests.
 8. Leave macOS PIV login deferred unless its additional value justifies the recovery complexity.
 
 ## Sources

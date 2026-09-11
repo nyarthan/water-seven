@@ -466,7 +466,7 @@ Personal/work context selection remains application-owned. Browser profiles, pro
 
 ### YubiKey policy
 
-The current hardware is one YubiKey 5 NFC with USB-C. Acquire a second YubiKey 5C NFC as an independently enrolled backup before making hardware presence mandatory. The keys contain separate credentials; they are not clones.
+The current hardware is one YubiKey 5 NFC with USB-C. All YubiKey integration is deferred until a second YubiKey 5C NFC is available as an independently enrolled backup. Until then, do not mutate the current key, register Water Seven credentials on it, enroll it for LUKS, or make configuration depend on its presence. The intended keys contain separate credentials; they are not clones.
 
 Privileged YubiKey operations require PIN plus physical touch. Use purpose-specific credentials:
 
@@ -532,7 +532,7 @@ The blank-machine recovery route must not require another configured Water Seven
 
 Keep work credential inventory and recovery material only in work Bitwarden or another company-approved system.
 
-Do not enforce hardware-backed LUKS, login, sudo, or operator decryption while only one YubiKey exists. Before enforcement, test primary key, backup key, and recovery-only paths independently.
+Do not integrate hardware-backed LUKS, login, sudo, Git signing, or operator decryption while only one YubiKey exists. After the second key arrives, provision both together and test primary-key, backup-key, and recovery-only paths independently before enforcement.
 
 A lost key triggers removal of every registered credential in its inventory, removal of its SOPS recipient, replacement-key provisioning, and recovery retesting. A compromised host triggers revocation of its sessions and generated tokens, rotation of every static secret it could decrypt, removal of its host recipient, and generation of a new host identity after reinstall.
 
