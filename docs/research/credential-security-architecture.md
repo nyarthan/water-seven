@@ -12,7 +12,7 @@ The recommended blank-machine recovery path is:
 
 1. Buy a second YubiKey 5C NFC and provision it as an independently enrolled backup, not a clone.
 2. Keep the backup key away from the daily key.
-3. Maintain a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, a SOPS break-glass identity, and the personal credential-registration inventory.
+3. Maintain a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, a SOPS break-glass identity, and the personal credential-registration inventory. Encrypt its digital payload with a unique generated multiword passphrase and keep two sealed paper copies away from both the media and backup YubiKey.
 4. Make personal Bitwarden available as the convenient online recovery source, but do not make it the only route.
 5. Defer all Water Seven YubiKey integration while only one key exists. Provision or enforce hardware-backed paths only after the backup key is available and every fallback can be tested.
 
@@ -84,7 +84,9 @@ Each physical LUKS2 volume keeps three independent classes of unlock path:
 2. separately enrolled backup YubiKey; and
 3. a unique high-entropy recovery passphrase.
 
-Systemd stores FIDO2 enrollment metadata in the LUKS2 JSON token area and uses the token's `hmac-secret` extension to acquire the unlock key.[^systemd-cryptenroll] The recovery passphrase must not equal the Unix login password or another host's disk secret. Store it in personal Bitwarden and in the sealed recovery kit. Do not add TPM-only unlock before Secure Boot/measured-boot policy is designed, because it changes the physical-attack and boot-integrity assumptions.
+Systemd stores FIDO2 enrollment metadata in the LUKS2 JSON token area and uses the token's `hmac-secret` extension to acquire the unlock key.[^systemd-cryptenroll] The recovery passphrase must not equal the Unix login password or another host's disk secret. Store it in personal Bitwarden and in the sealed recovery kit.
+
+TPM2-assisted unlock is in scope, but it changes physical-attack and boot-integrity assumptions and therefore needs a dedicated design before enrollment. Evaluate it together with Secure Boot, signed unified kernel images, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, optional TPM PIN use, and clean fallback to the recovery passphrase.
 
 VM disks keep independent passphrases. USB token passthrough is too fragile to be their only unlock path. Any VM receiving a real secret has credential-bearing snapshots and exports.
 

@@ -437,7 +437,7 @@ Shared notebook baseline:
 
 Inbound SSH is host-specific and may be introduced for future desktops or servers. It is disabled on the initial notebooks after bootstrap.
 
-Secure Boot is deferred. Investigate Lanzaboote after reproducible installation and LUKS2 work reliably. Record its threat model and recovery implications before enabling it.
+Secure Boot activation remains deferred while it is designed together with TPM2-assisted LUKS unlock. The prerequisite reproducible LUKS2 installation now works on `striker`; investigate Lanzaboote, signed unified kernel images, measured-boot policy, generation rollback, update behavior, and recovery before enabling either mechanism.
 
 Erase-on-boot impermanence is deferred. First prove reliable recovery from a blank disk.
 
@@ -486,7 +486,9 @@ Do not initially add YubiKey PIV login to macOS. `baratie` keeps FileVault passw
 
 Every disk credential is unique and independent of the Unix login password.
 
-`striker` will retain a high-entropy LUKS2 recovery passphrase and separately enroll both YubiKeys with client PIN and user presence. The recovery passphrase remains valid even when no token is available. Do not add TPM-only unlock until Secure Boot and measured-boot policy are designed.
+`striker` will retain a high-entropy LUKS2 recovery passphrase and, after the hardware-key deferral ends, separately enroll both YubiKeys with client PIN and user presence. The recovery passphrase remains valid when neither token nor the TPM path is available.
+
+TPM2-assisted unlock is in scope but requires a separate threat-model and recovery decision before implementation. Design it together with Secure Boot, signed unified kernel images, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and a tested recovery-passphrase path. Do not enroll the TPM until that design selects whether normal boot is unattended or requires a TPM PIN and proves that failed measurements fall back cleanly to recovery.
 
 VMs retain independent passphrases and never depend on USB passthrough for recovery. A VM that receives a real secret has credential-bearing snapshots and exports.
 
@@ -530,7 +532,7 @@ The blank-machine recovery route must not require another configured Water Seven
 2. personal Bitwarden as the convenient online source;
 3. a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, a SOPS break-glass identity, and the personal credential-registration inventory.
 
-Keep work credential inventory and recovery material only in work Bitwarden or another company-approved system.
+Store the digital payload as a passphrase-encrypted, cross-platform archive on removable media. Give it a unique generated multiword passphrase that is not reused for Bitwarden, login, disk encryption, or hardware-token PINs. Keep two sealed paper copies of that passphrase in separate trusted locations, with neither copy stored beside the media or backup YubiKey. A personal Bitwarden copy is optional convenience, never the sole copy. Keep work credential inventory and recovery material only in work Bitwarden or another company-approved system.
 
 Do not integrate hardware-backed LUKS, login, sudo, Git signing, or operator decryption while only one YubiKey exists. After the second key arrives, provision both together and test primary-key, backup-key, and recovery-only paths independently before enforcement.
 
