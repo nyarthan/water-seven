@@ -452,8 +452,7 @@ The full rationale, platform findings, and rollout sequence are in [Credential a
 ### Authorities
 
 - Personal Bitwarden owns human-oriented personal credentials and selected recovery records.
-- Work Bitwarden owns human-oriented work credentials and company recovery records.
-- STACKIT Secrets Manager owns work application and team secrets that need central API access and versioning.
+- Company policy governs work credentials, approved storage, access, recovery, and offboarding. Work Bitwarden and STACKIT Secrets Manager are company-managed facilities, not authorities controlled by Water Seven.
 - Issuing services own OAuth, browser-login, and generated CLI credentials; local copies are renewable application state.
 - SOPS owns delivery of only selected static, machine-consumed, personal-scope secrets.
 - FileVault and each LUKS2 volume own their independent disk credentials.
@@ -515,7 +514,7 @@ Do not put password-manager sessions, OAuth state, GitHub CLI sessions, disk rec
 
 Applications use Keychain on macOS and Secret Service on Linux when supported. Otherwise, a mode-`0600` application-owned file on the encrypted volume is acceptable. A FIDO-only Linux login cannot automatically provide a login-keyring password; prompt to unlock the keyring rather than storing that password to bypass the prompt.
 
-Browser-generated and OAuth CLI credentials remain application-owned mutable state. Back up the authority and recovery method, not access tokens: reauthenticate or reissue them after loss. STACKIT work secrets are fetched explicitly at application launch or login and must not make every system rebuild depend on work SSO or network availability.
+Browser-generated and OAuth CLI credentials remain application-owned mutable state. Back up the authority and recovery method, not access tokens: reauthenticate or reissue them after loss. Water Seven does not decide which work secrets belong in STACKIT or how they are accessed; it may support a concrete company-approved workflow without making system rebuilds depend on work credentials, SSO, or network availability.
 
 ### Git identity and signing
 

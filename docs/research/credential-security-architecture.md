@@ -23,8 +23,8 @@ This avoids three single points of failure: one physical key, an already working
 | Material | Authority | Normal local placement | Recovery or renewal |
 |---|---|---|---|
 | Personal human credentials and recovery codes | Personal Bitwarden account or the issuing provider | Bitwarden client; copy to a process only when required | Personal Bitwarden plus selected sealed offline recovery material |
-| Work human credentials and recovery codes | Work Bitwarden account or company identity provider | Separate Bitwarden account state | Company recovery and offboarding policy |
-| Work application/team secrets | STACKIT Secrets Manager | Fetch on demand into process memory, a protected runtime file, or a platform credential store | Reissue/version in STACKIT |
+| Work human credentials and recovery codes | Company identity and credential policy | Company-approved storage such as the work Bitwarden account | Company recovery and offboarding policy |
+| Work application/team secrets | Company policy and the issuing system | Company-approved facilities such as STACKIT Secrets Manager | Company-defined recovery, renewal, and versioning |
 | Selected static personal machine secrets | SOPS file in this public repository | `sops-nix` protected runtime file | Host recipient, either operator YubiKey recipient, or offline break-glass recipient |
 | OAuth, browser-login, and generated CLI sessions | Issuing service | macOS Keychain, Linux Secret Service, application-owned protected state, or process environment | Reauthenticate; do not back up access/session tokens as declarative secrets |
 | Linux disk unlock | Each LUKS2 volume | LUKS2 token/keyslot | Two separately enrolled YubiKeys plus a unique recovery passphrase |
@@ -53,7 +53,7 @@ The YubiKey is a hardware holder for several independent credentials, not the au
 
 Use FIDO2 for:
 
-- passkeys or second-factor credentials at Bitwarden, GitHub, STACKIT/SSO, and other web relying parties;
+- passkeys or second-factor credentials at Bitwarden, GitHub, and company services where policy permits;
 - dedicated OpenSSH credentials for SSH authentication and Git signing;
 - separately scoped `pam_u2f` credentials for NixOS login and sudo; and
 - per-volume LUKS2 enrollment through systemd.
@@ -110,7 +110,7 @@ Good initial SOPS candidates include host-scoped Wi-Fi or static application con
 
 ## Remote and local secret stores
 
-STACKIT describes Secrets Manager as a managed secure key-value store with an API and per-secret version history.[^stackit] Treat that documented interface as authoritative. Do not assume HashiCorp Vault/OpenBao protocols, dynamic leases, transit encryption, or a particular authentication flow until STACKIT's service-specific API documentation confirms them. Integrating it must not make every `darwin-rebuild` depend on network or work SSO availability; fetch work material at application launch or an explicit login step.
+STACKIT describes Secrets Manager as a managed secure key-value store with an API and per-secret version history.[^stackit] Those product capabilities do not give Water Seven authority over its use. Company policy decides which secrets live there and prescribes authentication, retrieval, caching, rotation, and recovery. Water Seven may package a client or support a concrete approved workflow, but it must not invent a general STACKIT integration or make `darwin-rebuild` depend on work credentials, SSO, or network availability. Do not assume HashiCorp Vault/OpenBao protocols, dynamic leases, transit encryption, or a particular authentication flow unless company documentation requires them.
 
 On macOS, use Keychain for applications that support it. Apple protects keychain data with access controls tied to the user/device security model.[^apple-keychain] On Linux, provide a Secret Service implementation for applications that support the freedesktop interface.[^secret-service] A FIDO-only desktop login cannot automatically supply a symmetric login-keyring password; accept a first-use keyring unlock prompt rather than storing that password to bypass the prompt.
 
