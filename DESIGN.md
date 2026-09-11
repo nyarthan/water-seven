@@ -461,7 +461,9 @@ The full rationale, platform findings, and rollout sequence are in [Credential a
 
 No work secret or work-secret ciphertext enters the public repository unless company policy later authorizes the exact publication model. Account overlap does not relax this rule.
 
-Bitwarden desktop/browser clients may hold both accounts through native account switching. CLI use keeps separate personal and work state directories and process-local sessions. `BW_SESSION`, STACKIT access tokens, OAuth tokens, and equivalent session material are never declarative secrets.
+Bitwarden desktop/browser clients may hold both accounts through native account switching. CLI use may keep separate personal and work state directories and process-local sessions where that improves the actual workflow. `BW_SESSION`, STACKIT access tokens, OAuth tokens, and equivalent session material are never declarative secrets.
+
+Personal/work context selection remains application-owned. Browser profiles, project directories with direnv or mise, repository-local Git rules, named cloud profiles, and isolated CLI state solve different problems; do not synchronize them through a machine-wide current-context switch. Add context-specific launchers or wrappers only for applications with a demonstrated need, using that application's native scoping mechanism.
 
 ### YubiKey policy
 

@@ -37,7 +37,9 @@ A secret copied into Keychain, Secret Service, or a runtime file does not change
 
 ## Personal and work overlap
 
-Bitwarden clients support multiple logged-in accounts, and the CLI supports separate simultaneous states through `BITWARDENCLI_APPDATA_DIR`.[^bitwarden-switching][^bitwarden-cli] Water Seven should therefore expose explicitly named personal and work CLI entry points rather than one ambiguous `bw` state. `BW_SESSION` is a decryption session key; it belongs only in the invoking process environment and must be invalidated with `bw lock` or `bw logout` after use.[^bitwarden-cli]
+Bitwarden clients support multiple logged-in accounts, and the CLI supports separate simultaneous states through `BITWARDENCLI_APPDATA_DIR`.[^bitwarden-switching][^bitwarden-cli] Water Seven may expose explicitly named personal and work CLI entry points when that improves the real workflow. `BW_SESSION` is a decryption session key; it belongs only in the invoking process environment and must be invalidated with `bw lock` or `bw logout` after use.[^bitwarden-cli]
+
+Do not add a machine-wide personal/work context switch. Context has different native scopes: a browser profile can own web sessions, a project directory can select direnv or mise state, a repository can select Git identity, and a CLI can isolate its own configuration directory. Synchronizing these through one mutable ambient setting would be misleading for already-running and concurrent processes. Add an application-specific launcher or wrapper only where concrete use shows it is useful.
 
 One GitHub account may contain personal and work email addresses, passkeys, SSH authentication keys, and signing keys. That does not make them one credential. Label and register separate purpose/domain keys, choose Git identity by repository location or remote context, and revoke only the affected key when possible. If company policy requires a company-owned authenticator or signing identity, add a work-dedicated device rather than changing ownership of the personal recovery keys.
 
@@ -141,7 +143,7 @@ For a lost key, use the backup key or disk recovery secret, then remove every cr
 
 1. Add inventory/check tooling only; do not mutate the current YubiKey.
 2. Acquire and provision the backup and offline recovery kit.
-3. Add explicit `bw-personal`/`bw-work` state separation and platform credential-store support.
+3. Add platform credential-store support and introduce account-specific wrappers only for demonstrated workflows.
 4. Introduce SOPS with a non-sensitive fixture, host recipients, both YubiKey recipients, and the offline recipient.
 5. Provision dedicated SSH authentication and Git signing credentials, then enable private Git identity/signing configuration.
 6. Enroll and test both YubiKeys for `striker` LUKS2.
