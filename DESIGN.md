@@ -488,7 +488,9 @@ Every disk credential is unique and independent of the Unix login password.
 
 `striker` will retain a high-entropy LUKS2 recovery passphrase and, after the hardware-key deferral ends, separately enroll both YubiKeys with client PIN and user presence. The recovery passphrase remains valid when neither token nor the TPM path is available.
 
-TPM2-assisted unlock is in scope but requires a separate threat-model and recovery decision before implementation. Design it together with Secure Boot, signed unified kernel images, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and a tested recovery-passphrase path. Do not enroll the TPM until that design selects whether normal boot is unattended or requires a TPM PIN and proves that failed measurements fall back cleanly to recovery.
+Use transparent TPM2-assisted unlock for `striker` once its boot-integrity design has been validated. A recognized signed boot chain may unlock LUKS without user input; the OS login then becomes the user-authentication boundary. This deliberately accepts that the root filesystem is mounted at the login screen in exchange for protection against SSD removal and unauthorized measured boot paths without an extra normal-boot prompt.
+
+Design and test TPM enrollment together with Secure Boot, signed unified kernel images, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and the recovery-passphrase path. Failed measurements must fall back cleanly to recovery. Retain the independent high-entropy LUKS recovery passphrase. When YubiKey integration resumes, reconsider transparent TPM unlock because leaving it enabled means YubiKey presence is not required for disk decryption.
 
 VMs retain independent passphrases and never depend on USB passthrough for recovery. A VM that receives a real secret has credential-bearing snapshots and exports.
 

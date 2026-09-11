@@ -86,7 +86,9 @@ Each physical LUKS2 volume keeps three independent classes of unlock path:
 
 Systemd stores FIDO2 enrollment metadata in the LUKS2 JSON token area and uses the token's `hmac-secret` extension to acquire the unlock key.[^systemd-cryptenroll] The recovery passphrase must not equal the Unix login password or another host's disk secret. Store it in personal Bitwarden and in the sealed recovery kit.
 
-TPM2-assisted unlock is in scope, but it changes physical-attack and boot-integrity assumptions and therefore needs a dedicated design before enrollment. Evaluate it together with Secure Boot, signed unified kernel images, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, optional TPM PIN use, and clean fallback to the recovery passphrase.
+The selected interim target for `striker` is transparent TPM2-assisted unlock: an authorized signed boot chain may release the LUKS key without user input, after which the OS login is the user-authentication boundary. This is stronger than an unencrypted disk against SSD removal and unauthorized measured boot paths, but deliberately weaker than requiring a user-held secret before mounting.
+
+Do not enroll the TPM until a dedicated design validates Secure Boot, signed unified kernel images, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and clean fallback to the independent recovery passphrase. Reconsider the transparent path when YubiKey integration resumes, because it otherwise bypasses any requirement for token presence during disk decryption.
 
 VM disks keep independent passphrases. USB token passthrough is too fragile to be their only unlock path. Any VM receiving a real secret has credential-bearing snapshots and exports.
 
@@ -144,13 +146,14 @@ For a lost key, use the backup key or disk recovery secret, then remove every cr
 ## Implementation sequence
 
 1. Add platform credential-store support and introduce account-specific wrappers only for demonstrated workflows.
-2. Acquire the backup YubiKey and prepare the offline recovery kit before any YubiKey integration.
-3. Inventory and provision both keys together.
-4. Introduce SOPS with a non-sensitive fixture, host recipients, both YubiKey recipients, and the offline recipient.
-5. Provision dedicated SSH authentication and Git signing credentials, then enable private Git identity/signing configuration.
-6. Enroll and test both YubiKeys for `striker` LUKS2.
-7. Add one NixOS local-authentication credential per host/key for login and sudo; enforce only after console and recovery tests.
-8. Leave macOS PIV login deferred unless its additional value justifies the recovery complexity.
+2. Research and validate Secure Boot, signed UKIs, PCR policy, updates, rollback, and recovery before enrolling transparent TPM2 unlock on `striker`.
+3. Acquire the backup YubiKey and prepare the offline recovery kit before any YubiKey integration.
+4. Inventory and provision both keys together.
+5. Introduce SOPS with a non-sensitive fixture, host recipients, both YubiKey recipients, and the offline recipient.
+6. Provision dedicated SSH authentication and Git signing credentials, then enable private Git identity/signing configuration.
+7. Enroll and test both YubiKeys for `striker` LUKS2.
+8. Add one NixOS local-authentication credential per host/key for login and sudo; enforce only after console and recovery tests.
+9. Leave macOS PIV login deferred unless its additional value justifies the recovery complexity.
 
 ## Sources
 
