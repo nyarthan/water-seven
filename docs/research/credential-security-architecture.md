@@ -132,20 +132,24 @@ Git evaluates `gitdir:` against repository metadata. Standard linked worktrees p
 
 ## Recovery, rotation, and revocation
 
-Maintain a private credential registry with, for each hardware credential: token nickname and serial, application/purpose, relying party, public-key fingerprint or credential label, creation date, recovery path, and revocation URL/procedure. Partition it by authority: keep personal entries in personal Bitwarden with an offline copy, and work entries only in work Bitwarden or another company-approved system. Publish neither YubiKey serials nor work relying-party details in this repository.
+Maintain a private credential registry recording authority, token nickname and serial where applicable, purpose, relying party, host/device, public fingerprint or identifier, creation and last-test dates, recovery path, revocation procedure, and status. Partition it by authority: keep personal entries in personal Bitwarden with an encrypted offline copy, and work entries only in work Bitwarden or another company-approved system. Publish neither YubiKey serials nor work relying-party details in this repository.
+
+Run a lightweight recovery drill every six months and after security-relevant changes. Verify sealed records, recovery-media readability, non-sensitive decryption fixtures, public fingerprints, backup registrations, and instructions without displaying live secrets. Use disposable systems or temporary encrypted volumes for destructive scenarios. Rotate credentials after disclosure, loss, compromise, offboarding, scope reduction, or provider/company policy—not merely because time passed.
 
 YubiKey-dependent implementation is deferred until the second key is available. Then provision in this order:
 
-1. Inventory both YubiKeys' firmware and existing applications without resetting anything.
-2. Acquire the backup YubiKey.
+1. Acquire the backup YubiKey.
+2. Inventory both YubiKeys' firmware and existing applications without resetting anything.
 3. Set non-default FIDO2 and PIV administration credentials and record break-glass material offline.
-4. Create distinct credentials on both keys and register both with every relying party.
+4. Create distinct credentials on both keys and register both with every policy-permitted relying party.
 5. Create primary, backup, and offline SOPS recipients; prove each against a fixture.
 6. Add both keys and a recovery passphrase to LUKS2; boot-test each path.
 7. Test Bitwarden and repository recovery from a clean browser/live image.
 8. Only then make hardware-backed login or sudo the normal path.
 
-For a lost key, use the backup key or disk recovery secret, then remove every credential listed for the lost token, remove its SOPS recipient, provision a replacement, and test before returning to an enforced policy. For a compromised host, revoke local sessions and generated application tokens, rotate every static secret the host could decrypt, remove its SOPS recipient, and generate a new host identity after reinstall. Rotate hardware credentials on loss, suspected compromise, ownership change, or policy demand—not merely on an arbitrary calendar.
+For a lost key, use the backup key or disk recovery secret, then remove every credential listed for the lost token, remove its SOPS recipient, provision a replacement, and test before returning to an enforced policy. For a compromised host, revoke local sessions and generated application tokens, rotate every static secret the host could decrypt, remove its SOPS recipient, and generate a new host identity after reinstall. Transparent TPM unlock means a stolen intact `striker` can reach an unlocked root filesystem behind the OS login, so revoke locally available credentials conservatively even though SSD removal alone does not expose plaintext.
+
+Water Seven may provide public incident checklists, permission/fingerprint checks, and recovery-test reminders. It must not automate remote revocation, export local credential stores, print recovery values, or claim recovery success without an interactive test.
 
 ## Implementation sequence
 

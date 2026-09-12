@@ -544,7 +544,11 @@ Store the digital payload as a passphrase-encrypted, cross-platform archive on r
 
 Do not integrate hardware-backed LUKS, login, sudo, Git signing, or operator decryption while only one YubiKey exists. After the second key arrives, provision both together and test primary-key, backup-key, and recovery-only paths independently before enforcement.
 
-A lost key triggers removal of every registered credential in its inventory, removal of its SOPS recipient, replacement-key provisioning, and recovery retesting. A compromised host triggers revocation of its sessions and generated tokens, rotation of every static secret it could decrypt, removal of its host recipient, and generation of a new host identity after reinstall.
+Maintain a private credential inventory recording authority, purpose, host/device, public fingerprint or identifier, creation and last-test dates, recovery method, revocation procedure, and status. Personal entries live in personal Bitwarden with an encrypted offline copy; work entries live only in a company-approved system. Water Seven contains generic procedures and read-only checks, never the private inventory or automatic remote revocation.
+
+Run a lightweight recovery drill every six months and after security-relevant changes. Verify paper records, recovery-media readability, non-sensitive decryption fixtures, fingerprints, registrations, and instructions without printing live secrets. Use disposable systems or temporary volumes for destructive scenarios; physical hosts use controlled alternative-path tests.
+
+Rotate on disclosure, loss, compromise, offboarding or scope/policy changes, not merely because time passed. Provider-expiring credentials follow provider policy. A lost key triggers removal of every registered credential in its inventory, removal of its SOPS recipient, replacement-key provisioning, and recovery retesting. A compromised host triggers revocation of its sessions and generated tokens, rotation of every static secret it could decrypt, removal of its host recipient, and generation of a new host identity after reinstall.
 
 ## Bootstrap
 
