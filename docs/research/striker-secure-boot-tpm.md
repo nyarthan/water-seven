@@ -146,7 +146,7 @@ Treat this bundle as a high-value signing authority:
 
 - generate it manually on `striker` only after the recovery path is prepared;
 - keep the live bundle root-only on the LUKS-protected filesystem;
-- add an encrypted copy to the personal recovery archive;
+- add an encrypted copy to the existing personal recovery archive;
 - record its public fingerprints in the private credential inventory;
 - never put private keys in Git, SOPS, a derivation, logs, or command arguments; and
 - rotate the firmware authority after suspected key exposure.
@@ -287,10 +287,7 @@ Only after all stages pass should transparent TPM unlock become normal `striker`
 
 The initial PCR set is `[ 4 7 ]`; PCR 0 remains deferred until a firmware-update rehearsal. Remaining decisions are:
 
-Automatic boot counting is deferred until a workstation boot-success target exists. The bootable and measured generation limit is eight. Remaining decisions are:
-
-1. Decide whether Secure Boot key backup joins the same recovery archive or a separately encrypted archive.
-2. Decide where the two physical recovery-passphrase envelopes and backup archive will be stored; locations remain private.
+Automatic boot counting is deferred until a workstation boot-success target exists. The bootable and measured generation limit is eight. The Secure Boot key backup joins the existing encrypted personal recovery archive. The physical locations of the archive and two recovery-passphrase envelopes remain a private offline decision and must be prepared before key generation.
 
 ## Sources
 

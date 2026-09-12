@@ -12,7 +12,7 @@ The recommended blank-machine recovery path is:
 
 1. Buy a second YubiKey 5C NFC and provision it as an independently enrolled backup, not a clone.
 2. Keep the backup key away from the daily key.
-3. Maintain a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, a SOPS break-glass identity, and the personal credential-registration inventory. Encrypt its digital payload with a unique generated multiword passphrase and keep two sealed paper copies away from both the media and backup YubiKey.
+3. Maintain a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, the Secure Boot signing-key backup, a SOPS break-glass identity, and the personal credential-registration inventory. Encrypt its digital payload with a unique generated multiword passphrase and keep two sealed paper copies away from both the media and backup YubiKey.
 4. Make personal Bitwarden available as the convenient online recovery source, but do not make it the only route.
 5. Defer all Water Seven YubiKey integration while only one key exists. Provision or enforce hardware-backed paths only after the backup key is available and every fallback can be tested.
 
@@ -88,7 +88,7 @@ Systemd stores FIDO2 enrollment metadata in the LUKS2 JSON token area and uses t
 
 The selected interim target for `striker` is transparent TPM2-assisted unlock: an authorized signed boot chain may release the LUKS key without user input, after which the OS login is the user-authentication boundary. This is stronger than an unencrypted disk against SSD removal and unauthorized measured boot paths, but deliberately weaker than requiring a user-held secret before mounting.
 
-Do not enroll the TPM until a dedicated design validates Secure Boot, signed unified kernel images, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and clean fallback to the independent recovery passphrase. Reconsider the transparent path when YubiKey integration resumes, because it otherwise bypasses any requirement for token presence during disk decryption.
+Do not enroll the TPM until [the dedicated `striker` design](striker-secure-boot-tpm.md) validates Secure Boot, Lanzaboote's signed generation stubs and measured artifacts, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and clean fallback to the independent recovery passphrase. Reconsider the transparent path when YubiKey integration resumes, because it otherwise bypasses any requirement for token presence during disk decryption.
 
 VM disks keep independent passphrases. USB token passthrough is too fragile to be their only unlock path. Any VM receiving a real secret has credential-bearing snapshots and exports.
 
@@ -154,7 +154,7 @@ Water Seven may provide public incident checklists, permission/fingerprint check
 ## Implementation sequence
 
 1. Add platform credential-store support and introduce account-specific wrappers only for demonstrated workflows.
-2. Research and validate Secure Boot, signed UKIs, PCR policy, updates, rollback, and recovery before enrolling transparent TPM2 unlock on `striker`.
+2. Follow the staged Lanzaboote Secure Boot, measured-boot, manual-rollback, and recovery design before enrolling transparent TPM2 unlock on `striker`.
 3. Acquire the backup YubiKey and prepare the offline recovery kit before any YubiKey integration.
 4. Inventory and provision both keys together.
 5. Introduce SOPS with a non-sensitive fixture, host recipients, both YubiKey recipients, and the offline recipient.

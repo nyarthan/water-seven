@@ -437,7 +437,7 @@ Shared notebook baseline:
 
 Inbound SSH is host-specific and may be introduced for future desktops or servers. It is disabled on the initial notebooks after bootstrap.
 
-Secure Boot activation remains gated while it is deployed in observable stages with TPM2-assisted LUKS unlock. Follow [the `striker` Secure Boot and TPM design](docs/research/striker-secure-boot-tpm.md): Lanzaboote first, firmware enforcement second, measured policy third, and LUKS TPM enrollment last. Lanzaboote uses signed generation stubs with hash-verified kernel, initrd, and embedded command-line artifacts rather than requiring each artifact to be independently signed. Retain at most eight bootable and measured generations, the supported maximum, while monitoring the 1 GiB ESP and removing obsolete vulnerable generations promptly.
+Secure Boot activation remains gated while it is deployed in observable stages with TPM2-assisted LUKS unlock. Follow [the `striker` Secure Boot and TPM design](docs/research/striker-secure-boot-tpm.md): Lanzaboote first, firmware enforcement second, measured policy third, and LUKS TPM enrollment last. Lanzaboote uses signed generation stubs with hash-verified kernel, initrd, and embedded command-line artifacts rather than requiring each artifact to be independently signed. Retain at most eight bootable and measured generations, the supported maximum, while monitoring the 1 GiB ESP and removing obsolete vulnerable generations promptly. Back up the root-only Secure Boot key bundle and its public fingerprints inside the existing encrypted personal recovery archive.
 
 Erase-on-boot impermanence is deferred. First prove reliable recovery from a blank disk.
 
@@ -538,7 +538,7 @@ The blank-machine recovery route must not require another configured Water Seven
 
 1. the separately stored backup YubiKey;
 2. personal Bitwarden as the convenient online source;
-3. a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, a SOPS break-glass identity, and the personal credential-registration inventory.
+3. a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, the Secure Boot signing-key backup, a SOPS break-glass identity, and the personal credential-registration inventory.
 
 Store the digital payload as a passphrase-encrypted, cross-platform archive on removable media. Give it a unique generated multiword passphrase that is not reused for Bitwarden, login, disk encryption, or hardware-token PINs. Keep two sealed paper copies of that passphrase in separate trusted locations, with neither copy stored beside the media or backup YubiKey. A personal Bitwarden copy is optional convenience, never the sole copy. Keep work credential inventory and recovery material only in work Bitwarden or another company-approved system.
 
