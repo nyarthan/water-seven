@@ -437,7 +437,7 @@ Shared notebook baseline:
 
 Inbound SSH is host-specific and may be introduced for future desktops or servers. It is disabled on the initial notebooks after bootstrap.
 
-Secure Boot activation remains gated while it is deployed in observable stages with TPM2-assisted LUKS unlock. Follow [the `striker` Secure Boot and TPM design](docs/research/striker-secure-boot-tpm.md): Lanzaboote first, firmware enforcement second, measured policy third, and LUKS TPM enrollment last. Lanzaboote uses signed generation stubs with hash-verified kernel, initrd, and embedded command-line artifacts rather than requiring each artifact to be independently signed.
+Secure Boot activation remains gated while it is deployed in observable stages with TPM2-assisted LUKS unlock. Follow [the `striker` Secure Boot and TPM design](docs/research/striker-secure-boot-tpm.md): Lanzaboote first, firmware enforcement second, measured policy third, and LUKS TPM enrollment last. Lanzaboote uses signed generation stubs with hash-verified kernel, initrd, and embedded command-line artifacts rather than requiring each artifact to be independently signed. Retain at most eight bootable and measured generations, the supported maximum, while monitoring the 1 GiB ESP and removing obsolete vulnerable generations promptly.
 
 Erase-on-boot impermanence is deferred. First prove reliable recovery from a blank disk.
 

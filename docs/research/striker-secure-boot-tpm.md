@@ -120,7 +120,7 @@ Lanzaboote generates pcrlock components for installed boot artifacts and updates
 - retained older generations can remain authorized for manual rollback; and
 - selecting an unknown or modified generation should fail TPM release and fall back to the LUKS passphrase.
 
-Every retained authorized generation is part of the trusted boot set. Keeping an old vulnerable generation therefore preserves a rollback attack path. Balance recovery against attack surface with an initial generation limit of **four**: current plus three prior entries. Lanzaboote/systemd-pcrlock enforce an absolute maximum of eight variants, and `/boot` has only 1 GiB.[^lanzaboote-measured-guide][^lanzaboote-module]
+Every retained authorized generation is part of the trusted boot set. Keeping an old vulnerable generation therefore preserves a rollback attack path. `striker` uses Lanzaboote's supported maximum configuration limit of **eight**: current plus seven prior entries. This prioritizes manual rollback depth, but requires monitoring the 1 GiB ESP and promptly removing generations with known vulnerabilities. Lanzaboote enforces a maximum `configurationLimit` of eight when measured boot is enabled.[^lanzaboote-measured-guide][^lanzaboote-module]
 
 Before relying on rollback:
 
@@ -239,7 +239,7 @@ DMA/IOMMU state and whether the ThinkPad uses integrated firmware TPM or a discr
 ### Stage 1: signed boot, enforcement still off
 
 - Pin Lanzaboote v1.1.0 to the existing nixpkgs input.
-- Set a four-generation limit and disable the boot editor.
+- Set the eight-generation limit and disable the boot editor.
 - Generate and back up `/var/lib/sbctl` manually.
 - Switch from the NixOS systemd-boot module to Lanzaboote.
 - Build with Secure Boot still disabled.
@@ -287,11 +287,10 @@ Only after all stages pass should transparent TPM unlock become normal `striker`
 
 The initial PCR set is `[ 4 7 ]`; PCR 0 remains deferred until a firmware-update rehearsal. Remaining decisions are:
 
-Automatic boot counting is deferred until a workstation boot-success target exists. Remaining decisions are:
+Automatic boot counting is deferred until a workstation boot-success target exists. The bootable and measured generation limit is eight. Remaining decisions are:
 
-1. Confirm a four-generation trusted/boot limit.
-2. Decide whether Secure Boot key backup joins the same recovery archive or a separately encrypted archive.
-3. Decide where the two physical recovery-passphrase envelopes and backup archive will be stored; locations remain private.
+1. Decide whether Secure Boot key backup joins the same recovery archive or a separately encrypted archive.
+2. Decide where the two physical recovery-passphrase envelopes and backup archive will be stored; locations remain private.
 
 ## Sources
 
