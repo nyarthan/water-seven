@@ -52,4 +52,4 @@ Remove the USB drive and reboot. Then verify:
 
 Core first-boot validation has passed. Bluetooth and suspend/resume testing are explicitly deferred and do not block deployment readiness.
 
-Keep Secure Boot disabled for the initial installation. Enabling it with Lanzaboote remains separate deferred work.
+Secure Boot remains disabled until the staged preflight and recovery gates in [the `striker` Secure Boot and TPM design](../research/striker-secure-boot-tpm.md) pass. Do not combine Lanzaboote migration, firmware enforcement, measured-boot policy, and LUKS TPM enrollment in one change.

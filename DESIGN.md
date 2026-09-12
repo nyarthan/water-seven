@@ -437,7 +437,7 @@ Shared notebook baseline:
 
 Inbound SSH is host-specific and may be introduced for future desktops or servers. It is disabled on the initial notebooks after bootstrap.
 
-Secure Boot activation remains deferred while it is designed together with TPM2-assisted LUKS unlock. The prerequisite reproducible LUKS2 installation now works on `striker`; investigate Lanzaboote, signed unified kernel images, measured-boot policy, generation rollback, update behavior, and recovery before enabling either mechanism.
+Secure Boot activation remains gated while it is deployed in observable stages with TPM2-assisted LUKS unlock. Follow [the `striker` Secure Boot and TPM design](docs/research/striker-secure-boot-tpm.md): Lanzaboote first, firmware enforcement second, measured policy third, and LUKS TPM enrollment last. Lanzaboote uses signed generation stubs with hash-verified kernel, initrd, and embedded command-line artifacts rather than requiring each artifact to be independently signed.
 
 Erase-on-boot impermanence is deferred. First prove reliable recovery from a blank disk.
 
@@ -490,7 +490,7 @@ Every disk credential is unique and independent of the Unix login password.
 
 Use transparent TPM2-assisted unlock for `striker` once its boot-integrity design has been validated. A recognized signed boot chain may unlock LUKS without user input; the OS login then becomes the user-authentication boundary. This deliberately accepts that the root filesystem is mounted at the login screen in exchange for protection against SSD removal and unauthorized measured boot paths without an extra normal-boot prompt.
 
-Design and test TPM enrollment together with Secure Boot, signed unified kernel images, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and the recovery-passphrase path. Failed measurements must fall back cleanly to recovery. Retain the independent high-entropy LUKS recovery passphrase. When YubiKey integration resumes, reconsider transparent TPM unlock because leaving it enabled means YubiKey presence is not required for disk decryption.
+Design and test TPM enrollment together with Lanzaboote's signed generation stubs and measured artifacts, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and the recovery-passphrase path. Failed measurements must fall back cleanly to recovery. Retain the independent high-entropy LUKS recovery passphrase. When YubiKey integration resumes, reconsider transparent TPM unlock because leaving it enabled means YubiKey presence is not required for disk decryption.
 
 VMs retain independent passphrases and never depend on USB passthrough for recovery. A VM that receives a real secret has credential-bearing snapshots and exports.
 
