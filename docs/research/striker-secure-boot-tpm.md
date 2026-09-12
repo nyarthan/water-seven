@@ -285,11 +285,12 @@ Only after all stages pass should transparent TPM unlock become normal `striker`
 
 ## Remaining decisions before implementation
 
-1. Confirm the initial PCR set `[ 4 7 ]`, with PCR 0 deferred until a firmware-update rehearsal.
-2. Confirm a four-generation trusted/boot limit.
-3. Decide whether Secure Boot key backup joins the same recovery archive or a separately encrypted archive.
-4. Decide where the two physical recovery-passphrase envelopes and backup archive will be stored; locations remain private.
-5. Decide whether automatic boot counting is a later feature or part of this project after a workstation boot-success target is defined.
+The initial PCR set is `[ 4 7 ]`; PCR 0 remains deferred until a firmware-update rehearsal. Remaining decisions are:
+
+1. Confirm a four-generation trusted/boot limit.
+2. Decide whether Secure Boot key backup joins the same recovery archive or a separately encrypted archive.
+3. Decide where the two physical recovery-passphrase envelopes and backup archive will be stored; locations remain private.
+4. Decide whether automatic boot counting is a later feature or part of this project after a workstation boot-success target is defined.
 
 ## Sources
 
