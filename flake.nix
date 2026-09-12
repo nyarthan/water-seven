@@ -1,5 +1,5 @@
 {
-  description = "Water Seven — declarative personal workstation configuration";
+  description = "Water Seven — declarative workstation configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";

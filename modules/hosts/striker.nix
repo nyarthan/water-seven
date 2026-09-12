@@ -6,19 +6,19 @@ in
   waterSeven.hosts.striker = {
     platform = "nixos";
     system = "x86_64-linux";
-    role = "private";
-    deploymentReady = true;
+    role = "work";
+    deploymentReady = false;
 
     os.imports = [
       modules.nixos.shared-workstation
-      modules.nixos.role-private
+      modules.nixos.role-work
       modules.nixos.platform-nixos
       modules.nixos.host-striker
     ];
 
     home.imports = [
       modules.homeManager.shared-workstation
-      modules.homeManager.role-private
+      modules.homeManager.role-work
       modules.homeManager.platform-nixos
       modules.homeManager.host-striker
     ];

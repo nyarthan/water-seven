@@ -34,7 +34,11 @@
       };
     };
 
-    nixos.role-private = { pkgs, ... }: {
+    nixos.role-personal = { pkgs, ... }: {
+      environment.systemPackages = [ pkgs.google-chrome ];
+    };
+
+    darwin.role-personal = { pkgs, ... }: {
       environment.systemPackages = [ pkgs.google-chrome ];
     };
   };

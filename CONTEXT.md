@@ -1,8 +1,24 @@
 # Water Seven
 
-Water Seven describes one personal workstation fleet and the authorities that make its configuration, credentials, and recovery reproducible across macOS and NixOS.
+Water Seven describes one mixed-ownership workstation fleet and the authorities that make its configuration, credentials, and recovery reproducible across macOS and NixOS.
 
 ## Language
+
+**Host role**:
+The primary usage context that supplies a workstation's default applications and configuration. It is neither the device owner nor a credential-security boundary.
+_Avoid_: Device owner, credential authority
+
+**Personal role**:
+A host role for personal activity and personally selected application defaults.
+_Avoid_: Private role
+
+**Work role**:
+A host role for company activity whose software and credential handling remain subject to company policy.
+_Avoid_: Company ownership, credential authority
+
+**Device owner**:
+The person or organization with authority over a physical workstation's firmware, operating system, disk recovery, and lifecycle. Ownership constrains configuration even when the device is not centrally managed.
+_Avoid_: Host role, MDM status
 
 **Credential authority**:
 The system or owner that issues, validates, and revokes a credential; copying a value into local storage does not transfer its authority.

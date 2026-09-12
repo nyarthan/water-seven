@@ -49,7 +49,7 @@ in
               role = mkOption {
                 type = types.enum [
                   "work"
-                  "private"
+                  "personal"
                   "egghead"
                 ];
               };

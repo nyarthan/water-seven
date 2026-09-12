@@ -1,4 +1,7 @@
 {
-  flake.modules.darwin.role-work = { };
-  flake.modules.homeManager.role-work = { };
+  flake.modules = {
+    darwin.role-work = { };
+    nixos.role-work = { };
+    homeManager.role-work = { };
+  };
 }

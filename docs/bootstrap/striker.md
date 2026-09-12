@@ -1,6 +1,6 @@
 # Bootstrap `striker`
 
-`striker` is a Lenovo ThinkPad E14 Gen 6 (`x86_64-linux`) personal workstation. Its reviewed installation target is the single 512 GB NVMe disk at `/dev/nvme0n1`. The installer USB appears separately as `/dev/sda`.
+`striker` is a company-owned Lenovo ThinkPad E14 Gen 6 (`x86_64-linux`) work workstation. Its reviewed installation target is the single 512 GB NVMe disk at `/dev/nvme0n1`. The installer USB appears separately as `/dev/sda`.
 
 The installation destroys the entire NVMe disk and creates:
 
@@ -34,7 +34,7 @@ export NIX_CONFIG="experimental-features = nix-command flakes"
 nix run .#bootstrap -- striker
 ```
 
-Bootstrap performs a complete host build before asking for erasure approval. Check that its disk report identifies `/dev/nvme0n1` as the 512 GB NVMe device. To authorize destruction, type `striker` exactly, then enter a new LUKS passphrase twice. Later, set the independent login password for `jannis`.
+Bootstrap remains blocked by `deploymentReady = false` until company authorization for reinstalling the company-owned device is explicit. Once authorized and re-enabled, it performs a complete host build before asking for erasure approval. Check that its disk report identifies `/dev/nvme0n1` as the 512 GB NVMe device. To authorize destruction, type `striker` exactly, then enter a new LUKS passphrase twice. Later, set the independent login password for `jannis`.
 
 An interrupted run recognizes only a LUKS partition carrying Water Seven's declared GPT partition label as resumable. Unrelated pre-existing encrypted disks are treated as destructive installation targets and still require explicit authorization.
 
@@ -48,8 +48,8 @@ Remove the USB drive and reboot. Then verify:
 4. `nmtui` can reconnect Wi-Fi; installer network credentials are not migrated.
 5. Ghostty, tmux, Neovim, audio, brightness controls, touchpad, TrackPoint, and Wi-Fi work.
 6. `systemctl --failed` reports no failed units.
-7. `linearis --version` reports the private-role package version without requiring access to private authentication state.
+7. `mole --version` reports the work-role Linux package version without requiring Homebrew.
 
 Core first-boot validation has passed. Bluetooth and suspend/resume testing are explicitly deferred and do not block deployment readiness.
 
-Secure Boot remains disabled until the staged preflight and recovery gates in [the `striker` Secure Boot and TPM design](../research/striker-secure-boot-tpm.md) pass. Do not combine Lanzaboote migration, firmware enforcement, measured-boot policy, and LUKS TPM enrollment in one change.
+Secure Boot remains disabled until company authority over firmware, TPM, disk recovery, and signing-key custody is clarified and the staged preflight and recovery gates in [the `striker` Secure Boot and TPM design](../research/striker-secure-boot-tpm.md) pass. Do not infer authorization from the absence of MDM or combine Lanzaboote migration, firmware enforcement, measured-boot policy, and LUKS TPM enrollment in one change.

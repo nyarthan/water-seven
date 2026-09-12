@@ -6,19 +6,19 @@ in
   waterSeven.hosts.baratie = {
     platform = "darwin";
     system = "aarch64-darwin";
-    role = "work";
+    role = "personal";
     deploymentReady = false;
 
     os.imports = [
       modules.darwin.shared-workstation
-      modules.darwin.role-work
+      modules.darwin.role-personal
       modules.darwin.platform-darwin
       modules.darwin.host-baratie
     ];
 
     home.imports = [
       modules.homeManager.shared-workstation
-      modules.homeManager.role-work
+      modules.homeManager.role-personal
       modules.homeManager.platform-darwin
       modules.homeManager.host-baratie
     ];

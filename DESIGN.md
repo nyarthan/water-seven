@@ -10,7 +10,7 @@ The first machine brought up will be the disposable NixOS VM `mini-merry`. Conti
 
 ## Vision
 
-Create a personal, public system configuration with:
+Create an operator-maintained, public system configuration with:
 
 1. As much declarative setup as each platform reliably permits.
 2. A unified user experience across macOS and Linux.
@@ -23,8 +23,8 @@ The initial fleet is:
 |---|---|---|
 | `mini-merry` | `aarch64-linux` NixOS VM hosted on the Mac | Complete test workstation; `egghead` role |
 | `mini-sunny` | `aarch64-darwin` macOS VM hosted on the Mac | Disposable Darwin test workstation; `egghead` role |
-| `baratie` | `aarch64-darwin` MacBook | Work-oriented workstation |
-| `striker` | `x86_64-linux` NixOS notebook | Private-oriented workstation |
+| `baratie` | `aarch64-darwin` MacBook | Personally owned personal workstation |
+| `striker` | `x86_64-linux` NixOS notebook | Company-owned work workstation |
 
 The Mac currently reports another hostname (`ghost`), but its declared identity going forward is `baratie`.
 
@@ -101,12 +101,12 @@ Expected profile composition:
 
 ```text
 shared workstation
-    └── role: work, private, or VM test role
+    └── role: work, personal, or VM test role
           └── platform: macOS or NixOS
                 └── host: hardware facts and exceptions
 ```
 
-The work/private distinction is mostly accounts, credentials, applications, and other role-specific configuration. Shell, editor, terminal, and interaction behavior remain shared.
+The work/personal distinction is mostly accounts, credentials, applications, and other role-specific configuration. A host role describes primary use, not device ownership or a credential-security boundary. Shell, editor, terminal, and interaction behavior remain shared.
 
 ### Declarative management tiers
 
@@ -377,7 +377,7 @@ Initial shared GUI baseline:
 - Platform window manager
 - Platform launcher
 
-Chrome is installed only by the private role.
+Chrome is installed only by the personal role.
 
 Add communication, office, media, gaming, and other applications deliberately after the foundation exists. The current Mac's installed application list is evidence, not desired state.
 
@@ -437,7 +437,7 @@ Shared notebook baseline:
 
 Inbound SSH is host-specific and may be introduced for future desktops or servers. It is disabled on the initial notebooks after bootstrap.
 
-Secure Boot activation remains gated while it is deployed in observable stages with TPM2-assisted LUKS unlock. Follow [the `striker` Secure Boot and TPM design](docs/research/striker-secure-boot-tpm.md): Lanzaboote first, firmware enforcement second, measured policy third, and LUKS TPM enrollment last. Lanzaboote uses signed generation stubs with hash-verified kernel, initrd, and embedded command-line artifacts rather than requiring each artifact to be independently signed. Retain at most eight bootable and measured generations, the supported maximum, while monitoring the 1 GiB ESP and removing obsolete vulnerable generations promptly. Back up the root-only Secure Boot key bundle and its public fingerprints inside the existing encrypted personal recovery archive.
+Secure Boot activation on `striker` is blocked pending company clarification of firmware, TPM, disk-recovery, and signing-key authority. The company-owned host already meets the stated full-disk-encryption requirement through LUKS2; absence of MDM is not authorization for Water Seven to control additional trust anchors. If approved, follow [the staged `striker` Secure Boot and TPM design](docs/research/striker-secure-boot-tpm.md): Lanzaboote first, firmware enforcement second, measured policy third, and LUKS TPM enrollment last. Lanzaboote uses signed generation stubs with hash-verified kernel, initrd, and embedded command-line artifacts rather than requiring each artifact to be independently signed. Retain at most eight bootable and measured generations, the supported maximum, while monitoring the 1 GiB ESP and removing obsolete vulnerable generations promptly. Store signing and recovery material only through the company-approved custody model.
 
 Erase-on-boot impermanence is deferred. First prove reliable recovery from a blank disk.
 
@@ -486,9 +486,9 @@ Do not initially add YubiKey PIV login to macOS. `baratie` keeps FileVault passw
 
 Every disk credential is unique and independent of the Unix login password.
 
-`striker` will retain a high-entropy LUKS2 recovery passphrase and, after the hardware-key deferral ends, separately enroll both YubiKeys with client PIN and user presence. The recovery passphrase remains valid when neither token nor the TPM path is available.
+`striker` retains its existing high-entropy LUKS2 recovery passphrase. Because it is company-owned, company policy must authorize custody of that passphrase and any future TPM or YubiKey enrollment before Water Seven changes the volume's unlock authorities. Do not enroll personal YubiKeys merely because the host has a work role.
 
-Use transparent TPM2-assisted unlock for `striker` once its boot-integrity design has been validated. A recognized signed boot chain may unlock LUKS without user input; the OS login then becomes the user-authentication boundary. This deliberately accepts that the root filesystem is mounted at the login screen in exchange for protection against SSD removal and unauthorized measured boot paths without an extra normal-boot prompt.
+Use transparent TPM2-assisted unlock for `striker` only after its boot-integrity design and the company's authority requirements have both been validated. A recognized signed boot chain may then unlock LUKS without user input; the OS login becomes the user-authentication boundary. This deliberately accepts that the root filesystem is mounted at the login screen in exchange for protection against SSD removal and unauthorized measured boot paths without an extra normal-boot prompt.
 
 Design and test TPM enrollment together with Lanzaboote's signed generation stubs and measured artifacts, PCR policy across NixOS generations and manual rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and the recovery-passphrase path. Start with PCR 4 for recognized boot artifacts and PCR 7 for Secure Boot state/authority. Defer PCR 0 firmware binding until a controlled firmware-update and policy-recovery rehearsal passes. Keep automatic boot counting disabled until a useful workstation boot-success criterion is designed and tested separately. Failed measurements must fall back cleanly to recovery. Retain the independent high-entropy LUKS recovery passphrase. When YubiKey integration resumes, reconsider transparent TPM unlock because leaving it enabled means YubiKey presence is not required for disk decryption.
 
@@ -538,7 +538,7 @@ The blank-machine recovery route must not require another configured Water Seven
 
 1. the separately stored backup YubiKey;
 2. personal Bitwarden as the convenient online source;
-3. a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, the Secure Boot signing-key backup, a SOPS break-glass identity, and the personal credential-registration inventory.
+3. a sealed offline personal recovery kit containing password-manager recovery material, personal-device disk recovery credentials, a SOPS break-glass identity, and the personal credential-registration inventory.
 
 Store the digital payload as a passphrase-encrypted, cross-platform archive on removable media. Give it a unique generated multiword passphrase that is not reused for Bitwarden, login, disk encryption, or hardware-token PINs. Keep two sealed paper copies of that passphrase in separate trusted locations, with neither copy stored beside the media or backup YubiKey. A personal Bitwarden copy is optional convenience, never the sole copy. Keep work credential inventory and recovery material only in work Bitwarden or another company-approved system.
 

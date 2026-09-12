@@ -127,12 +127,12 @@ Use `flake.modules` for the actual deferred class modules, but also declare Wate
 
 ```text
 shared-workstation
-role-work | role-private | role-egghead
+role-work | role-personal | role-egghead
 platform-nixos | platform-darwin
 host-mini-merry | host-baratie | host-striker
 ```
 
-Feature files merge into these bundle names. For example, `features/terminal/ghostty.nix` may contribute to all three classes' `shared-workstation`; `features/browser/chrome.nix` contributes only to `homeManager.role-private` or the appropriate platform role bundles. Hosts import four references, not dozens of leaf feature names.
+Feature files merge into these bundle names. For example, `features/terminal/ghostty.nix` may contribute to all three classes' `shared-workstation`; `features/browser/chrome.nix` contributes only to `homeManager.role-personal` or the appropriate platform role bundles. Hosts import four references, not dozens of leaf feature names.
 
 The VM role's confirmed One Piece name is `egghead`.
 
@@ -355,7 +355,7 @@ water-seven/
 │   │   ├── shared-workstation.nix    # only profile-wide policy not owned below
 │   │   ├── roles/
 │   │   │   ├── work.nix
-│   │   │   ├── private.nix
+│   │   │   ├── personal.nix
 │   │   │   └── egghead.nix
 │   │   └── platforms/
 │   │       ├── nixos.nix

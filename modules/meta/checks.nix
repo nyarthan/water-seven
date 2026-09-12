@@ -57,10 +57,12 @@
           ]
         ) "Water Seven's fleet must contain baratie, mini-merry, mini-sunny, and striker";
         assert lib.assertMsg (
+          config.waterSeven.hosts.baratie.role == "personal" && config.waterSeven.hosts.striker.role == "work"
+        ) "baratie must remain the personal host and striker the work host";
+        assert lib.assertMsg (
           deploymentReadyHostNames == [
             "mini-merry"
             "mini-sunny"
-            "striker"
           ]
         ) "Only reviewed hosts may be deployment-ready during migration";
         assert lib.assertMsg (

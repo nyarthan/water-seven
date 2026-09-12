@@ -12,7 +12,7 @@ The recommended blank-machine recovery path is:
 
 1. Buy a second YubiKey 5C NFC and provision it as an independently enrolled backup, not a clone.
 2. Keep the backup key away from the daily key.
-3. Maintain a sealed offline personal recovery kit containing password-manager recovery material, disk recovery credentials, the Secure Boot signing-key backup, a SOPS break-glass identity, and the personal credential-registration inventory. Encrypt its digital payload with a unique generated multiword passphrase and keep two sealed paper copies away from both the media and backup YubiKey.
+3. Maintain a sealed offline personal recovery kit containing password-manager recovery material, personal-device disk recovery credentials, a SOPS break-glass identity, and the personal credential-registration inventory. Encrypt its digital payload with a unique generated multiword passphrase and keep two sealed paper copies away from both the media and backup YubiKey. Company-device recovery material follows company custody policy instead.
 4. Make personal Bitwarden available as the convenient online recovery source, but do not make it the only route.
 5. Defer all Water Seven YubiKey integration while only one key exists. Provision or enforce hardware-backed paths only after the backup key is available and every fallback can be tested.
 
@@ -27,7 +27,8 @@ This avoids three single points of failure: one physical key, an already working
 | Work application/team secrets | Company policy and the issuing system | Company-approved facilities such as STACKIT Secrets Manager | Company-defined recovery, renewal, and versioning |
 | Selected static personal machine secrets | SOPS file in this public repository | `sops-nix` protected runtime file | Host recipient, either operator YubiKey recipient, or offline break-glass recipient |
 | OAuth, browser-login, and generated CLI sessions | Issuing service | macOS Keychain, Linux Secret Service, application-owned protected state, or process environment | Reauthenticate; do not back up access/session tokens as declarative secrets |
-| Linux disk unlock | Each LUKS2 volume | LUKS2 token/keyslot | Two separately enrolled YubiKeys plus a unique recovery passphrase |
+| Personal Linux disk unlock | Each personal LUKS2 volume | LUKS2 token/keyslot | Two separately enrolled personal YubiKeys plus a unique recovery passphrase |
+| Company Linux disk unlock | Company/device policy | LUKS2 token/keyslot | Company-approved recovery and offboarding path |
 | macOS disk unlock | FileVault/Secure Enclave | Native FileVault state | Unique personal recovery key and account password |
 | SSH authentication | Each remote relying party | Dedicated FIDO2 credential on each YubiKey; public key and local handle are non-secret metadata | Register both keys; remove a lost key at every relying party |
 | Git commit/tag signing | GitHub and local Git trust configuration | Dedicated FIDO2 SSH signing credential, distinct from SSH authentication | Register both signing keys; revoke independently |
@@ -56,7 +57,9 @@ Use FIDO2 for:
 - passkeys or second-factor credentials at Bitwarden, GitHub, and company services where policy permits;
 - dedicated OpenSSH credentials for SSH authentication and Git signing;
 - separately scoped `pam_u2f` credentials for NixOS login and sudo; and
-- per-volume LUKS2 enrollment through systemd.
+- personal per-volume LUKS2 enrollment through systemd.
+
+Do not enroll personal YubiKeys as company-device disk or local-login authorities without explicit company approval.
 
 FIDO user presence is a physical touch; user verification can be a YubiKey PIN. OpenSSH's `verify-required` option enforces verification in addition to touch.[^yubico-ssh] `pam_u2f` exposes separate `pinverification` and `userpresence` requirements.[^pam-u2f] `systemd-cryptenroll` likewise has distinct client-PIN and user-presence controls, both defaulting to enabled for FIDO2 enrollment.[^systemd-cryptenroll]
 
@@ -78,17 +81,17 @@ Disable unused YubiKey applications only after inventorying current use. The int
 
 ### NixOS
 
-Each physical LUKS2 volume keeps three independent classes of unlock path:
+Each personal physical LUKS2 volume keeps three independent classes of unlock path:
 
 1. daily primary YubiKey enrollment with client PIN and touch;
 2. separately enrolled backup YubiKey; and
 3. a unique high-entropy recovery passphrase.
 
-Systemd stores FIDO2 enrollment metadata in the LUKS2 JSON token area and uses the token's `hmac-secret` extension to acquire the unlock key.[^systemd-cryptenroll] The recovery passphrase must not equal the Unix login password or another host's disk secret. Store it in personal Bitwarden and in the sealed recovery kit.
+Systemd stores FIDO2 enrollment metadata in the LUKS2 JSON token area and uses the token's `hmac-secret` extension to acquire the unlock key.[^systemd-cryptenroll] A personal recovery passphrase must not equal the Unix login password or another host's disk secret; store it in personal Bitwarden and in the sealed personal recovery kit.
 
-The selected interim target for `striker` is transparent TPM2-assisted unlock: an authorized signed boot chain may release the LUKS key without user input, after which the OS login is the user-authentication boundary. This is stronger than an unencrypted disk against SSD removal and unauthorized measured boot paths, but deliberately weaker than requiring a user-held secret before mounting.
+`striker` is company-owned and already meets the stated full-disk-encryption requirement with a passphrase-protected LUKS2 root. Its recovery-passphrase custody, firmware authority, and future TPM or YubiKey enrollments are unresolved because no explicit company policy was found. Absence of MDM does not transfer those authorities to Water Seven or the personal recovery kit.
 
-Do not enroll the TPM until [the dedicated `striker` design](striker-secure-boot-tpm.md) validates Secure Boot, Lanzaboote's signed generation stubs and measured artifacts, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and clean fallback to the independent recovery passphrase. Reconsider the transparent path when YubiKey integration resumes, because it otherwise bypasses any requirement for token presence during disk decryption.
+If the company approves user-managed transparent TPM2 unlock, an authorized signed boot chain may release the LUKS key without user input, after which the OS login is the user-authentication boundary. This is stronger than an unencrypted disk against SSD removal and unauthorized measured boot paths, but deliberately weaker than requiring a user-held secret before mounting. Do not enroll the TPM until both company authorization and [the dedicated `striker` design](striker-secure-boot-tpm.md) validate key custody, Secure Boot, Lanzaboote's signed generation stubs and measured artifacts, PCR policy across NixOS generations and rollback, firmware/kernel updates, suspend behavior, TPM clearing or motherboard replacement, and clean fallback to the independent recovery passphrase.
 
 VM disks keep independent passphrases. USB token passthrough is too fragile to be their only unlock path. Any VM receiving a real secret has credential-bearing snapshots and exports.
 
@@ -154,13 +157,13 @@ Water Seven may provide public incident checklists, permission/fingerprint check
 ## Implementation sequence
 
 1. Add platform credential-store support and introduce account-specific wrappers only for demonstrated workflows.
-2. Follow the staged Lanzaboote Secure Boot, measured-boot, manual-rollback, and recovery design before enrolling transparent TPM2 unlock on `striker`.
+2. Obtain company clarification for `striker` firmware, disk-recovery, TPM, and signing-key authority; only then follow the staged Lanzaboote Secure Boot, measured-boot, manual-rollback, and recovery design.
 3. Acquire the backup YubiKey and prepare the offline recovery kit before any YubiKey integration.
 4. Inventory and provision both keys together.
 5. Introduce SOPS with a non-sensitive fixture, host recipients, both YubiKey recipients, and the offline recipient.
 6. Provision dedicated SSH authentication and Git signing credentials, then enable private Git identity/signing configuration.
-7. Enroll and test both YubiKeys for `striker` LUKS2.
-8. Add one NixOS local-authentication credential per host/key for login and sudo; enforce only after console and recovery tests.
+7. Enroll and test both YubiKeys for personal LUKS2 volumes; company-owned volumes require separate company approval.
+8. Add one NixOS local-authentication credential per personal host/key for login and sudo; company-owned hosts require separate company approval and all enforcement follows console and recovery tests.
 9. Leave macOS PIV login deferred unless its additional value justifies the recovery complexity.
 
 ## Sources

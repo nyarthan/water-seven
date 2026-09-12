@@ -1,11 +1,11 @@
 # Water Seven
 
-Declarative personal workstation configuration for:
+Declarative workstation configuration for a mixed-ownership fleet:
 
 - `mini-merry` — `aarch64-linux` NixOS VM, `egghead` role
 - `mini-sunny` — `aarch64-darwin` macOS VM, `egghead` role
-- `baratie` — `aarch64-darwin` work notebook
-- `striker` — `x86_64-linux` private notebook
+- `baratie` — `aarch64-darwin` personal notebook
+- `striker` — `x86_64-linux` company-owned work notebook
 
 See [DESIGN.md](DESIGN.md) for the system design and
 [the Dendritic architecture research](docs/research/dendritic-nix-architecture.md)

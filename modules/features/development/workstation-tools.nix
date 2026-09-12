@@ -22,30 +22,32 @@
           tokentracker-cli = pkgs.callPackage ../../../packages/tokentracker-cli.nix { };
         in
         {
-          home.packages = with pkgs; [
-            act
-            awscli2
-            cloudflared
-            devenv
-            dust
-            gh
-            headroom-ai
-            hyperfine
-            lazygit
-            tokentracker-cli
-            turbo
-            uv
-            yazi
-            unstable.bws
-            unstable.claude-code
-            unstable.opencode
-            unstable.rtk
-            unstable.tuicr
-            unstable.worktrunk
-          ];
+          home.packages =
+            (with pkgs; [
+              act
+              awscli2
+              cloudflared
+              devenv
+              dust
+              gh
+              headroom-ai
+              hyperfine
+              lazygit
+              tokentracker-cli
+              turbo
+              uv
+              yazi
+              unstable.bws
+              unstable.claude-code
+              unstable.opencode
+              unstable.rtk
+              unstable.tuicr
+              unstable.worktrunk
+            ])
+            ++ lib.optionals pkgs.stdenv.isLinux [ pkgs.mole ];
         };
 
-      role-private = { pkgs, ... }: {
+      role-personal = { pkgs, ... }: {
         home.packages = [ (pkgs.callPackage ../../../packages/linearis.nix { }) ];
       };
     };

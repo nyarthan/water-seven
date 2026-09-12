@@ -6,9 +6,11 @@ How can `striker` use transparent TPM2-assisted LUKS2 unlock without reducing th
 
 ## Recommendation
 
-Adopt the design in three independently recoverable stages:
+`striker` is company-owned even though it is not MDM-managed. The only known company requirement is full-disk encryption, which its existing LUKS2 root already satisfies. No accessible Confluence policy was found for self-managed Linux, Secure Boot/TPM ownership, or recovery-key custody. Do not generate Secure Boot keys, change firmware authority, enroll TPM unlock, or place company-device recovery material in a personal archive until the company clarifies that authority.
 
-1. **Lanzaboote Secure Boot only.** Pin stable Lanzaboote v1.1.0, manually create and back up the Secure Boot key bundle, boot Lanzaboote once with Secure Boot disabled, then manually enroll the keys with Microsoft certificates retained.
+If company policy permits user-managed trust anchors, adopt the technical design in three independently recoverable stages:
+
+1. **Lanzaboote Secure Boot only.** Pin stable Lanzaboote v1.1.0, manually create and back up the Secure Boot key bundle using the approved custody model, boot Lanzaboote once with Secure Boot disabled, then manually enroll the keys with Microsoft certificates retained.
 2. **Measured Boot without LUKS enrollment.** Enable Lanzaboote's `systemd-pcrlock` integration initially for PCRs 4 and 7, inspect prediction coverage, and prove signed-generation boot and rollback before the TPM controls any disk key.
 3. **Transparent TPM enrollment.** Manually add a TPM2 LUKS token bound to the validated pcrlock policy, without a TPM PIN, while retaining the existing passphrase keyslot permanently. Test normal automatic unlock, authorized rollback, PCR mismatch fallback, and rescue-media recovery.
 
@@ -144,16 +146,16 @@ Lanzaboote uses `sbctl` keys under `/var/lib/sbctl`; the private key is root-rea
 
 Treat this bundle as a high-value signing authority:
 
-- generate it manually on `striker` only after the recovery path is prepared;
+- generate it manually on `striker` only after company authority and recovery custody are explicit;
 - keep the live bundle root-only on the LUKS-protected filesystem;
-- add an encrypted copy to the existing personal recovery archive;
-- record its public fingerprints in the private credential inventory;
+- back it up only through the approved company-device recovery channel;
+- record its public fingerprints in the corresponding authority's private credential inventory;
 - never put private keys in Git, SOPS, a derivation, logs, or command arguments; and
 - rotate the firmware authority after suspected key exposure.
 
 Loss of the signing bundle does not reveal disk plaintext, but it prevents signing new boot artifacts under the enrolled authority. Recovery then requires the LUKS passphrase, disabling Secure Boot to boot rescue media, resetting firmware to Setup Mode, and enrolling a replacement authority.
 
-Set and preserve a UEFI supervisor password before relying on Secure Boot. It prevents an unattended attacker from casually disabling enforcement or changing boot authority, and it protects the owner from an evil-maid flow that replaces the boot path and waits for the recovery passphrase. Store its recovery record in personal Bitwarden and the offline recovery kit, never in Water Seven.
+Set and preserve a UEFI supervisor password before relying on Secure Boot. It prevents an unattended attacker from casually disabling enforcement or changing boot authority, and it protects the owner from an evil-maid flow that replaces the boot path and waits for the recovery passphrase. Store its recovery record only through the company-approved custody model, never in Water Seven or a personal store by default.
 
 Use manual key enrollment and retain Microsoft certificates as Lanzaboote recommends for hardware whose option ROMs may depend on them. Do not select firmware options that clear the forbidden-signature database (`dbx`). An up-to-date dbx remains necessary to reject known vulnerable signed loaders.[^lanzaboote-enable]
 
@@ -234,7 +236,7 @@ DMA/IOMMU state and whether the ThinkPad uses integrated firmware TPM or a discr
 - Record current Secure Boot/setup mode, TPM, dbx, ESP use, boot entries, and firmware security report privately.
 - Confirm the LUKS recovery passphrase through a controlled reboot before changing boot authority.
 - Confirm current recovery media boots in UEFI mode.
-- Prepare the recovery archive and UEFI supervisor-password record.
+- Prepare the company-approved recovery channel and UEFI supervisor-password record.
 
 ### Stage 1: signed boot, enforcement still off
 
@@ -287,7 +289,7 @@ Only after all stages pass should transparent TPM unlock become normal `striker`
 
 The initial PCR set is `[ 4 7 ]`; PCR 0 remains deferred until a firmware-update rehearsal. Remaining decisions are:
 
-Automatic boot counting is deferred until a workstation boot-success target exists. The bootable and measured generation limit is eight. The Secure Boot key backup joins the existing encrypted personal recovery archive. The physical locations of the archive and two recovery-passphrase envelopes remain a private offline decision and must be prepared before key generation.
+Automatic boot counting is deferred until a workstation boot-success target exists. The bootable and measured generation limit is eight. Key custody remains blocked: company policy must decide who controls the LUKS recovery passphrase, Secure Boot key backup, UEFI supervisor password, and any future hardware-token enrollment before key generation or firmware changes.
 
 ## Sources
 
