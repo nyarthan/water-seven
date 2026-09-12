@@ -522,7 +522,7 @@ Applications use Keychain on macOS and Secret Service on Linux when supported. G
 
 Otherwise, a mode-`0600` application-owned file on the encrypted volume is acceptable. A FIDO-only Linux login cannot automatically provide a login-keyring password; prompt to unlock the keyring rather than storing that password to bypass the prompt. Water Seven owns broker availability and non-secret integration, never Keychain/keyring contents or interactive access decisions.
 
-Browser-generated and OAuth CLI credentials remain application-owned mutable state. Back up the authority and recovery method, not access tokens: reauthenticate or reissue them after loss. Water Seven does not decide which work secrets belong in STACKIT or how they are accessed; it may support a concrete company-approved workflow without making system rebuilds depend on work credentials, SSO, or network availability.
+Browser-generated and OAuth CLI credentials remain application-owned mutable state. Reauthentication is the default recovery path for Codex, Claude, GitHub CLI, AWS SSO, Linearis, and similar tools; do not back up their live access, refresh, cookie, or session state through SOPS or a password vault. Classify genuinely long-lived personal API keys individually, and handle valuable non-secret history mixed into an authentication directory as a separate application-data backup decision. Water Seven does not decide which work secrets belong in STACKIT or how they are accessed; it may support a concrete company-approved workflow without making system rebuilds depend on work credentials, SSO, or network availability.
 
 ### Git identity and signing
 
