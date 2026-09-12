@@ -98,6 +98,8 @@ Keep native FileVault ownership. Apple-silicon FileVault uses the Secure Enclave
 
 ## SOPS as declarative delivery
 
+Actual SOPS payloads and `sops-nix` activation are deferred until the second YubiKey is available. Keep the pinned input and architecture, but do not introduce an interim software operator identity merely to deploy SOPS early. Revisit only for a concrete unattended personal secret whose complete recipient and recovery model justifies the exception.
+
 SOPS is for selected **static, machine-consumed, personal-scope values** whose ciphertext and metadata are acceptable in a public repository. It is not the password manager, work vault, session cache, or universal backup format. SOPS supports age recipients and encrypted structured files.[^sops] `sops-nix` decrypts system secrets into non-persistent runtime locations and supports NixOS, nix-darwin, and Home Manager adapters.[^sops-nix]
 
 Use three recipient classes:

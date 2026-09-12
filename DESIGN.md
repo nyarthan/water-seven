@@ -498,6 +498,8 @@ FileVault remains macOS-native. Preserve its personal recovery key in personal B
 
 ### Declarative delivery with SOPS
 
+Actual SOPS payloads and `sops-nix` activation are deferred with YubiKey integration. Keep the pinned input and intended architecture, but do not create an interim software operator identity merely to deploy SOPS early. Revisit the deferral only if a concrete unattended personal secret creates an earlier need and its recipient/recovery model is reviewed explicitly.
+
 SOPS ciphertext, filenames, recipients, and change metadata are public. Include only values for which that disclosure is acceptable.
 
 Each authorized host receives a unique generated age identity protected by its encrypted disk. Each SOPS file may additionally grant the primary YubiKey, backup YubiKey, and offline break-glass identity. Host identities permit unattended activation and are replaceable on reinstall rather than backed up.
