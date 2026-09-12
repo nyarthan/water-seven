@@ -518,7 +518,9 @@ Do not put password-manager sessions, OAuth state, GitHub CLI sessions, disk rec
 
 ### Local and renewable credentials
 
-Applications use Keychain on macOS and Secret Service on Linux when supported. Otherwise, a mode-`0600` application-owned file on the encrypted volume is acceptable. A FIDO-only Linux login cannot automatically provide a login-keyring password; prompt to unlock the keyring rather than storing that password to bypass the prompt.
+Applications use Keychain on macOS and Secret Service on Linux when supported. GNOME Keyring is the selected NixOS Secret Service implementation despite the non-GNOME desktop because it provides the widely supported interface and PAM integration. Install only the keyring/Secret Service closure required for that role; do not add the GNOME desktop, GNOME applications, or GNOME Keyring's SSH/GPG-agent responsibilities.
+
+Otherwise, a mode-`0600` application-owned file on the encrypted volume is acceptable. A FIDO-only Linux login cannot automatically provide a login-keyring password; prompt to unlock the keyring rather than storing that password to bypass the prompt. Water Seven owns broker availability and non-secret integration, never Keychain/keyring contents or interactive access decisions.
 
 Browser-generated and OAuth CLI credentials remain application-owned mutable state. Back up the authority and recovery method, not access tokens: reauthenticate or reissue them after loss. Water Seven does not decide which work secrets belong in STACKIT or how they are accessed; it may support a concrete company-approved workflow without making system rebuilds depend on work credentials, SSO, or network availability.
 
