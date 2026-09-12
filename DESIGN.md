@@ -526,7 +526,9 @@ Browser-generated and OAuth CLI credentials remain application-owned mutable sta
 
 ### Git identity and signing
 
-Use SSH-format Git commit and tag signatures from a dedicated resident FIDO2 signing credential, distinct from SSH authentication. Register primary and backup signing keys independently. Keep author name and email in private personal/work includes restored from the corresponding Bitwarden account or created interactively. Host role chooses a default; conditional includes override repositories that cross that default.
+Use SSH-format Git commit and tag signatures from a dedicated resident FIDO2 signing credential, distinct from SSH authentication. Register primary and backup signing keys independently.
+
+Keep author name and email in private personal/work identity files restored from the corresponding approved authority or created interactively. A private Git context map selects them with directory-specific `includeIf "gitdir:..."` rules; host role supplies no identity default. Set `user.useConfigOnly = true` so an unclassified repository fails to commit instead of guessing an identity. Classify repositories outside the normal trees through an explicit repository-local include. Standard linked worktrees normally retain the identity of their main repository because their Git metadata remains below its `.git/worktrees` directory; test tool-created layouts such as the `work` CLI before relying on this.
 
 Do not enable signing until the backup key exists, both keys are registered, clean-machine recovery has been tested, and the active private Git include selects the intended identity and signer.
 

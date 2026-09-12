@@ -126,7 +126,9 @@ When an application supports neither local broker, a mode-`0600` application-own
 
 Use SSH-format Git signatures because GitHub supports SSH signing and it avoids introducing OpenPGP solely for Git.[^github-signing] Create a dedicated FIDO2 resident signing credential with `verify-required`; do not reuse the SSH authentication credential. Register the primary and backup signing public keys separately with GitHub. The active private handle and public key are local metadata; the private key remains on the YubiKey.
 
-Keep author name/email out of the public Nix configuration. Restore private personal and work include files from their corresponding Bitwarden accounts or create them interactively. Host role supplies only a default. Conditional includes override identity for repositories that cross the default, so one GitHub account does not force one author identity or signing revocation domain.
+Keep author name/email out of the public Nix configuration. Restore private personal and work identity files from their corresponding approved authority or create them interactively. A private context map selects them through directory-specific `includeIf "gitdir:..."` rules; host role supplies no identity default. Set `user.useConfigOnly = true` so repositories outside a classified tree fail to commit rather than accepting a guessed identity. Exceptional repositories use an explicit repository-local include.
+
+Git evaluates `gitdir:` against repository metadata. Standard linked worktrees placed in a flat directory retain metadata below the main repository's `.git/worktrees` directory and therefore normally retain its classification. Test the actual `work` CLI layout: an independent flat clone needs another explicit condition, while a standard linked worktree should not.
 
 ## Recovery, rotation, and revocation
 
