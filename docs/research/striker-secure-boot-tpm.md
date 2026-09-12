@@ -136,7 +136,7 @@ Lanzaboote documents that ESP exhaustion or FAT corruption can make the machine 
 
 Lanzaboote supports systemd-boot boot counting, and its test demonstrates falling back after repeated failed boots.[^lanzaboote-boot-counting] Systemd marks a counted entry good through `systemd-bless-boot` after `boot-complete.target`; its no-failures check is disabled upstream by default.[^automatic-boot-assessment]
 
-Do not enable boot counting in the first Secure Boot/TPM change. First define what `striker` considers a successful workstation boot—at minimum multi-user state, greetd availability, and no failed critical system units—then test automatic fallback separately. Otherwise a generation can be blessed before the graphical workstation is actually usable.
+Automatic boot counting is deferred. Keep `boot.lanzaboote.bootCounting.initialTries = 0` and test manual generation rollback. Reconsider only after defining what `striker` considers a successful workstation boot—at minimum multi-user state, greetd availability, and no failed critical system units—and testing fallback separately. Otherwise a generation can be blessed before the graphical workstation is actually usable.
 
 ## Secure Boot key authority
 
@@ -287,10 +287,11 @@ Only after all stages pass should transparent TPM unlock become normal `striker`
 
 The initial PCR set is `[ 4 7 ]`; PCR 0 remains deferred until a firmware-update rehearsal. Remaining decisions are:
 
+Automatic boot counting is deferred until a workstation boot-success target exists. Remaining decisions are:
+
 1. Confirm a four-generation trusted/boot limit.
 2. Decide whether Secure Boot key backup joins the same recovery archive or a separately encrypted archive.
 3. Decide where the two physical recovery-passphrase envelopes and backup archive will be stored; locations remain private.
-4. Decide whether automatic boot counting is a later feature or part of this project after a workstation boot-success target is defined.
 
 ## Sources
 
