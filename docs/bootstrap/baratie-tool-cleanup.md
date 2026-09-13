@@ -35,12 +35,15 @@ Once the relevant checks pass:
 
 Preserve application data and configuration while removing executable installations. In particular, this checklist does not authorize deletion of `~/.claude`, TokenTracker runtime data, or Headroom runtime data. Review whether that state is still required before transferring or deleting it; work credential material follows company policy and must not be copied into personal recovery storage.
 
+## Completed pre-activation cleanup
+
+The standalone `nixd` Nix profile entry was removed after a headless test confirmed that Water Seven Neovim attaches its bundled `nil` server to this flake. The still-active Tendril Neovim independently bundles its own `nixd`, so removing the redundant profile entry did not interrupt the current editor.
+
 ## Deferred items
 
 Do not delete these until their separate migration decisions are complete:
 
 - `@earendil-works/pi-coding-agent`, the custom pi fork.
 - Unreferenced mise installation caches. Preserve them through initial activation; prune only after representative project-owned toolchains have been exercised.
-- The standalone `nixd` Nix profile entry; first confirm that no editor or project still selects it. Water Seven itself uses `nil`.
 
 The npm prefix can be removed only after every remaining package is either migrated or explicitly rejected.
