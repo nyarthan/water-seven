@@ -1,6 +1,6 @@
 # `baratie` mutable tool cleanup
 
-Use this checklist only after Water Seven is approved for `baratie`, activated, and the replacement or retirement decisions have been verified. The paths below were inventoried from metadata only; none of the unmanaged executables need to be run to complete the inventory.
+Use this checklist only after [the application and service migration](baratie-app-migration.md) has prepared `baratie` for Water Seven activation and the replacement or retirement decisions have been verified. The paths below were inventoried from metadata only; none of the unmanaged executables need to be run to complete the inventory.
 
 ## Verify the personal-role replacement
 

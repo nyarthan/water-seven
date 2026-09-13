@@ -5,7 +5,9 @@ let
     "google-chrome"
     "mos"
     "obsidian"
+    "orbstack"
     "raycast"
+    "slack"
   ];
 
   packagePolicy = {

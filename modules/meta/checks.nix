@@ -27,7 +27,34 @@
         "LSHandlers"
       ] null representativeSystem.config;
       darwinBrewNames = map (brew: brew.name) representativeSystem.config.homebrew.brews;
-      darwinCaskNames = map (cask: cask.name) representativeSystem.config.homebrew.casks;
+      darwinCasks = representativeSystem.config.homebrew.casks;
+      darwinCaskNames = map (cask: cask.name) darwinCasks;
+      darwinMasApps = representativeSystem.config.homebrew.masApps;
+      personalCaskNames = [
+        "affinity"
+        "ausweisapp"
+        "chatgpt"
+        "fujitsu-scansnap-home"
+        "helium-browser"
+        "libreoffice"
+        "microsoft-auto-update"
+        "microsoft-teams"
+        "steam"
+        "tableplus"
+        "yubico-authenticator"
+      ];
+      expectedDarwinCaskNames = [
+        "ghostty"
+      ]
+      ++ lib.optionals (representativeHost.role == "personal") personalCaskNames;
+      personalDarwinPackageNames = [
+        "google-chrome"
+        "orbstack"
+        "proton-vpn"
+        "scroll-reverser"
+        "slack"
+        "whatsapp-for-mac"
+      ];
       deploymentReadyHostNames = lib.attrNames (
         lib.filterAttrs (_: host: host.deploymentReady) config.waterSeven.hosts
       );
@@ -84,8 +111,17 @@
                 "raycast"
               ] == [ ]
               && darwinBrewNames == lib.optionals (representativeHost.role == "work") [ "mole" ]
-              && darwinCaskNames == [ "ghostty" ]
-              && lib.all (cask: cask.args.no_quarantine or false) representativeSystem.config.homebrew.casks
+              && lib.sort builtins.lessThan darwinCaskNames == lib.sort builtins.lessThan expectedDarwinCaskNames
+              &&
+                darwinMasApps == lib.optionalAttrs (representativeHost.role == "personal") {
+                  "P-touch Editor" = 1453365242;
+                }
+              && lib.all (cask: !(cask.args.no_quarantine or false) || cask.name == "ghostty") darwinCasks
+              && lib.any (cask: cask.name == "ghostty" && (cask.args.no_quarantine or false)) darwinCasks
+              && (
+                representativeHost.role != "personal"
+                || lib.all (name: builtins.elem name darwinPackageNames) personalDarwinPackageNames
+              )
               && representativeSystem.config.system.defaults.LaunchServices.LSQuarantine
               && lib.any (
                 package:
@@ -97,7 +133,7 @@
               ) representativeSystem.config.waterSeven.bootstrap.followUpSteps
             )
           )
-          "Darwin applications must prefer nixpkgs, avoid ineffective LaunchServices plist handlers, and document interactive browser consent; Ghostty and broken-on-Darwin Mole are the only approved Homebrew fallbacks";
+          "Darwin applications must match the role package, Homebrew, MAS, quarantine, and interactive-consent policy";
         assert lib.assertMsg (
           representativeHost.platform != "nixos"
           || (
