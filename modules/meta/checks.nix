@@ -197,9 +197,7 @@
             touch "$out"
           '';
 
-      neovimFacts =
-        pkgs.writeText "water-seven-neovim.lua"
-          home.xdg.configFile."water-seven/generated/neovim.lua".text;
+      neovimPlugins = home.xdg.dataFile."nvim/site/pack/hm".source;
       tmuxFacts =
         pkgs.writeText "water-seven-tmux.conf"
           home.xdg.configFile."water-seven/generated/tmux.conf".text;
@@ -260,9 +258,34 @@
             grep -Fx '[tools]' ${miseConfig}
             ! grep -F '=' ${miseConfig}
 
-            cp "$source/native/nvim/init.lua" "$XDG_CONFIG_HOME/nvim/init.lua"
-            cp "${neovimFacts}" "$XDG_CONFIG_HOME/water-seven/generated/neovim.lua"
-            nvim --headless '+quitall'
+            mkdir -p "$XDG_DATA_HOME/nvim/site/pack"
+            ln -s "${neovimPlugins}" "$XDG_DATA_HOME/nvim/site/pack/hm"
+            cat > neovim-check.lua <<'LUA'
+            local ok, verification_error = xpcall(function()
+              assert(vim.g.water_seven_config_directory, "the selected config did not finish loading")
+              assert(
+                vim.fn.filereadable(vim.g.water_seven_config_directory .. "/init.lua") == 1,
+                "the loaded config has no init.lua"
+              )
+              assert(vim.fn.exepath("nil") ~= "", "nil is not available")
+              assert(vim.fn.exepath("nixd") == "", "nixd is unexpectedly available")
+              assert(vim.lsp.config.nil_ls ~= nil, "nil_ls is not configured")
+              assert(package.loaded["mini.files"], "MiniFiles is not loaded")
+              assert(package.loaded["snacks"], "Snacks is not loaded")
+              assert(package.loaded["trouble"], "Trouble is not loaded")
+            end, debug.traceback)
+            if not ok then
+              io.stderr:write(verification_error .. "\n")
+              os.exit(1)
+            end
+            vim.cmd("quitall")
+            LUA
+
+            export NVIM_CONFIG_DIR="$source/native/nvim"
+            nvim --headless -l neovim-check.lua
+
+            export NVIM_CONFIG_DIR="$TMPDIR/missing-neovim-config"
+            nvim --headless -l neovim-check.lua
 
             cp "${tmuxFacts}" "$XDG_CONFIG_HOME/water-seven/generated/tmux.conf"
             tmux -L water-seven-check -f "$source/native/tmux/tmux.conf" new-session -d

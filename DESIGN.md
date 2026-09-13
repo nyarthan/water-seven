@@ -157,8 +157,8 @@ Accepted consequences:
 - A commit makes native changes portable and recoverable through the repository.
 - A rebuild validates the clean revision and updates packages, generated fragments, and other Nix-managed state.
 - The checkout is required workstation infrastructure.
-- There is no separately maintained runtime or frozen fallback copy.
-- Nix store snapshots created during evaluation or testing are disposable artifacts, not configuration authorities.
+- There is no separately maintained runtime copy. An application may use an immutable Nix-store snapshot derived from the same native source as a break-glass fallback when the checkout is unavailable.
+- Nix-store snapshots are generated artifacts, not editable configuration authorities.
 
 The earlier idea of automatically reverting native changes at login was rejected because preserving edits while deactivating them requires hidden session tracking, duplicate checkouts, or explicit mode transitions.
 
@@ -359,10 +359,11 @@ Direnv activation requires `direnv allow` once per checkout. After trust is gran
 ## Neovim
 
 - Use stable Neovim from the stable package universe.
-- Nix owns Neovim installation, plugin installation, selected Tree-sitter parsers, and commonly used editor tools.
+- `native/nvim/` is the editable authority. Neovim loads it directly when available and falls back to an immutable snapshot derived from the same files.
+- Nix owns Neovim installation, plugin installation, the complete packaged Tree-sitter grammar set, and commonly used editor tools.
 - Lua owns plugin loading, configuration, editor behavior, and all Control-layer keybindings.
 - Treat Tree-sitter parsers like plugins.
-- Provide commonly used language servers and formatters with the Neovim package.
+- Provide commonly used language servers and formatters with the Neovim package; use `nil` for Nix and do not expose `nixd` through the editor package.
 - Native Neovim configuration detects/selects tools at runtime.
 - Do not require projects to contain Neovim-specific configuration.
 - Project environments may still provide project-specific tools.
