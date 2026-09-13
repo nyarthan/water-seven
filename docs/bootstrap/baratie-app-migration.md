@@ -213,7 +213,7 @@ git --version
 
 Then remove Xcode through Finder or its supported uninstall path. Do not remove `/Library/Developer/CommandLineTools`.
 
-Unload and remove the stale user LaunchAgent registrations for PostgreSQL, scheduled Git maintenance, and Podman Desktop. Let Water Seven replace Tendril-managed AeroSpace, Raycast, Home Manager applications, and PostgreSQL service declarations. Do not manually edit launchd databases or run a global `sfltool resetbtm`.
+The stale user LaunchAgent registrations and plist files for PostgreSQL, scheduled Git maintenance, and Podman Desktop were removed before activation. Both PostgreSQL services were stopped, while `/opt/homebrew/var/postgresql@16` and `/var/lib/postgresql/17` remain preserved. Let Water Seven replace Tendril-managed AeroSpace, Raycast, and Home Manager applications. Do not manually edit launchd databases or run a global `sfltool resetbtm`.
 
 Remove obsolete application bundles only after their replacements and dependent workflows pass. In particular:
 

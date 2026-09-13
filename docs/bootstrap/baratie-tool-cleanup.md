@@ -39,6 +39,8 @@ Preserve application data and configuration while removing executable installati
 
 The standalone `nixd` Nix profile entry was removed after a headless test confirmed that Water Seven Neovim attaches its bundled `nil` server to this flake. The still-active Tendril Neovim independently bundles its own `nixd`, so removing the redundant profile entry did not interrupt the current editor.
 
+The rejected global npm packages `ccstatusline` and `eas-cli` and the dangling `~/.local/bin/awslocal{,.bat}` links were also removed. No application or credential state was deleted.
+
 ## Deferred items
 
 Do not delete these until their separate migration decisions are complete:
