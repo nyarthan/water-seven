@@ -28,10 +28,8 @@ Ghostty remains the one explicitly trusted Homebrew cask allowed to bypass quara
 - Affinity
 - AusweisApp
 - ChatGPT
-- ScanSnap Home (`fujitsu-scansnap-home`)
 - Helium Browser (`helium-browser`)
 - LibreOffice
-- Microsoft AutoUpdate
 - Microsoft Teams
 - Steam
 - TablePlus
@@ -44,6 +42,8 @@ Ghostty remains the one explicitly trusted Homebrew cask allowed to bypass quara
 ### Documented mutable/manual installations
 
 - Logi Tune, because its Homebrew cask launches an interactive installer
+- Microsoft AutoUpdate, because its self-updater can advance beyond the Homebrew cask
+- ScanSnap Home, because its package cask cannot safely adopt the existing vendor installation
 - YubiKey Manager GUI; retaining the application does not authorize changing a YubiKey
 - Factorio and Hollow Knight: Silksong, managed by Steam
 - P-touch and ScanSnap device state and drivers
@@ -73,6 +73,8 @@ Retire these only through the staged procedure below:
 - Mos, Obsidian, qBittorrent, and VLC from the old personal-host installation; these now belong to the work role
 
 Bitwarden, Slack, and WhatsApp currently have MAS copies. Google Chrome, ProtonVPN, Scroll Reverser, OrbStack, and several cask-selected applications currently have vendor/manual copies. Remove those old application bundles only after the selected replacement opens successfully and mutable state is still available.
+
+AusweisApp 2.5.5 is Intel-only in both official macOS distributions. The App Store and Homebrew cask deliver byte-identical `x86_64` application artifacts, so changing sources does not avoid Rosetta or macOS's future-compatibility warning. Retain the Homebrew cask and re-evaluate when upstream publishes a native Apple-silicon desktop build.
 
 ## Background-service disposition
 
@@ -143,18 +145,16 @@ The casks to migrate are:
 affinity
 ausweisapp
 chatgpt
-fujitsu-scansnap-home
 helium-browser
 libreoffice
-microsoft-auto-update
 microsoft-teams
 tableplus
 yubico-authenticator
 ```
 
-Migrate one token per command. Installer-based casks such as ScanSnap Home, Teams, and Microsoft AutoUpdate may request administrator approval. Do not bypass those prompts.
+Migrate one token per command. The Teams package installer may request administrator approval. Do not bypass that prompt.
 
-Logi Tune is excluded from this list and remains vendor-managed. P-touch Editor remains MAS-managed. Be signed into the App Store before activation so nix-darwin can verify or request P-touch Editor.
+Logi Tune, Microsoft AutoUpdate, and ScanSnap Home are excluded from this list and remain vendor-managed. An attempted ScanSnap Home 4.0.0 cask migration safely stopped because the signed installer refuses to reinstall an existing same-version product. Microsoft AutoUpdate 4.85.26080216 was newer than Homebrew's 4.84.26071119 cask, so it was not downgraded for package-manager ownership. P-touch Editor remains MAS-managed. Be signed into the App Store before activation so nix-darwin can verify or request P-touch Editor.
 
 ## Phase 3: first Water Seven activation
 
