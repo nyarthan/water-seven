@@ -290,6 +290,20 @@
             cp "${tmuxFacts}" "$XDG_CONFIG_HOME/water-seven/generated/tmux.conf"
             tmux -L water-seven-check -f "$source/native/tmux/tmux.conf" new-session -d
             tmux -L water-seven-check list-sessions >/dev/null
+            test "$(tmux -L water-seven-check show-options -gv prefix)" = C-b
+            test "$(tmux -L water-seven-check show-options -gv default-terminal)" = tmux-256color
+            test "$(tmux -L water-seven-check show-options -gv mode-keys)" = vi
+            test "$(tmux -L water-seven-check show-options -gv status-keys)" = vi
+            test "$(tmux -L water-seven-check show-options -gv renumber-windows)" = off
+            test "$(tmux -L water-seven-check show-options -gv focus-events)" = on
+            test "$(tmux -L water-seven-check show-options -gv extended-keys)" = on
+            test "$(tmux -L water-seven-check show-options -gv extended-keys-format)" = csi-u
+            test "$(tmux -L water-seven-check show-options -gv allow-passthrough)" = on
+            test "$(tmux -L water-seven-check show-options -gv set-titles-string)" = '#{pane_title}'
+            tmux -L water-seven-check list-keys -T prefix c | grep -F 'new-window -c "#{pane_current_path}"'
+            tmux -L water-seven-check list-keys -T prefix w | grep -F 'choose-tree -Zw'
+            tmux -L water-seven-check list-keys -T root M-h | grep -F 'select-pane -L'
+            ! tmux -L water-seven-check list-keys | grep -F '$SHELL -lc work'
             tmux -L water-seven-check kill-server
 
             ${lib.optionalString pkgs.stdenv.isLinux ''

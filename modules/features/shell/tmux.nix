@@ -11,10 +11,6 @@ in
     {
       programs.tmux = {
         enable = true;
-        baseIndex = 1;
-        escapeTime = 0;
-        keyMode = "emacs";
-        terminal = "tmux-256color";
         extraConfig = ''
           source-file "${checkout}/native/tmux/tmux.conf"
         '';
