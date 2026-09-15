@@ -87,6 +87,7 @@
         ) "baratie must remain the personal host and striker the work host";
         assert lib.assertMsg (
           deploymentReadyHostNames == [
+            "baratie"
             "mini-merry"
             "mini-sunny"
           ]

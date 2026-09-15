@@ -7,7 +7,7 @@ in
     platform = "darwin";
     system = "aarch64-darwin";
     role = "personal";
-    deploymentReady = false;
+    deploymentReady = true;
 
     os.imports = [
       modules.darwin.shared-workstation
