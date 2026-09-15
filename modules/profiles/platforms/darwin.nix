@@ -1,4 +1,9 @@
-{ config, inputs, ... }:
+{
+  config,
+  inputs,
+  lib,
+  ...
+}:
 let
   username = config.waterSeven.username;
 in
@@ -25,7 +30,12 @@ in
       };
     };
 
-    system.primaryUser = username;
+    system = {
+      activationScripts.setup-homebrew.text = lib.mkBefore ''
+        /bin/bash ${../../../scripts/prepare-darwin-homebrew-taps.sh} /opt/homebrew
+      '';
+      primaryUser = username;
+    };
   };
 
   flake.modules.homeManager.platform-darwin = {

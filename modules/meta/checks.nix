@@ -263,6 +263,29 @@
             bash -n "$source/native/bash/bashrc"
             bash -n "$source/scripts/bootstrap.sh"
             bash -n "$source/scripts/check-darwin-default-browser.sh"
+            bash -n "$source/scripts/prepare-darwin-homebrew-taps.sh"
+
+            homebrew_prefix="$TMPDIR/homebrew-prefix"
+            mkdir -p "$homebrew_prefix/Library/Taps"
+            bash "$source/scripts/prepare-darwin-homebrew-taps.sh" "$homebrew_prefix"
+            test ! -e "$homebrew_prefix/Library/Taps"
+
+            mkdir -p "$homebrew_prefix/Library/Taps"
+            touch "$homebrew_prefix/Library/Taps/preserved"
+            if bash "$source/scripts/prepare-darwin-homebrew-taps.sh" "$homebrew_prefix"; then
+              echo "the Homebrew migration guard removed or accepted a nonempty Taps directory" >&2
+              exit 1
+            fi
+            test -f "$homebrew_prefix/Library/Taps/preserved"
+            rm -rf "$homebrew_prefix/Library/Taps"
+
+            mkdir -p "$homebrew_prefix/declarative-taps"
+            ln -s "$homebrew_prefix/declarative-taps" "$homebrew_prefix/Library/Taps"
+            bash "$source/scripts/prepare-darwin-homebrew-taps.sh" "$homebrew_prefix"
+            test -L "$homebrew_prefix/Library/Taps"
+            rm "$homebrew_prefix/Library/Taps"
+            bash "$source/scripts/prepare-darwin-homebrew-taps.sh" "$homebrew_prefix"
+
             test "$(git config --file ${gitConfig} --get init.defaultBranch)" = main
             test "$(git config --file ${gitConfig} --get pull.rebase)" = true
             test "$(git config --file ${gitConfig} --get push.default)" = simple

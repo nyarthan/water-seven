@@ -162,7 +162,7 @@ After cask ownership is prepared and the build succeeds:
 
 1. Review the complete diff and expected package removals.
 2. Set `baratie.deploymentReady = true` in a dedicated commit.
-3. Run guided bootstrap for `baratie`.
+3. Run guided bootstrap for `baratie`. Before nix-homebrew claims immutable tap ownership, the activation removes a legacy `Library/Taps` directory only when it is empty; files or existing taps stop activation for explicit reconciliation.
 4. Complete interactive TCC, default-browser, network-extension, App Store, and installer prompts.
 5. Reboot before cleanup.
 
