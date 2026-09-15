@@ -17,6 +17,7 @@
         else
           config.flake.darwinConfigurations.${representativeHostName};
       home = representativeSystem.config.home-manager.users.${config.waterSeven.username};
+      homePackageNames = map (package: package.pname or (lib.getName package)) home.home.packages;
       darwinSystemPackages = representativeSystem.config.environment.systemPackages;
       darwinPackageNames = map (package: package.pname or (lib.getName package)) darwinSystemPackages;
       browserHandlers = lib.attrByPath [
@@ -90,6 +91,19 @@
             "mini-sunny"
           ]
         ) "Only reviewed hosts may be deployment-ready during migration";
+        assert lib.assertMsg home.programs.atuin.settings.enter_accept
+          "Atuin must retain enter_accept behavior during migration";
+        assert lib.assertMsg (
+          representativeHost.role != "personal"
+          || (
+            builtins.elem "twg" homePackageNames
+            && lib.any (
+              package:
+              (package.pname or (lib.getName package)) == "pi-coding-agent"
+              && lib.versionAtLeast (package.version or "0") "0.85.1"
+            ) home.home.packages
+          )
+        ) "Personal hosts must preserve TWG and pi-coding-agent without downgrading pi";
         assert lib.assertMsg (
           representativeHost.platform != "darwin"
           || (

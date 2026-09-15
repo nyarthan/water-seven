@@ -88,7 +88,7 @@ Keep:
 - OrbStack privileged helper
 - ProtonVPN network extension
 - Steam support and cleanup processes required by the selected games
-- `com.atlassian.twg.upkeep` temporarily, until TWG ownership is designed
+- Vendor-managed TWG state and `com.atlassian.twg.upkeep`; Water Seven exposes only a narrow wrapper for its updater-managed executable
 
 Retire:
 

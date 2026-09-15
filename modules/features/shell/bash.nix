@@ -33,6 +33,7 @@ in
           enableBashIntegration = false;
           settings = {
             auto_sync = false;
+            enter_accept = true;
             update_check = false;
           };
         };

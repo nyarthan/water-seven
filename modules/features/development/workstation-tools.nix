@@ -47,9 +47,31 @@
             ++ lib.optionals pkgs.stdenv.isLinux [ pkgs.mole ];
         };
 
-      role-personal = { pkgs, ... }: {
-        home.packages = [ (pkgs.callPackage ../../../packages/linearis.nix { }) ];
-      };
+      role-personal =
+        { pkgs, ... }:
+        let
+          unstable = import inputs.nixpkgs-unstable {
+            inherit (pkgs.stdenv.hostPlatform) system;
+          };
+          twg = pkgs.writeShellApplication {
+            name = "twg";
+            text = ''
+              twg_binary="$HOME/.local/share/mise/installs/twg/latest/twg"
+              if [[ ! -x "$twg_binary" ]]; then
+                echo "error: vendor-managed TWG is unavailable at $twg_binary" >&2
+                exit 127
+              fi
+              exec "$twg_binary" "$@"
+            '';
+          };
+        in
+        {
+          home.packages = [
+            (pkgs.callPackage ../../../packages/linearis.nix { })
+            unstable.pi-coding-agent
+            twg
+          ];
+        };
     };
   };
 }
