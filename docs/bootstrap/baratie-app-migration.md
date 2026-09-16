@@ -165,7 +165,18 @@ After cask ownership is prepared and the build succeeds:
 2. Set `baratie.deploymentReady = true` in a dedicated commit.
 3. Run guided bootstrap for `baratie`. Before nix-homebrew claims immutable tap ownership, the activation removes a legacy `Library/Taps` directory only when it is empty; files or existing taps stop activation for explicit reconciliation.
 4. Complete interactive TCC, default-browser, network-extension, App Store, and installer prompts.
-5. Reboot before cleanup.
+5. Fully quit Slack, then install the Water Seven Slack policy once:
+
+   ```bash
+   open /etc/water-seven/profiles/slack-disable-auto-update.mobileconfig
+   ```
+
+   In System Settings → General → Device Management, review and install **Water Seven: disable Slack self-updates**. macOS intentionally requires interactive approval for a user-installed configuration profile. The profile enforces Slack's current `AutoUpdate=false` policy because the read-only Nix application—not Slack's Squirrel helper—owns upgrades. Reopen Slack after installing it, then verify both the forced status and value:
+
+   ```bash
+   verify-slack-update-policy
+   ```
+6. Reboot before cleanup.
 
 Verify retained applications without changing their data:
 

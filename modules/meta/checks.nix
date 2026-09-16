@@ -31,6 +31,12 @@
       darwinCasks = representativeSystem.config.homebrew.casks;
       darwinCaskNames = map (cask: cask.name) darwinCasks;
       darwinMasApps = representativeSystem.config.homebrew.masApps;
+      slackAutoUpdateProfile = lib.attrByPath [
+        "environment"
+        "etc"
+        "water-seven/profiles/slack-disable-auto-update.mobileconfig"
+        "source"
+      ] null representativeSystem.config;
       personalCaskNames = [
         "affinity"
         "ausweisapp"
@@ -53,6 +59,7 @@
         "proton-vpn"
         "scroll-reverser"
         "slack"
+        "verify-slack-update-policy"
         "whatsapp-for-mac"
       ];
       deploymentReadyHostNames = lib.attrNames (
@@ -121,6 +128,15 @@
             ) home.home.packages
           )
         ) "Personal hosts must preserve TWG and pi-coding-agent without downgrading pi";
+        assert lib.assertMsg (
+          representativeHost.role != "personal"
+          || (
+            slackAutoUpdateProfile != null
+            && lib.any (
+              step: lib.hasInfix "Slack" step && lib.hasInfix "slack-disable-auto-update.mobileconfig" step
+            ) representativeSystem.config.waterSeven.bootstrap.followUpSteps
+          )
+        ) "Personal hosts must disable Slack self-updates through an approved managed profile";
         assert lib.assertMsg (
           representativeHost.platform != "darwin"
           || (
@@ -262,6 +278,7 @@
               home.programs.tmux.package
               pkgs.bash
               pkgs.nodejs_24
+              pkgs.python3
               workmuxPackage
             ]
             ++ lib.optionals pkgs.stdenv.isLinux [
@@ -333,6 +350,21 @@
             cp ${workmuxConfig} "$XDG_CONFIG_HOME/workmux/config.yaml"
             workmux --version
             workmux completions bash >/dev/null
+
+            ${lib.optionalString (slackAutoUpdateProfile != null) ''
+              python - ${slackAutoUpdateProfile} <<'PY'
+              import plistlib
+              import sys
+
+              with open(sys.argv[1], "rb") as profile_file:
+                  profile = plistlib.load(profile_file)
+
+              assert profile["PayloadIdentifier"] == "dev.water-seven.slack.disable-auto-update"
+              preferences, = profile["PayloadContent"]
+              assert preferences["PayloadType"] == "com.tinyspeck.slackmacgap"
+              assert preferences["AutoUpdate"] is False
+              PY
+            ''}
 
             mkdir -p "$XDG_DATA_HOME/nvim/site/pack"
             ln -s "${neovimPlugins}" "$XDG_DATA_HOME/nvim/site/pack/hm"
