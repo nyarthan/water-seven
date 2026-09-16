@@ -50,9 +50,6 @@
       role-personal =
         { pkgs, ... }:
         let
-          unstable = import inputs.nixpkgs-unstable {
-            inherit (pkgs.stdenv.hostPlatform) system;
-          };
           twg = pkgs.writeShellApplication {
             name = "twg";
             text = ''
@@ -68,7 +65,6 @@
         {
           home.packages = [
             (pkgs.callPackage ../../../packages/linearis.nix { })
-            unstable.pi-coding-agent
             twg
           ];
         };

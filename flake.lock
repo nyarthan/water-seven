@@ -175,7 +175,8 @@
         "nix-homebrew": "nix-homebrew",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
-        "sops-nix": "sops-nix"
+        "sops-nix": "sops-nix",
+        "workmux": "workmux"
       }
     },
     "sops-nix": {
@@ -195,6 +196,27 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
+        "type": "github"
+      }
+    },
+    "workmux": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789534355,
+        "narHash": "sha256-0+kYlhIkYfCavnbealgmXhtEZeYdrp5lHf06OA4/6y0=",
+        "owner": "raine",
+        "repo": "workmux",
+        "rev": "b26022043336d9c18d6b03260fbbac2859e1ed08",
+        "type": "github"
+      },
+      "original": {
+        "owner": "raine",
+        "ref": "v0.1.263",
+        "repo": "workmux",
         "type": "github"
       }
     }

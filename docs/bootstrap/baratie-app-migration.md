@@ -9,7 +9,6 @@ Never use Homebrew `zap` cleanup or an application-cleaner tool during migration
 ### Nix-owned
 
 - Bitwarden
-- Brave
 - Google Chrome
 - OrbStack
 - ProtonVPN
@@ -27,6 +26,7 @@ Ghostty remains the one explicitly trusted Homebrew cask allowed to bypass quara
 
 - Affinity
 - AusweisApp
+- Brave
 - ChatGPT
 - Helium Browser (`helium-browser`)
 - LibreOffice
@@ -144,6 +144,7 @@ The casks to migrate are:
 ```text
 affinity
 ausweisapp
+brave-browser
 chatgpt
 helium-browser
 libreoffice
@@ -152,7 +153,7 @@ tableplus
 yubico-authenticator
 ```
 
-Migrate one token per command. The Teams package installer may request administrator approval. Do not bypass that prompt.
+Migrate one token per command. Brave's Homebrew cask preserves its upstream macOS signature, unlike the Nix package's unsigned app bundle; both use the same bundle identifier and user profile. The Teams package installer may request administrator approval. Do not bypass that prompt.
 
 Logi Tune, Microsoft AutoUpdate, and ScanSnap Home are excluded from this list and remain vendor-managed. An attempted ScanSnap Home 4.0.0 cask migration safely stopped because the signed installer refuses to reinstall an existing same-version product. Microsoft AutoUpdate 4.85.26080216 was newer than Homebrew's 4.84.26071119 cask, so it was not downgraded for package-manager ownership. P-touch Editor remains MAS-managed. Be signed into the App Store before activation so nix-darwin can verify or request P-touch Editor.
 

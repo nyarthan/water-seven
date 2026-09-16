@@ -1,0 +1,38 @@
+--- a/src/config.rs
++++ b/src/config.rs
+@@ -659,0 +660,5 @@
++    /// Whether to offer interactive agent hook and skill setup. Default: true.
++    /// Set to false when these resources are managed declaratively. Global-only.
++    #[serde(default)]
++    pub setup_wizard: Option<bool>,
++
+@@ -2687,0 +2693,4 @@
++
++        // Setup policy is global-only. A repository must not opt back into
++        // mutating user-level agent configuration.
++        merged.setup_wizard = self.setup_wizard;
+@@ -6148,0 +6158,20 @@
++    fn setup_wizard_can_be_disabled() {
++        let config: Config = serde_yaml::from_str("setup_wizard: false").unwrap();
++        assert_eq!(config.setup_wizard, Some(false));
++    }
++
++    #[test]
++    fn setup_wizard_policy_is_global_only() {
++        let global = Config {
++            setup_wizard: Some(false),
++            ..Default::default()
++        };
++        let project = Config {
++            setup_wizard: Some(true),
++            ..Default::default()
++        };
++
++        assert_eq!(global.merge(project).setup_wizard, Some(false));
++    }
++
++    #[test]
+--- a/src/cli.rs
++++ b/src/cli.rs
+@@ -996,0 +997 @@
++        && cfg.setup_wizard.unwrap_or(true)

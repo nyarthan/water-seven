@@ -1,0 +1,23 @@
+--- a/src/command/dashboard/keymap.rs
++++ b/src/command/dashboard/keymap.rs
+@@ -68 +68 @@
+-        KeyCode::Char('b') => Some(Action::ShowBaseBranchPicker),
++        KeyCode::Char('b') if key.modifiers.is_empty() => Some(Action::ShowBaseBranchPicker),
+@@ -112 +112 @@
+-        KeyCode::Char('b') => Some(Action::ShowBaseBranchPicker),
++        KeyCode::Char('b') if key.modifiers.is_empty() => Some(Action::ShowBaseBranchPicker),
+@@ -344,0 +345,14 @@
++    }
++
++    #[test]
++    fn test_ctrl_b_is_not_treated_as_base_branch_key() {
++        let plain_b = KeyEvent::new(KeyCode::Char('b'), KeyModifiers::NONE);
++        let ctrl_b = KeyEvent::new(KeyCode::Char('b'), KeyModifiers::CONTROL);
++
++        for context in [Context::DashboardNormal, Context::WorktreeNormal] {
++            assert_eq!(
++                action_for_key(context, plain_b),
++                Some(Action::ShowBaseBranchPicker)
++            );
++            assert_eq!(action_for_key(context, ctrl_b), None);
++        }

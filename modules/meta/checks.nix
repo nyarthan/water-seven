@@ -43,6 +43,7 @@
         "yubico-authenticator"
       ];
       expectedDarwinCaskNames = [
+        "brave-browser"
         "ghostty"
       ]
       ++ lib.optionals (representativeHost.role == "personal") personalCaskNames;
@@ -94,6 +95,21 @@
         ) "Only reviewed hosts may be deployment-ready during migration";
         assert lib.assertMsg home.programs.atuin.settings.enter_accept
           "Atuin must retain enter_accept behavior during migration";
+        assert lib.assertMsg (lib.versionAtLeast home.programs.mise.package.version "2026.7.0")
+          "Mise must satisfy the minimum required version";
+        assert lib.assertMsg (
+          builtins.elem "workmux" homePackageNames
+          && builtins.elem "pi-coding-agent" homePackageNames
+          && home.programs.bash.shellAliases.wm == "workmux"
+          && lib.hasInfix "agent: pi" home.xdg.configFile."workmux/config.yaml".text
+          && lib.hasInfix "mode: window" home.xdg.configFile."workmux/config.yaml".text
+          && lib.hasInfix "setup_wizard: false" home.xdg.configFile."workmux/config.yaml".text
+          &&
+            lib.hasInfix "/${config.waterSeven.projectsDirectory}/worktrees/{project}"
+              home.xdg.configFile."workmux/config.yaml".text
+          && home.home.file ? ".pi/agent/extensions/workmux-status.ts"
+          && home.home.file ? ".agents/skills/workmux"
+        ) "Shared workstations must provide the declarative Workmux and Pi workflow";
         assert lib.assertMsg (
           representativeHost.role != "personal"
           || (
@@ -120,9 +136,9 @@
               lib.subtractLists darwinPackageNames [
                 "aerospace"
                 "bitwarden-desktop"
-                "brave"
                 "raycast"
               ] == [ ]
+              && !(builtins.elem "brave" darwinPackageNames)
               && darwinBrewNames == lib.optionals (representativeHost.role == "work") [ "mole" ]
               && lib.sort builtins.lessThan darwinCaskNames == lib.sort builtins.lessThan expectedDarwinCaskNames
               &&
@@ -212,12 +228,19 @@
             touch "$out"
           '';
 
+      neovimInit = pkgs.writeText "water-seven-neovim-init.lua" home.programs.neovim.initLua;
       neovimPlugins = home.xdg.dataFile."nvim/site/pack/hm".source;
       tmuxFacts =
         pkgs.writeText "water-seven-tmux.conf"
           home.xdg.configFile."water-seven/generated/tmux.conf".text;
       gitConfig = home.xdg.configFile."git/config".source;
       miseConfig = home.xdg.configFile."mise/config.toml".source;
+      workmuxConfig =
+        pkgs.writeText "water-seven-workmux.yaml"
+          home.xdg.configFile."workmux/config.yaml".text;
+      workmuxExtension = home.home.file.".pi/agent/extensions/workmux-status.ts".source;
+      workmuxSkill = home.home.file.".agents/skills/workmux".source;
+      workmuxPackage = lib.findFirst (package: lib.getName package == "workmux") null home.home.packages;
       ghosttyFacts = pkgs.writeText "water-seven-ghostty.conf" ''
         config-file = ${source}/native/ghostty/linux.conf
         keybind = ctrl+shift+t=unbind
@@ -238,6 +261,8 @@
               home.programs.neovim.finalPackage
               home.programs.tmux.package
               pkgs.bash
+              pkgs.nodejs_24
+              workmuxPackage
             ]
             ++ lib.optionals pkgs.stdenv.isLinux [
               pkgs.ghostty
@@ -296,10 +321,31 @@
             grep -Fx '[tools]' ${miseConfig}
             ! grep -F '=' ${miseConfig}
 
+            grep -Fx 'agent: pi' ${workmuxConfig}
+            grep -Fx 'mode: window' ${workmuxConfig}
+            grep -Fx 'setup_wizard: false' ${workmuxConfig}
+            grep -Fx 'worktree_dir: "${home.home.homeDirectory}/${config.waterSeven.projectsDirectory}/worktrees/{project}"' ${workmuxConfig}
+            grep -F 'pi.exec("workmux", ["register-agent"])' ${workmuxExtension}
+            grep -F 'pi.on("ui_prompt_start"' ${workmuxExtension}
+            grep -Fx 'name: workmux' ${workmuxSkill}/SKILL.md
+            node --test "$source/native/pi/extensions/workmux-status.test.mjs"
+            mkdir -p "$XDG_CONFIG_HOME/workmux"
+            cp ${workmuxConfig} "$XDG_CONFIG_HOME/workmux/config.yaml"
+            workmux --version
+            workmux completions bash >/dev/null
+
             mkdir -p "$XDG_DATA_HOME/nvim/site/pack"
             ln -s "${neovimPlugins}" "$XDG_DATA_HOME/nvim/site/pack/hm"
+            cat > "$XDG_CONFIG_HOME/nvim/init.lua" <<'LUA'
+            vim.g.water_seven_config_loaded_before_init = vim.g.water_seven_config_directory ~= nil
+            dofile("${neovimInit}")
+            LUA
             cat > neovim-check.lua <<'LUA'
             local ok, verification_error = xpcall(function()
+              assert(
+                not vim.g.water_seven_config_loaded_before_init,
+                "the Water Seven config loaded before the managed init.lua"
+              )
               assert(vim.g.water_seven_config_directory, "the selected config did not finish loading")
               assert(
                 vim.fn.filereadable(vim.g.water_seven_config_directory .. "/init.lua") == 1,
@@ -320,10 +366,10 @@
             LUA
 
             export NVIM_CONFIG_DIR="$source/native/nvim"
-            nvim --headless -l neovim-check.lua
+            nvim --headless "+luafile neovim-check.lua"
 
             export NVIM_CONFIG_DIR="$TMPDIR/missing-neovim-config"
-            nvim --headless -l neovim-check.lua
+            nvim --headless "+luafile neovim-check.lua"
 
             cp "${tmuxFacts}" "$XDG_CONFIG_HOME/water-seven/generated/tmux.conf"
             tmux -L water-seven-check -f "$source/native/tmux/tmux.conf" new-session -d
@@ -339,7 +385,8 @@
             test "$(tmux -L water-seven-check show-options -gv allow-passthrough)" = on
             test "$(tmux -L water-seven-check show-options -gv set-titles-string)" = '#{pane_title}'
             tmux -L water-seven-check list-keys -T prefix c | grep -F 'new-window -c "#{pane_current_path}"'
-            tmux -L water-seven-check list-keys -T prefix w | grep -F 'choose-tree -Zw'
+            tmux -L water-seven-check list-keys -T prefix w | grep -F 'display-popup'
+            tmux -L water-seven-check list-keys -T prefix w | grep -F 'workmux dashboard'
             tmux -L water-seven-check list-keys -T root M-h | grep -F 'select-pane -L'
             ! tmux -L water-seven-check list-keys | grep -F '$SHELL -lc work'
             tmux -L water-seven-check kill-server

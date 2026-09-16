@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, inputs, ... }:
 let
   projectsDirectory = config.waterSeven.projectsDirectory;
 in
@@ -7,6 +7,7 @@ in
     { config, pkgs, ... }:
     let
       checkout = "${config.home.homeDirectory}/${projectsDirectory}/water-seven";
+      unstable = import inputs.nixpkgs-unstable { inherit (pkgs.stdenv.hostPlatform) system; };
     in
     {
       home = {
@@ -52,6 +53,7 @@ in
         mise = {
           enable = true;
           enableBashIntegration = false;
+          package = unstable.mise;
         };
         starship = {
           enable = true;

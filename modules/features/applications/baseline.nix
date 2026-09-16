@@ -13,10 +13,8 @@
       ];
 
       fonts.packages = [ pkgs.iosevka ];
-      environment.systemPackages = with pkgs; [
-        bitwarden-desktop
-        brave
-      ];
+      environment.systemPackages = [ pkgs.bitwarden-desktop ];
+      homebrew.casks = [ "brave-browser" ];
     };
 
     homeManager.shared-workstation = { pkgs, ... }: {
