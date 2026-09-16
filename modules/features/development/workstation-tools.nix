@@ -64,6 +64,8 @@
         in
         {
           home.packages = [
+            pkgs.gh
+            pkgs.lazygit
             (pkgs.callPackage ../../../packages/linearis.nix { })
             twg
           ];
