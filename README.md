@@ -22,6 +22,13 @@ configurations.
 Non-flake modules, native application configuration, package expressions, and
 test fixtures must live outside `modules/`.
 
+## Agent configuration
+
+Harness-neutral skills and context live under [`native/agents/`](native/agents/).
+Pi-specific settings, extensions, and themes live under
+[`native/pi/`](native/pi/). Home Manager deploys both collections while leaving
+credentials, sessions, trust decisions, and caches under their runtime owners.
+
 ## Development
 
 ```console

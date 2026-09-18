@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": [
+    "@nyarthan/tsconfig/base",
+    "@nyarthan/tsconfig/environment/node",
+    "@nyarthan/tsconfig/module/nodenext",
+    "@nyarthan/tsconfig/emit/no-emit"
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
+  "include": ["./extensions"]
+}

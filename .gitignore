@@ -2,3 +2,5 @@
 result
 result-*
 *.qcow2
+
+/native/pi/node_modules/

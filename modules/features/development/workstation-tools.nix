@@ -64,9 +64,11 @@
         in
         {
           home.packages = [
+            pkgs.dust
             pkgs.gh
             pkgs.lazygit
             (pkgs.callPackage ../../../packages/linearis.nix { })
+            (pkgs.callPackage ../../../packages/opencode-v2.nix { })
             twg
           ];
         };

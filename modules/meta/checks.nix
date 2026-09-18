@@ -114,8 +114,10 @@
           &&
             lib.hasInfix "/${config.waterSeven.projectsDirectory}/worktrees/{project}"
               home.xdg.configFile."workmux/config.yaml".text
-          && home.home.file ? ".pi/agent/extensions/workmux-status.ts"
-          && home.home.file ? ".agents/skills/workmux"
+          && home.home.file ? ".pi/agent/settings.json"
+          && home.home.file ? ".pi/agent/extensions"
+          && home.home.file ? ".pi/agent/node_modules"
+          && home.home.file ? ".agents/skills"
         ) "Shared workstations must provide the declarative Workmux and Pi workflow";
         assert lib.assertMsg (
           representativeHost.role != "personal"
@@ -254,8 +256,15 @@
       workmuxConfig =
         pkgs.writeText "water-seven-workmux.yaml"
           home.xdg.configFile."workmux/config.yaml".text;
-      workmuxExtension = home.home.file.".pi/agent/extensions/workmux-status.ts".source;
-      workmuxSkill = home.home.file.".agents/skills/workmux".source;
+      piSettings = home.home.file.".pi/agent/settings.json".source;
+      piExtensions = home.home.file.".pi/agent/extensions".source;
+      piNodeModules = home.home.file.".pi/agent/node_modules".source;
+      agentSkills = home.home.file.".agents/skills".source;
+      workmuxExtension = "${piExtensions}/workmux-status.ts";
+      workmuxSkill = "${agentSkills}/workmux";
+      piPackage = lib.findFirst (
+        package: lib.getName package == "pi-coding-agent"
+      ) null home.home.packages;
       workmuxPackage = lib.findFirst (package: lib.getName package == "workmux") null home.home.packages;
       ghosttyFacts = pkgs.writeText "water-seven-ghostty.conf" ''
         config-file = ${source}/native/ghostty/linux.conf
@@ -277,8 +286,10 @@
               home.programs.neovim.finalPackage
               home.programs.tmux.package
               pkgs.bash
+              pkgs.jq
               pkgs.nodejs_24
               pkgs.python3
+              piPackage
               workmuxPackage
             ]
             ++ lib.optionals pkgs.stdenv.isLinux [
@@ -342,10 +353,28 @@
             grep -Fx 'mode: window' ${workmuxConfig}
             grep -Fx 'setup_wizard: false' ${workmuxConfig}
             grep -Fx 'worktree_dir: "${home.home.homeDirectory}/${config.waterSeven.projectsDirectory}/worktrees/{project}"' ${workmuxConfig}
+            test "$(jq -r .lastChangelogVersion ${piSettings})" = "${piPackage.version}"
+            test "$(jq -r .theme ${piSettings})" = vesper
+            grep -F 'from "effect"' ${piExtensions}/ask-user-question.ts
+            test -f ${piNodeModules}/effect/package.json
             grep -F 'pi.exec("workmux", ["register-agent"])' ${workmuxExtension}
             grep -F 'pi.on("ui_prompt_start"' ${workmuxExtension}
             grep -Fx 'name: workmux' ${workmuxSkill}/SKILL.md
+            for skill in ${agentSkills}/*; do
+              test -f "$skill/SKILL.md"
+              grep -Eq '^name: [a-z0-9]+(-[a-z0-9]+)*$' "$skill/SKILL.md"
+              grep -Eq '^description:' "$skill/SKILL.md"
+            done
             node --test "$source/native/pi/extensions/workmux-status.test.mjs"
+
+            mkdir -p "$HOME/.pi/agent" "$HOME/.agents"
+            ln -s ${piExtensions} "$HOME/.pi/agent/extensions"
+            ln -s ${piNodeModules} "$HOME/.pi/agent/node_modules"
+            ln -s ${agentSkills} "$HOME/.agents/skills"
+            cp ${piSettings} "$HOME/.pi/agent/settings.json"
+            printf '%s\n' '{"type":"get_state"}' \
+              | PI_OFFLINE=1 pi --mode rpc --no-session \
+              | grep -F '"success":true'
             mkdir -p "$XDG_CONFIG_HOME/workmux"
             cp ${workmuxConfig} "$XDG_CONFIG_HOME/workmux/config.yaml"
             workmux --version
