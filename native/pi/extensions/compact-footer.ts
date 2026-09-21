@@ -1,6 +1,7 @@
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 import { basename } from "node:path";
+import { codexAccountForProvider } from "./shared/codex-account-routing.js";
 
 const CODEX_USAGE_URL = "https://chatgpt.com/backend-api/wham/usage";
 const SEPARATOR = " · ";
@@ -36,7 +37,7 @@ function isCodexSubscription(
 ): model is ActiveModel {
   return Boolean(
     model &&
-    model.provider === "openai-codex" &&
+    codexAccountForProvider(model.provider) &&
     model.api === "openai-codex-responses" &&
     ctx.modelRegistry.isUsingOAuth(model),
   );
@@ -199,7 +200,9 @@ export default function compactFooter(pi: ExtensionAPI) {
         render(width: number): string[] {
           const branch = footerData.getGitBranch();
           const model = activeModel;
-          const modelLabel = theme.fg("text", model?.id ?? "no-model");
+          const account = model ? codexAccountForProvider(model.provider) : undefined;
+          const modelName = `${model?.id ?? "no-model"}${account ? ` [${account}]` : ""}`;
+          const modelLabel = theme.fg("text", modelName);
           const thinking = model?.reasoning ? theme.fg("accent", pi.getThinkingLevel()) : "";
           const limits =
             isCodexSubscription(ctx, model) && codexUsage

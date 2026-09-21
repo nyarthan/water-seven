@@ -355,7 +355,10 @@
             grep -Fx 'worktree_dir: "${home.home.homeDirectory}/${config.waterSeven.projectsDirectory}/worktrees/{project}"' ${workmuxConfig}
             test "$(jq -r .lastChangelogVersion ${piSettings})" = "${piPackage.version}"
             test "$(jq -r .theme ${piSettings})" = vesper
+            jq -e '.enabledModels | index("openai-codex-work/gpt-5.6-sol")' ${piSettings} >/dev/null
             grep -F 'from "effect"' ${piExtensions}/ask-user-question.ts
+            grep -F 'pi.registerProvider(createCodexProvider("work"))' ${piExtensions}/codex-accounts.ts
+            test -f ${piNodeModules}/@earendil-works/pi-ai/package.json
             test -f ${piNodeModules}/effect/package.json
             grep -F 'pi.exec("workmux", ["register-agent"])' ${workmuxExtension}
             grep -F 'pi.on("ui_prompt_start"' ${workmuxExtension}
@@ -365,7 +368,9 @@
               grep -Eq '^name: [a-z0-9]+(-[a-z0-9]+)*$' "$skill/SKILL.md"
               grep -Eq '^description:' "$skill/SKILL.md"
             done
-            node --test "$source/native/pi/extensions/workmux-status.test.mjs"
+            node --test \
+              "$source/native/pi/extensions/codex-accounts.test.mjs" \
+              "$source/native/pi/extensions/workmux-status.test.mjs"
 
             mkdir -p "$HOME/.pi/agent" "$HOME/.agents"
             ln -s ${piExtensions} "$HOME/.pi/agent/extensions"
