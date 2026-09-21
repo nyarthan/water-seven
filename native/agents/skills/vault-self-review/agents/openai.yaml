@@ -1,4 +1,0 @@
-interface:
-  display_name: "Vault Self-Review"
-  short_description: "Audit agent traces into verified vault fixes"
-  default_prompt: "Use $vault-self-review to audit a bounded sample of agent conversations and turn verified process findings into vault improvements."

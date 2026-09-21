@@ -1,117 +1,46 @@
 {
-  "version": 1,
+  "version": 2,
   "sources": [
     {
       "repository": "https://github.com/mattpocock/skills",
       "license": "licenses/mattpocock-skills-MIT.txt",
-      "provenance": "Imported from the previous skill installer state; recordedFolderHash is the installer-recorded content hash.",
+      "provenance": "Locally maintained derivatives. Attribution is retained because source wording or substantial structure remains; upstream folder hashes no longer describe the local content.",
       "skills": [
         {
-          "name": "code-review",
-          "upstreamPath": "skills/engineering/code-review/SKILL.md",
-          "recordedFolderHash": "956ad60120cc6e88a9a879a8eaa26e19026b974d"
+          "name": "agent-guidance",
+          "upstreamPath": "skills/productivity/writing-for-agents"
+        },
+        {
+          "name": "architecture-assessment",
+          "upstreamPath": "skills/engineering/improve-codebase-architecture"
+        },
+        {
+          "name": "bug-diagnosis",
+          "upstreamPath": "skills/engineering/diagnosing-bugs"
         },
         {
           "name": "codebase-design",
-          "upstreamPath": "skills/engineering/codebase-design/SKILL.md",
-          "recordedFolderHash": "7347168e8de2de105e2e55f07ecb33d25fd56f44"
+          "upstreamPath": "skills/engineering/codebase-design"
         },
         {
-          "name": "diagnosing-bugs",
-          "upstreamPath": "skills/engineering/diagnosing-bugs/SKILL.md",
-          "recordedFolderHash": "27bf00e3ccc53491e938e8b5602be39238ce68f3"
+          "name": "decision-grilling",
+          "upstreamPath": "skills/productivity/grilling"
+        },
+        {
+          "name": "design-prototyping",
+          "upstreamPath": "skills/engineering/prototype"
         },
         {
           "name": "domain-modeling",
-          "upstreamPath": "skills/engineering/domain-modeling/SKILL.md",
-          "recordedFolderHash": "959e63161ff78b4b1cd553b2c0e09e0c68418e5f"
+          "upstreamPath": "skills/engineering/domain-modeling"
         },
         {
-          "name": "grill-me",
-          "upstreamPath": "skills/productivity/grill-me/SKILL.md",
-          "recordedFolderHash": "c817f6f36acd483294144694a935a76d3e3eb101"
+          "name": "session-handoff",
+          "upstreamPath": "skills/productivity/handoff"
         },
         {
-          "name": "grill-with-docs",
-          "upstreamPath": "skills/engineering/grill-with-docs/SKILL.md",
-          "recordedFolderHash": "5fdcdeedf2d0c73b3ecb1da0a464dd885590f8d6"
-        },
-        {
-          "name": "grilling",
-          "upstreamPath": "skills/productivity/grilling/SKILL.md",
-          "recordedFolderHash": "fd99bcbb818f7ef766b83656fb5fac0b58e223ad"
-        },
-        {
-          "name": "handoff",
-          "upstreamPath": "skills/productivity/handoff/SKILL.md",
-          "recordedFolderHash": "184d485ae68a2132893a94239b2b85d253e6152b"
-        },
-        {
-          "name": "improve-codebase-architecture",
-          "upstreamPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
-          "recordedFolderHash": "bce229692e60dff3462e49bc5e774e83bef348e6"
-        },
-        {
-          "name": "prototype",
-          "upstreamPath": "skills/engineering/prototype/SKILL.md",
-          "recordedFolderHash": "57569dda16077a016b8fb82494dbf9f6430d7cc4"
-        },
-        {
-          "name": "research",
-          "upstreamPath": "skills/engineering/research/SKILL.md",
-          "recordedFolderHash": "972a34cd8128b7952b7eb279b06715862db906a7"
-        },
-        {
-          "name": "resolving-merge-conflicts",
-          "upstreamPath": "skills/engineering/resolving-merge-conflicts/SKILL.md",
-          "recordedFolderHash": "6aa1ed0b40fac0ebea5c0cf6f2addf82c99b6323"
-        },
-        {
-          "name": "tdd",
-          "upstreamPath": "skills/engineering/tdd/SKILL.md",
-          "recordedFolderHash": "423f3cc2bccf3b0ed426fb35eeb4b38d9188a343"
-        },
-        {
-          "name": "teach",
-          "upstreamPath": "skills/productivity/teach/SKILL.md",
-          "recordedFolderHash": "15f8c86d39ef834e643d092733ca899b59049067"
-        },
-        {
-          "name": "to-questionnaire",
-          "upstreamPath": "skills/productivity/to-questionnaire/SKILL.md",
-          "recordedFolderHash": "7c4d04fb4d77824d7d98433ee7a8b17dde5efa13"
-        },
-        {
-          "name": "to-spec",
-          "upstreamPath": "skills/engineering/to-spec/SKILL.md",
-          "recordedFolderHash": "dc32a36159f99c854cb470f371106cd38513a15f"
-        },
-        {
-          "name": "wait-what",
-          "upstreamPath": "skills/productivity/wait-what/SKILL.md",
-          "recordedFolderHash": "6abe708f1bf253158a037ac49faea2944e2809dc"
-        },
-        {
-          "name": "wayfinder",
-          "upstreamPath": "skills/engineering/wayfinder/SKILL.md",
-          "recordedFolderHash": "48c3a8b0a9705d6310d37f7f9b53bcb2c55955c7"
-        },
-        {
-          "name": "writing-for-agents",
-          "upstreamPath": "skills/productivity/writing-for-agents/SKILL.md",
-          "recordedFolderHash": "bd9c9c4762db0a9a094fd419316ebd4b0444d06e"
-        }
-      ]
-    },
-    {
-      "repository": "https://github.com/testdino-hq/playwright-skill",
-      "license": "skills/playwright-skill/LICENSE",
-      "provenance": "Imported from the previous skill installer state; recordedFolderHash is the installer-recorded content hash.",
-      "skills": [
-        {
-          "name": "playwright-skill",
-          "upstreamPath": "SKILL.md",
-          "recordedFolderHash": "d3be9ca4d7303e2aee3eba4842963abf573117b0"
+          "name": "test-driven-development",
+          "upstreamPath": "skills/engineering/tdd"
         }
       ]
     },
@@ -119,45 +48,41 @@
       "repository": "https://github.com/raine/workmux",
       "revision": "b26022043336d9c18d6b03260fbbac2859e1ed08",
       "license": "licenses/workmux-MIT.txt",
+      "provenance": "Locally maintained derivatives. Workflow structure remains attributed; live Workmux help is authoritative for command syntax.",
       "skills": [
         {
-          "name": "coordinator",
-          "upstreamPath": "skills/coordinator"
+          "name": "branch-integration",
+          "upstreamPaths": [
+            "skills/merge",
+            "skills/rebase"
+          ]
         },
         {
-          "name": "merge",
-          "upstreamPath": "skills/merge"
-        },
-        {
-          "name": "open-pr",
+          "name": "pull-request-publication",
           "upstreamPath": "skills/open-pr"
         },
         {
-          "name": "rebase",
-          "upstreamPath": "skills/rebase"
-        },
-        {
-          "name": "workmux",
-          "upstreamPath": "skills/workmux"
-        },
-        {
-          "name": "worktree",
-          "upstreamPath": "skills/worktree"
+          "name": "worktree-orchestration",
+          "upstreamPaths": [
+            "skills/coordinator",
+            "skills/worktree"
+          ]
         }
       ]
     },
     {
       "repository": "water-seven",
-      "provenance": "No upstream installer provenance was recorded; imported from the workstation as locally maintained skills.",
+      "provenance": "Independently authored or previously locally maintained capabilities.",
       "skills": [
         {
-          "name": "resolve-design-friction"
+          "name": "design-friction-resolution",
+          "derivedFromLocalSkill": "resolve-design-friction"
+        },
+        {
+          "name": "research"
         },
         {
           "name": "rust-imports"
-        },
-        {
-          "name": "vault-self-review"
         }
       ]
     }

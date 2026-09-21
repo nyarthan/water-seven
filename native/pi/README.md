@@ -1,8 +1,8 @@
 # Pi resources
 
-Pi-specific configuration lives here; shared agent skills and context live in [`../agents/`](../agents/).
+Pi-specific configuration lives here; shared agent policy, skills, and context live in [`../agents/`](../agents/).
 
-Home Manager deploys `settings.json`, `keybindings.json`, `extensions/`, and `themes/` into `~/.pi/agent`. These resources are declarative and read-only after activation. Change them here and rebuild Water Seven rather than saving persistent changes through Pi's interactive settings.
+Home Manager deploys `settings.json`, `keybindings.json`, `extensions/`, and `themes/` from this directory into `~/.pi/agent`. It deploys the shared global policy there as `AGENTS.md`. These resources are declarative and read-only after activation. Change them in Water Seven and rebuild rather than saving persistent changes through Pi's interactive settings.
 
 Pi continues to own mutable runtime state such as authentication, sessions, project trust decisions, model metadata, caches, and package downloads.
 

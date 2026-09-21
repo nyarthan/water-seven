@@ -1,12 +1,18 @@
 ---
 name: research
-description: Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.
+description: Investigate a question against authoritative primary sources. Use when the user asks for research, documentation or API facts, source-backed comparisons, or evidence before a decision.
 ---
 
-Spin up a **background agent** to do the research, so you keep working while it reads.
+# Research
 
-Its job:
+Research is evidence gathering, not implementation.
 
-1. Investigate the question against **primary sources** — official docs, source code, specs, first-party APIs — not a secondary write-up of them. Follow every claim back to the source that owns it.
-2. Write the findings to a single Markdown file, citing each claim's source.
-3. Save it where the repo already keeps such notes; match the existing convention, and if there is none, put it somewhere sensible and say where.
+1. State the question, scope, and what would count as an answer.
+2. Prefer primary sources: official documentation, specifications, source code, first-party APIs, and authoritative records. Use secondary sources to locate or contextualize primary evidence, not as the sole support for a consequential claim.
+3. Trace material claims to their owning source. Record versions and dates when behavior may vary over time.
+4. Separate observed facts, source interpretation, and your own inference. Surface contradictions and unresolved uncertainty.
+5. Stop when the question is answered to the rigor justified by its consequences, or when a named evidence gap blocks a reliable answer.
+
+Use optional delegation when available and useful. If independent research is essential but unavailable, say so rather than implying it occurred.
+
+Return cited findings in the medium the user requested. Default to the conversation. Write a repository document only when requested or when an authorized parent workflow explicitly requires an artifact; temporary delegation notes belong outside the repository.

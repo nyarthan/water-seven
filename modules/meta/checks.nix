@@ -117,8 +117,10 @@
           && home.home.file ? ".pi/agent/settings.json"
           && home.home.file ? ".pi/agent/extensions"
           && home.home.file ? ".pi/agent/node_modules"
+          && home.home.file ? ".pi/agent/AGENTS.md"
           && home.home.file ? ".agents/skills"
-        ) "Shared workstations must provide the declarative Workmux and Pi workflow";
+          && home.xdg.configFile ? "opencode/AGENTS.md"
+        ) "Shared workstations must provide the declarative Workmux and agent workflow";
         assert lib.assertMsg (
           representativeHost.role != "personal"
           || (
@@ -260,8 +262,9 @@
       piExtensions = home.home.file.".pi/agent/extensions".source;
       piNodeModules = home.home.file.".pi/agent/node_modules".source;
       agentSkills = home.home.file.".agents/skills".source;
+      piAgentPolicy = home.home.file.".pi/agent/AGENTS.md".source;
+      openCodeAgentPolicy = home.xdg.configFile."opencode/AGENTS.md".source;
       workmuxExtension = "${piExtensions}/workmux-status.ts";
-      workmuxSkill = "${agentSkills}/workmux";
       piPackage = lib.findFirst (
         package: lib.getName package == "pi-coding-agent"
       ) null home.home.packages;
@@ -289,6 +292,7 @@
               pkgs.jq
               pkgs.nodejs_24
               pkgs.python3
+              pkgs.ruby
               piPackage
               workmuxPackage
             ]
@@ -362,20 +366,23 @@
             test -f ${piNodeModules}/effect/package.json
             grep -F 'pi.exec("workmux", ["register-agent"])' ${workmuxExtension}
             grep -F 'pi.on("ui_prompt_start"' ${workmuxExtension}
-            grep -Fx 'name: workmux' ${workmuxSkill}/SKILL.md
-            for skill in ${agentSkills}/*; do
-              test -f "$skill/SKILL.md"
-              grep -Eq '^name: [a-z0-9]+(-[a-z0-9]+)*$' "$skill/SKILL.md"
-              grep -Eq '^description:' "$skill/SKILL.md"
-            done
+            ruby "$source/native/agents/scripts/check-skills.rb" ${agentSkills}
+            cmp ${piAgentPolicy} ${openCodeAgentPolicy}
+            grep -Fx '# Global agent policy' ${piAgentPolicy}
+            grep -F 'When in doubt, ask for permission' ${piAgentPolicy}
+            grep -F 'Never fabricate results' ${piAgentPolicy}
+            ! grep -F 'RTK' ${piAgentPolicy}
             node --test \
               "$source/native/pi/extensions/codex-accounts.test.mjs" \
               "$source/native/pi/extensions/workmux-status.test.mjs"
 
-            mkdir -p "$HOME/.pi/agent" "$HOME/.agents"
+            mkdir -p "$HOME/.pi/agent" "$HOME/.agents" "$XDG_CONFIG_HOME/opencode"
             ln -s ${piExtensions} "$HOME/.pi/agent/extensions"
             ln -s ${piNodeModules} "$HOME/.pi/agent/node_modules"
+            ln -s ${piAgentPolicy} "$HOME/.pi/agent/AGENTS.md"
             ln -s ${agentSkills} "$HOME/.agents/skills"
+            ln -s ${openCodeAgentPolicy} "$XDG_CONFIG_HOME/opencode/AGENTS.md"
+            cmp "$HOME/.pi/agent/AGENTS.md" "$XDG_CONFIG_HOME/opencode/AGENTS.md"
             cp ${piSettings} "$HOME/.pi/agent/settings.json"
             printf '%s\n' '{"type":"get_state"}' \
               | PI_OFFLINE=1 pi --mode rpc --no-session \
@@ -488,6 +495,7 @@
         packages = [
           pkgs.deadnix
           pkgs.nixfmt-tree
+          pkgs.ruby
           statix
         ];
       };

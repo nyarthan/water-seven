@@ -40,9 +40,9 @@ from without carrying repetitive root paths through the code.
 2. Classify each referenced item as module, type, trait, macro, free function, or constant.
 3. Rewrite imports and call sites by the rules above; preserve visibility, `cfg`, and process-target
    boundaries.
-4. Run `cargo fmt`, the affected tests, and Clippy with warnings denied. Search the changed scope for
-   glob imports and directly imported free functions.
+4. Run the repository's relevant formatter, compiler, lints, and affected tests. Search the changed
+   scope for glob imports and directly imported free functions.
 
 The review is complete when every imported item has one classification, every non-local operation
-outside the unit-test parent prelude retains module provenance at its use site, and all Rust targets
-compile without unused imports.
+outside the unit-test parent prelude retains module provenance at its use site, and the relevant
+project checks pass without unused imports.
