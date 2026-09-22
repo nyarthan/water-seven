@@ -57,7 +57,6 @@
         systemPackages = with pkgs; [
           orbstack
           proton-vpn
-          scroll-reverser
           slack
           unstable.whatsapp-for-mac
           verifySlackUpdatePolicy

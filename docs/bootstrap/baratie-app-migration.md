@@ -13,7 +13,6 @@ Never use Homebrew `zap` cleanup or an application-cleaner tool during migration
 - OrbStack
 - ProtonVPN
 - Raycast
-- Scroll Reverser
 - Slack
 - UTM
 - WhatsApp from the localized unstable package set
@@ -72,7 +71,7 @@ Retire these only through the staged procedure below:
 - Claude Code URL Handler
 - Mos, Obsidian, qBittorrent, and VLC from the old personal-host installation; these now belong to the work role
 
-Bitwarden, Slack, and WhatsApp currently have MAS copies. Google Chrome, ProtonVPN, Scroll Reverser, OrbStack, and several cask-selected applications currently have vendor/manual copies. Remove those old application bundles only after the selected replacement opens successfully and mutable state is still available.
+Bitwarden, Slack, and WhatsApp currently have MAS copies. Google Chrome, ProtonVPN, OrbStack, and several cask-selected applications currently have vendor/manual copies. Remove those old application bundles only after the selected replacement opens successfully and mutable state is still available.
 
 AusweisApp 2.5.5 is Intel-only in both official macOS distributions. The App Store and Homebrew cask deliver byte-identical `x86_64` application artifacts, so changing sources does not avoid Rosetta or macOS's future-compatibility warning. Retain the Homebrew cask and re-evaluate when upstream publishes a native Apple-silicon desktop build.
 
@@ -185,7 +184,7 @@ for app in \
   'Affinity' 'AusweisApp' 'Bitwarden' 'Brave Browser' 'ChatGPT' \
   'Google Chrome' 'Helium' 'LibreOffice' 'Logi Tune' \
   'Microsoft Teams' 'OrbStack' 'P-touch Editor' 'ProtonVPN' \
-  'Raycast' 'ScanSnapHomeMain' 'Scroll Reverser' 'Slack' 'Steam' \
+  'Raycast' 'ScanSnapHomeMain' 'Slack' 'Steam' \
   'TablePlus' 'UTM' 'WhatsApp' 'Yubico Authenticator' \
   'YubiKey Manager'; do
   open -Ra "$app" || printf 'missing: %s\n' "$app"

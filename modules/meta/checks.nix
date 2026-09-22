@@ -57,7 +57,6 @@
         "google-chrome"
         "orbstack"
         "proton-vpn"
-        "scroll-reverser"
         "slack"
         "verify-slack-update-policy"
         "whatsapp-for-mac"
