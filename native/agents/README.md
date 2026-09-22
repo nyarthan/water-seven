@@ -45,7 +45,7 @@ Agent system:
 
 - `agent-guidance`
 
-Code review and behavioral evaluation of the agent setup are intentionally deferred. They have no placeholder skills: add them only after their workflows and evaluation model are designed.
+Code review and behavioral evaluation of the agent setup are intentionally deferred. They have no placeholder skills: add them only after their workflows and evaluation model are designed. The current evaluation and task-routing research is recorded in [`docs/research/agent-configuration-evaluation-and-routing.md`](../../docs/research/agent-configuration-evaluation-and-routing.md).
 
 ### Provenance
 
