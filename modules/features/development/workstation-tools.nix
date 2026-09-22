@@ -26,17 +26,21 @@
             (with pkgs; [
               act
               awscli2
+              betterleaks
               cloudflared
               devenv
               dust
               gh
+              gitleaks
               gource
               headroom-ai
               hyperfine
               k9s
               lazygit
               tokentracker-cli
+              trufflehog
               turbo
+              typos
               uv
               yazi
               unstable.bws
@@ -66,11 +70,15 @@
         in
         {
           home.packages = [
+            pkgs.betterleaks
             pkgs.dust
             pkgs.gh
+            pkgs.gitleaks
             pkgs.gource
             pkgs.k9s
             pkgs.lazygit
+            pkgs.trufflehog
+            pkgs.typos
             (pkgs.callPackage ../../../packages/linearis.nix { })
             (pkgs.callPackage ../../../packages/opencode-v2.nix { })
             twg
