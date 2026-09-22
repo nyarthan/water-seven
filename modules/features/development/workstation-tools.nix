@@ -30,8 +30,10 @@
               devenv
               dust
               gh
+              gource
               headroom-ai
               hyperfine
+              k9s
               lazygit
               tokentracker-cli
               turbo
@@ -66,6 +68,8 @@
           home.packages = [
             pkgs.dust
             pkgs.gh
+            pkgs.gource
+            pkgs.k9s
             pkgs.lazygit
             (pkgs.callPackage ../../../packages/linearis.nix { })
             (pkgs.callPackage ../../../packages/opencode-v2.nix { })
