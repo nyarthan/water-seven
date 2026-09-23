@@ -1,0 +1,11 @@
+{
+  "name": "elastic-cli",
+  "version": "0.5.0",
+  "private": true,
+  "bin": {
+    "elastic": "node_modules/@elastic/cli/dist/cli.js"
+  },
+  "dependencies": {
+    "@elastic/cli": "https://registry.npmjs.org/@elastic/cli/-/cli-0.5.0.tgz"
+  }
+}

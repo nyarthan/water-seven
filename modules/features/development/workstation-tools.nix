@@ -18,6 +18,7 @@
                 "claude-code"
               ];
           };
+          elastic-cli = pkgs.callPackage ../../../packages/elastic-cli.nix { };
           headroom-ai = unstable.callPackage ../../../packages/headroom-ai.nix { };
           tokentracker-cli = pkgs.callPackage ../../../packages/tokentracker-cli.nix { };
         in
@@ -26,10 +27,12 @@
             (with pkgs; [
               act
               awscli2
+              bazel
               betterleaks
               cloudflared
               devenv
               dust
+              elastic-cli
               gh
               gitleaks
               gource
@@ -70,8 +73,10 @@
         in
         {
           home.packages = [
+            pkgs.bazel
             pkgs.betterleaks
             pkgs.dust
+            (pkgs.callPackage ../../../packages/elastic-cli.nix { })
             pkgs.gh
             pkgs.gitleaks
             pkgs.gource
