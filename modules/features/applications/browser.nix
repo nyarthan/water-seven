@@ -1,11 +1,14 @@
 {
   flake.modules =
     let
+      # Leave the optional update URL unset. Helium routes the default Web Store
+      # URL through its extension proxy; an explicit Google URL is treated as an
+      # off-store source and blocked on machines without enterprise enrollment.
       extensionInstallForcelist = [
         # Bitwarden
-        "nngceckbapebfimnlniiiahkandclblb;https://clients2.google.com/service/update2/crx"
+        "nngceckbapebfimnlniiiahkandclblb"
         # Dark Reader
-        "eimadpbcbfnmbkopoojfekhnkhdbieeh;https://clients2.google.com/service/update2/crx"
+        "eimadpbcbfnmbkopoojfekhnkhdbieeh"
       ];
       recommendedPolicies = {
         DefaultBrowserSettingEnabled = true;

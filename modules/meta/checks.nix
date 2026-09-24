@@ -56,8 +56,8 @@
         "text"
       ] null representativeSystem.config;
       heliumExtensions = [
-        "nngceckbapebfimnlniiiahkandclblb;https://clients2.google.com/service/update2/crx"
-        "eimadpbcbfnmbkopoojfekhnkhdbieeh;https://clients2.google.com/service/update2/crx"
+        "nngceckbapebfimnlniiiahkandclblb"
+        "eimadpbcbfnmbkopoojfekhnkhdbieeh"
       ];
       personalCaskNames = [
         "affinity"
