@@ -37,11 +37,32 @@
         "water-seven/profiles/slack-disable-auto-update.mobileconfig"
         "source"
       ] null representativeSystem.config;
+      heliumExtensionProfile = lib.attrByPath [
+        "environment"
+        "etc"
+        "water-seven/profiles/helium-extension-policy.mobileconfig"
+        "source"
+      ] null representativeSystem.config;
+      heliumManagedPolicies = lib.attrByPath [
+        "environment"
+        "etc"
+        "chromium/policies/managed/water-seven-extensions.json"
+        "text"
+      ] null representativeSystem.config;
+      heliumRecommendedPolicies = lib.attrByPath [
+        "environment"
+        "etc"
+        "chromium/policies/recommended/water-seven-browser.json"
+        "text"
+      ] null representativeSystem.config;
+      heliumExtensions = [
+        "nngceckbapebfimnlniiiahkandclblb;https://clients2.google.com/service/update2/crx"
+        "eimadpbcbfnmbkopoojfekhnkhdbieeh;https://clients2.google.com/service/update2/crx"
+      ];
       personalCaskNames = [
         "affinity"
         "ausweisapp"
         "chatgpt"
-        "helium-browser"
         "libreoffice"
         "microsoft-teams"
         "steam"
@@ -49,8 +70,8 @@
         "yubico-authenticator"
       ];
       expectedDarwinCaskNames = [
-        "brave-browser"
         "ghostty"
+        "helium-browser"
       ]
       ++ lib.optionals (representativeHost.role == "personal") personalCaskNames;
       personalDarwinPackageNames = [
@@ -156,8 +177,8 @@
                 "aerospace"
                 "bitwarden-desktop"
                 "raycast"
+                "verify-helium-policy"
               ] == [ ]
-              && !(builtins.elem "brave" darwinPackageNames)
               && darwinBrewNames == lib.optionals (representativeHost.role == "work") [ "mole" ]
               && lib.sort builtins.lessThan darwinCaskNames == lib.sort builtins.lessThan expectedDarwinCaskNames
               &&
@@ -176,8 +197,14 @@
                 (package.pname or (lib.getName package)) == "raycast" && lib.versionAtLeast package.version "2.0"
               ) darwinSystemPackages
               && browserHandlers == null
+              && heliumExtensionProfile != null
+              && representativeSystem.config.system.defaults.CustomUserPreferences."net.imput.helium".DefaultBrowserSettingEnabled
               && lib.any (
-                step: lib.hasInfix "Brave" step && lib.hasInfix "approve the macOS prompt" step
+                step: lib.hasInfix "Helium" step && lib.hasInfix "approve the macOS prompt" step
+              ) representativeSystem.config.waterSeven.bootstrap.followUpSteps
+              && lib.any (
+                step:
+                lib.hasInfix "Helium extensions" step && lib.hasInfix "helium-extension-policy.mobileconfig" step
               ) representativeSystem.config.waterSeven.bootstrap.followUpSteps
             )
           )
@@ -186,17 +213,19 @@
           representativeHost.platform != "nixos"
           || (
             home.xdg.mimeApps.enable
-            && home.xdg.mimeApps.defaultApplications."text/html" == [ "brave-browser.desktop" ]
+            && home.xdg.mimeApps.defaultApplications."text/html" == [ "helium.desktop" ]
+            && home.xdg.mimeApps.defaultApplications."x-scheme-handler/http" == [ "helium.desktop" ]
+            && home.xdg.mimeApps.defaultApplications."x-scheme-handler/https" == [ "helium.desktop" ]
             &&
-              home.xdg.mimeApps.defaultApplications."x-scheme-handler/http" == [
-                "brave-browser.desktop"
-              ]
+              builtins.fromJSON heliumManagedPolicies == {
+                ExtensionInstallForcelist = heliumExtensions;
+              }
             &&
-              home.xdg.mimeApps.defaultApplications."x-scheme-handler/https" == [
-                "brave-browser.desktop"
-              ]
+              builtins.fromJSON heliumRecommendedPolicies == {
+                DefaultBrowserSettingEnabled = true;
+              }
           )
-        ) "NixOS must register Brave as the default handler for web content";
+        ) "NixOS must install Helium with managed extensions and register it as the default handler";
         pkgs.runCommand "water-seven-fleet-schema" { } "touch $out";
 
       requiredActions = lib.attrNames (

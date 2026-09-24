@@ -16,10 +16,10 @@ ObjC.unwrap(bundle.bundleIdentifier)
 JXA
 )
 
-if [[ $bundle_id != com.brave.Browser ]]; then
-  echo "error: the effective HTTPS handler is '$bundle_id', not 'com.brave.Browser'" >&2
-  echo "Open Brave, choose 'Set Brave as default browser', and approve the macOS prompt." >&2
+if [[ $bundle_id != net.imput.helium ]]; then
+  echo "error: the effective HTTPS handler is '$bundle_id', not 'net.imput.helium'" >&2
+  echo "Open Helium, choose 'Set as default browser', and approve the macOS prompt." >&2
   exit 1
 fi
 
-echo "Brave is the effective default browser."
+echo "Helium is the effective default browser."

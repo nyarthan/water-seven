@@ -70,7 +70,6 @@
           "affinity"
           "ausweisapp"
           "chatgpt"
-          "helium-browser"
           "libreoffice"
           "microsoft-teams"
           "steam"

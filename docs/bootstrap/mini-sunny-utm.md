@@ -82,22 +82,32 @@ git -C ~/Projects/water-seven status --short --branch
 All three names must be `mini-sunny`, and the checkout must be clean. Then:
 
 1. Grant the requested Accessibility permissions to AeroSpace and Raycast.
-2. Open Brave, choose **Set Brave as default browser**, and approve the macOS
-   prompt. LaunchServices ignores defaults-only handler declarations, and macOS
-   does not permit this consent to be bypassed. Verify the effective handler:
+2. Open Helium, choose **Set as default browser**, and approve the macOS prompt.
+   LaunchServices ignores defaults-only handler declarations, and macOS does not
+   permit this consent to be bypassed. Verify the effective handler:
 
    ```console
    ./scripts/check-darwin-default-browser.sh
    ```
 
-3. Confirm AeroSpace starts and exercise the shared focus, movement, workspace,
+3. Quit Helium, open
+   `/etc/water-seven/profiles/helium-extension-policy.mobileconfig`, and install
+   **Water Seven: Helium extensions** in System Settings → General → Device
+   Management. Reopen Helium, enable Helium services for proxied extension
+   downloads when prompted, then verify the forced policy:
+
+   ```console
+   verify-helium-policy
+   ```
+
+4. Confirm AeroSpace starts and exercise the shared focus, movement, workspace,
    floating, maximize, and launcher bindings.
-4. Open Ghostty and confirm it enters tmux session `main`.
-5. Run `bash --noprofile --norc` and confirm a clean diagnostic Bash starts.
-6. Start Neovim and confirm its configuration loads without errors.
-7. Edit a checkout-backed native file and verify native reload behavior without
+5. Open Ghostty and confirm it enters tmux session `main`.
+6. Run `bash --noprofile --norc` and confirm a clean diagnostic Bash starts.
+7. Start Neovim and confirm its configuration loads without errors.
+8. Edit a checkout-backed native file and verify native reload behavior without
    rebuilding.
-8. Reboot and confirm FileVault unlock, login, and application startup.
+9. Reboot and confirm FileVault unlock, login, and application startup.
 
 Re-enable AeroSpace on the physical host after testing:
 

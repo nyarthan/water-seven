@@ -376,13 +376,13 @@ Initial shared GUI baseline:
 
 - Bitwarden desktop application and CLI
 - Ghostty
-- Brave as the default browser
+- Helium as the default browser
 - Platform window manager
 - Platform launcher
 
 Chrome is installed only by the personal role.
 
-The `baratie` personal role additionally retains Affinity, AusweisApp, ChatGPT, Factorio, Helium Browser, Hollow Knight: Silksong, LibreOffice, Logi Tune, Microsoft Teams and AutoUpdate, OrbStack, ProtonVPN, P-touch Editor, ScanSnap Home, Slack, Steam, TablePlus, WhatsApp, Yubico Authenticator, and YubiKey Manager. Steam remains because the selected games depend on it. Logi Tune, Microsoft AutoUpdate, ScanSnap Home and its device state, YubiKey Manager, and Steam game state remain documented mutable installations where declarative ownership is unsuitable or incomplete.
+The `baratie` personal role additionally retains Affinity, AusweisApp, ChatGPT, Factorio, Hollow Knight: Silksong, LibreOffice, Logi Tune, Microsoft Teams and AutoUpdate, OrbStack, ProtonVPN, P-touch Editor, ScanSnap Home, Slack, Steam, TablePlus, WhatsApp, Yubico Authenticator, and YubiKey Manager. Steam remains because the selected games depend on it. Logi Tune, Microsoft AutoUpdate, ScanSnap Home and its device state, YubiKey Manager, and Steam game state remain documented mutable installations where declarative ownership is unsuitable or incomplete.
 
 Add other communication, office, media, gaming, and applications deliberately after the foundation exists. The current Mac's installed application list is evidence, not desired state. Follow [the `baratie` application migration checklist](docs/bootstrap/baratie-app-migration.md) for source ownership and removal decisions.
 
@@ -390,7 +390,7 @@ Use dark appearance where supported. Keep native OS widget themes platform-speci
 
 Use Iosevka as the shared terminal/editor monospace font. Native system UI fonts remain platform defaults.
 
-File managers, screenshots, and clipboard behavior remain platform-native initially. Browser profiles, groups/containers, history, and application accounts remain application-owned mutable state. Declarative browser profile/container management may be investigated later. On macOS, changing the effective default browser requires interactive user approval: Water Seven installs Brave, guides that consent, and verifies the live LaunchServices handler rather than writing an ineffective `LSHandlers` preference.
+File managers, screenshots, and clipboard behavior remain platform-native initially. Helium's native profiles, groups, history, and application accounts remain application-owned mutable state. Water Seven manages Helium installation, default-handler declarations, user-overridable policy defaults, and mandatory Bitwarden and Dark Reader installation. Helium already ships uBlock Origin as a built-in component. On macOS, extension enforcement uses a user-approved configuration profile, and changing the effective default browser requires separate interactive user approval: Water Seven guides both consent steps and verifies the live policy and LaunchServices handler rather than writing an ineffective `LSHandlers` preference.
 
 ## Package acquisition
 

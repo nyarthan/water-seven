@@ -25,9 +25,8 @@ Ghostty remains the one explicitly trusted Homebrew cask allowed to bypass quara
 
 - Affinity
 - AusweisApp
-- Brave
 - ChatGPT
-- Helium Browser (`helium-browser`)
+- Helium Browser (`helium-browser`), the shared default browser
 - LibreOffice
 - Microsoft Teams
 - Steam
@@ -143,7 +142,6 @@ The casks to migrate are:
 ```text
 affinity
 ausweisapp
-brave-browser
 chatgpt
 helium-browser
 libreoffice
@@ -152,7 +150,7 @@ tableplus
 yubico-authenticator
 ```
 
-Migrate one token per command. Brave's Homebrew cask preserves its upstream macOS signature, unlike the Nix package's unsigned app bundle; both use the same bundle identifier and user profile. The Teams package installer may request administrator approval. Do not bypass that prompt.
+Migrate one token per command. Helium's Homebrew cask preserves its upstream macOS signature and existing native profiles remain application-owned mutable state. The Teams package installer may request administrator approval. Do not bypass that prompt.
 
 Logi Tune, Microsoft AutoUpdate, and ScanSnap Home are excluded from this list and remain vendor-managed. An attempted ScanSnap Home 4.0.0 cask migration safely stopped because the signed installer refuses to reinstall an existing same-version product. Microsoft AutoUpdate 4.85.26080216 was newer than Homebrew's 4.84.26071119 cask, so it was not downgraded for package-manager ownership. P-touch Editor remains MAS-managed. Be signed into the App Store before activation so nix-darwin can verify or request P-touch Editor.
 
@@ -175,14 +173,37 @@ After cask ownership is prepared and the build succeeds:
    ```bash
    verify-slack-update-policy
    ```
-6. Reboot before cleanup.
+6. Fully quit Helium, then install the Water Seven extension policy once:
+
+   ```bash
+   open /etc/water-seven/profiles/helium-extension-policy.mobileconfig
+   ```
+
+   In System Settings → General → Device Management, review and install **Water
+   Seven: Helium extensions**. Reopen Helium, enable Helium services for proxied
+   extension downloads when prompted, then verify that Bitwarden and Dark Reader
+   are mandatory:
+
+   ```bash
+   verify-helium-policy
+   ```
+
+   Helium supplies uBlock Origin as a built-in component, so Water Seven does not
+   install a second copy. Native Helium profiles and their browsing data remain
+   mutable.
+7. Set Helium as the default browser and verify it:
+
+   ```bash
+   ./scripts/check-darwin-default-browser.sh
+   ```
+8. Reboot before cleanup.
 
 Verify retained applications without changing their data:
 
 ```bash
 for app in \
-  'Affinity' 'AusweisApp' 'Bitwarden' 'Brave Browser' 'ChatGPT' \
-  'Google Chrome' 'Helium' 'LibreOffice' 'Logi Tune' \
+  'Affinity' 'AusweisApp' 'Bitwarden' 'ChatGPT' 'Google Chrome' \
+  'Helium' 'LibreOffice' 'Logi Tune' \
   'Microsoft Teams' 'OrbStack' 'P-touch Editor' 'ProtonVPN' \
   'Raycast' 'ScanSnapHomeMain' 'Slack' 'Steam' \
   'TablePlus' 'UTM' 'WhatsApp' 'Yubico Authenticator' \
