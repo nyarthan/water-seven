@@ -16,6 +16,7 @@
               builtins.elem (lib.getName package) [
                 "bws"
                 "claude-code"
+                "sonarqube-cli"
               ];
           };
           elastic-cli = pkgs.callPackage ../../../packages/elastic-cli.nix { };
@@ -50,6 +51,7 @@
               unstable.claude-code
               unstable.opencode
               unstable.rtk
+              unstable.sonarqube-cli
               unstable.tuicr
               unstable.worktrunk
             ])
@@ -59,6 +61,10 @@
       role-personal =
         { pkgs, ... }:
         let
+          unstable = import inputs.nixpkgs-unstable {
+            inherit (pkgs.stdenv.hostPlatform) system;
+            config.allowUnfreePredicate = package: lib.getName package == "sonarqube-cli";
+          };
           twg = pkgs.writeShellApplication {
             name = "twg";
             text = ''
@@ -82,6 +88,7 @@
             pkgs.gource
             pkgs.k9s
             pkgs.lazygit
+            unstable.sonarqube-cli
             pkgs.trufflehog
             pkgs.typos
             (pkgs.callPackage ../../../packages/linearis.nix { })
