@@ -190,7 +190,16 @@ After cask ownership is prepared and the build succeeds:
 
    Helium supplies uBlock Origin as a built-in component, so Water Seven does not
    install a second copy. Native Helium profiles and their browsing data remain
-   mutable.
+   mutable. Water Seven maps `helium-primary` to the existing `Default` profile
+   directory and `helium-secondary` to `Profile 2`; it does not modify either
+   profile. Verify the mapping, then use either command to open the corresponding
+   profile:
+
+   ```bash
+   verify-helium-profiles
+   helium-primary
+   helium-secondary
+   ```
 7. Set Helium as the default browser and verify it:
 
    ```bash

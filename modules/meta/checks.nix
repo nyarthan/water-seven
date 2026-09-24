@@ -153,6 +153,14 @@
           )
         ) "Personal hosts must preserve TWG and pi-coding-agent without downgrading pi";
         assert lib.assertMsg (
+          representativeHostName != "baratie"
+          || lib.all (name: builtins.elem name homePackageNames) [
+            "helium-primary"
+            "helium-secondary"
+            "verify-helium-profiles"
+          ]
+        ) "baratie must provide launchers and verification for its native Helium profiles";
+        assert lib.assertMsg (
           representativeHost.role != "personal"
           || (
             slackAutoUpdateProfile != null

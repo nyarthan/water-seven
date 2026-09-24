@@ -99,5 +99,67 @@
           };
         };
       };
+
+      homeManager.host-baratie =
+        { pkgs, ... }:
+        let
+          heliumExecutable = "/Applications/Helium.app/Contents/MacOS/Helium";
+          mkProfileLauncher =
+            name: profileDirectory:
+            pkgs.writeShellApplication {
+              inherit name;
+              text = ''
+                if [[ "''${1:-}" == "--help" || "''${1:-}" == "-h" ]]; then
+                  echo "Usage: ${name} [URL ...]"
+                  echo "Open Helium's ${profileDirectory} profile."
+                  exit 0
+                fi
+
+                profile_path="$HOME/Library/Application Support/net.imput.helium/${profileDirectory}"
+                if [[ ! -d "$profile_path" ]]; then
+                  echo "error: Helium profile directory does not exist: $profile_path" >&2
+                  exit 1
+                fi
+                if [[ ! -x "${heliumExecutable}" ]]; then
+                  echo "error: Helium executable does not exist: ${heliumExecutable}" >&2
+                  exit 1
+                fi
+
+                exec "${heliumExecutable}" --profile-directory="${profileDirectory}" "$@"
+              '';
+            };
+          heliumPrimary = mkProfileLauncher "helium-primary" "Default";
+          heliumSecondary = mkProfileLauncher "helium-secondary" "Profile 2";
+          verifyHeliumProfiles = pkgs.writeShellApplication {
+            name = "verify-helium-profiles";
+            text = ''
+              user_data_dir="$HOME/Library/Application Support/net.imput.helium"
+              missing=0
+
+              for profile in "Default" "Profile 2"; do
+                if [[ -d "$user_data_dir/$profile" ]]; then
+                  printf 'present: %s\n' "$profile"
+                else
+                  printf 'missing: %s\n' "$profile" >&2
+                  missing=1
+                fi
+              done
+
+              if [[ ! -x "${heliumExecutable}" ]]; then
+                echo "missing: ${heliumExecutable}" >&2
+                missing=1
+              fi
+
+              exit "$missing"
+            '';
+          };
+        in
+        {
+          home.packages = [
+            heliumPrimary
+            heliumSecondary
+            verifyHeliumProfiles
+          ];
+        };
     };
 }
