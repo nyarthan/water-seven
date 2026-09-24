@@ -154,6 +154,15 @@
         ) "Personal hosts must preserve TWG and pi-coding-agent without downgrading pi";
         assert lib.assertMsg (
           representativeHostName != "baratie"
+          || (
+            builtins.elem "mos" homePackageNames
+            && lib.any (
+              step: lib.hasInfix "Mos" step && lib.hasInfix "Accessibility" step
+            ) representativeSystem.config.waterSeven.bootstrap.followUpSteps
+          )
+        ) "baratie must provide Mos with its required macOS consent guidance";
+        assert lib.assertMsg (
+          representativeHostName != "baratie"
           || lib.all (name: builtins.elem name homePackageNames) [
             "helium-primary"
             "helium-secondary"

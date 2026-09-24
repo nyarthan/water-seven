@@ -382,7 +382,7 @@ Initial shared GUI baseline:
 
 Chrome is installed only by the personal role.
 
-The `baratie` personal role additionally retains Affinity, AusweisApp, ChatGPT, Factorio, Hollow Knight: Silksong, LibreOffice, Logi Tune, Microsoft Teams and AutoUpdate, OrbStack, ProtonVPN, P-touch Editor, ScanSnap Home, Slack, Steam, TablePlus, WhatsApp, Yubico Authenticator, and YubiKey Manager. Steam remains because the selected games depend on it. Logi Tune, Microsoft AutoUpdate, ScanSnap Home and its device state, YubiKey Manager, and Steam game state remain documented mutable installations where declarative ownership is unsuitable or incomplete.
+The `baratie` personal role additionally retains Affinity, AusweisApp, ChatGPT, Factorio, Hollow Knight: Silksong, LibreOffice, Logi Tune, Microsoft Teams and AutoUpdate, Mos, OrbStack, ProtonVPN, P-touch Editor, ScanSnap Home, Slack, Steam, TablePlus, WhatsApp, Yubico Authenticator, and YubiKey Manager. Steam remains because the selected games depend on it. Logi Tune, Microsoft AutoUpdate, ScanSnap Home and its device state, YubiKey Manager, and Steam game state remain documented mutable installations where declarative ownership is unsuitable or incomplete.
 
 Add other communication, office, media, gaming, and applications deliberately after the foundation exists. The current Mac's installed application list is evidence, not desired state. Follow [the `baratie` application migration checklist](docs/bootstrap/baratie-app-migration.md) for source ownership and removal decisions.
 

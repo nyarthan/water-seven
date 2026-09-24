@@ -1,5 +1,15 @@
 { inputs, lib, ... }:
 {
+  flake.modules.homeManager.host-baratie = { pkgs, ... }: {
+    home.packages = [ pkgs.mos ];
+  };
+
+  flake.modules.darwin.host-baratie = {
+    waterSeven.bootstrap.followUpSteps = [
+      "Mos: open it, enable smooth scrolling and launch at login, then approve Accessibility access in System Settings > Privacy & Security > Accessibility when prompted."
+    ];
+  };
+
   flake.modules.darwin.role-personal =
     { pkgs, ... }:
     let

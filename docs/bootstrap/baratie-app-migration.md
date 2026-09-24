@@ -12,6 +12,7 @@ Never use Homebrew `zap` cleanup or an application-cleaner tool during migration
 - Google Chrome
 - OrbStack
 - ProtonVPN
+- Mos
 - Raycast
 - Slack
 - UTM
@@ -68,7 +69,7 @@ Retire these only through the staged procedure below:
 - WezTerm
 - Zen
 - Claude Code URL Handler
-- Mos, Obsidian, qBittorrent, and VLC from the old personal-host installation; these now belong to the work role
+- Obsidian, qBittorrent, and VLC from the old personal-host installation; these now belong to the work role
 
 Bitwarden, Slack, and WhatsApp currently have MAS copies. Google Chrome, ProtonVPN, OrbStack, and several cask-selected applications currently have vendor/manual copies. Remove those old application bundles only after the selected replacement opens successfully and mutable state is still available.
 
@@ -98,7 +99,7 @@ Retire:
 - stale OBS Virtual Camera extension
 - Tailscale login item and network extension
 - Karabiner DriverKit extension and agents
-- Figma, DockDoor, and Mos login items
+- Figma and DockDoor login items
 - Google Updater after the Nix-owned Chrome build is verified
 - Steam removal is cancelled because Factorio and Silksong depend on it
 
@@ -205,7 +206,9 @@ After cask ownership is prepared and the build succeeds:
    ```bash
    ./scripts/check-darwin-default-browser.sh
    ```
-8. Reboot before cleanup.
+8. Open Mos, enable smooth scrolling and launch at login, then approve Mos in
+   System Settings → Privacy & Security → Accessibility when prompted.
+9. Reboot before cleanup.
 
 Verify retained applications without changing their data:
 
@@ -213,7 +216,7 @@ Verify retained applications without changing their data:
 for app in \
   'Affinity' 'AusweisApp' 'Bitwarden' 'ChatGPT' 'Google Chrome' \
   'Helium' 'LibreOffice' 'Logi Tune' \
-  'Microsoft Teams' 'OrbStack' 'P-touch Editor' 'ProtonVPN' \
+  'Microsoft Teams' 'Mos' 'OrbStack' 'P-touch Editor' 'ProtonVPN' \
   'Raycast' 'ScanSnapHomeMain' 'Slack' 'Steam' \
   'TablePlus' 'UTM' 'WhatsApp' 'Yubico Authenticator' \
   'YubiKey Manager'; do
@@ -272,7 +275,8 @@ After cleanup and another reboot:
 nix run .#bootstrap -- baratie
 nix build .#checks.aarch64-darwin.host-baratie --no-link
 /opt/homebrew/bin/brew bundle check
-launchctl list | grep -E 'postgres|git-scm|podman|tailscale|karabiner|figma|DockDoor|Mos|zoom' || true
+launchctl list | grep -E 'postgres|git-scm|podman|tailscale|karabiner|figma|DockDoor|zoom' || true
+pgrep -x Mos
 systemextensionsctl list
 ```
 
