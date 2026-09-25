@@ -14,6 +14,7 @@ in
         packages = with pkgs; [
           bat
           curl
+          unstable.devenv
           eza
           fd
           fzf

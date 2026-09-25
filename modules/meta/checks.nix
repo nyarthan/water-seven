@@ -125,6 +125,9 @@
         assert lib.assertMsg (lib.versionAtLeast home.programs.mise.package.version "2026.7.0")
           "Mise must satisfy the minimum required version";
         assert lib.assertMsg (
+          devenvPackage != null && lib.versionAtLeast devenvPackage.version "2.1"
+        ) "Shared workstations must provide devenv with native shell-hook support";
+        assert lib.assertMsg (
           builtins.elem "workmux" homePackageNames
           && builtins.elem "pi-coding-agent" homePackageNames
           && home.programs.bash.shellAliases.wm == "workmux"
@@ -310,6 +313,7 @@
       piAgentPolicy = home.home.file.".pi/agent/AGENTS.md".source;
       openCodeAgentPolicy = home.xdg.configFile."opencode/AGENTS.md".source;
       workmuxExtension = "${piExtensions}/workmux-status.ts";
+      devenvPackage = lib.findFirst (package: lib.getName package == "devenv") null home.home.packages;
       piPackage = lib.findFirst (
         package: lib.getName package == "pi-coding-agent"
       ) null home.home.packages;
@@ -330,6 +334,7 @@
         pkgs.runCommand "water-seven-native-config"
           {
             nativeBuildInputs = [
+              devenvPackage
               home.programs.git.package
               home.programs.neovim.finalPackage
               home.programs.tmux.package
@@ -363,6 +368,8 @@
               "$XDG_RUNTIME_DIR"
 
             bash -n "$source/native/bash/bashrc"
+            grep -F 'eval "$(devenv hook bash)"' "$source/native/bash/bashrc"
+            devenv hook bash >/dev/null
             bash -n "$source/scripts/bootstrap.sh"
             bash -n "$source/scripts/check-darwin-default-browser.sh"
             bash -n "$source/scripts/prepare-darwin-homebrew-taps.sh"

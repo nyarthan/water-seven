@@ -21,11 +21,11 @@ The footer includes `[personal]` or `[work]` beside Codex models so the active s
 
 ## Development
 
-The nested TypeScript project exists only for extension development and validation:
+The nested TypeScript project exists only for extension development and validation. Run `devenv allow` once in this directory to enable automatic activation through the global Bash hook, then use its tasks:
 
 ```console
-mise run format:check
-mise run types
+devenv tasks run pi:format-check
+devenv tasks run pi:types
 ```
 
 Pi supplies its extension API, TUI, and TypeBox modules at runtime. Other runtime dependencies, including Pi's AI provider library and Effect, are declared in `package.json` and packaged with the extensions by Nix; extensions do not depend on a user-managed `~/.pi/agent/node_modules` tree.

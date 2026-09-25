@@ -31,7 +31,6 @@
               bazel
               betterleaks
               cloudflared
-              devenv
               dust
               elastic-cli
               gh
