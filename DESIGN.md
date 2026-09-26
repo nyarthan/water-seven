@@ -352,7 +352,7 @@ Shared shell conveniences initially include:
 
 Shell history uses the same tool/configuration but does not synchronize between machines initially.
 
-Mise is installed and activated as a compatibility mechanism for projects that declare it. Its Home Manager-owned global tool table is intentionally empty. Devenv is installed on every workstation, and its native Bash hook activates project environments after an explicit `devenv allow`. Prefer Nix development shells in projects under personal control. One project owns its toolchain; do not combine Nix, devenv, and mise ownership for the same tools.
+Mise is installed and activated as a compatibility mechanism for projects that declare it. Its Home Manager-owned global tool table is intentionally empty. Devenv is installed on every workstation, its TUI uses the top-aligned viewport, and its native Bash hook activates project environments after an explicit `devenv allow`. Prefer Nix development shells in projects under personal control. One project owns its toolchain; do not combine Nix, devenv, and mise ownership for the same tools.
 
 The personal role uses the Nix-owned Earendil pi fork and must not downgrade the version that preceded migration. TWG remains vendor/updater-managed on `baratie`; Water Seven exposes only its single executable through a wrapper and does not take ownership of TWG credentials, mutable configuration, installation state, or updater.
 

@@ -67,6 +67,13 @@ in
       };
 
       xdg.configFile = {
+        "devenv/config.yaml".text = ''
+          # yaml-language-server: $schema=https://devenv.sh/devenv.user.schema.json
+          version: 1
+          tui:
+            viewport: top
+        '';
+
         "mise/config.toml" = {
           force = true;
           text = ''

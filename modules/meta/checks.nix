@@ -125,8 +125,10 @@
         assert lib.assertMsg (lib.versionAtLeast home.programs.mise.package.version "2026.7.0")
           "Mise must satisfy the minimum required version";
         assert lib.assertMsg (
-          devenvPackage != null && lib.versionAtLeast devenvPackage.version "2.1"
-        ) "Shared workstations must provide devenv with native shell-hook support";
+          devenvPackage != null
+          && lib.versionAtLeast devenvPackage.version "2.4.0"
+          && lib.hasInfix "viewport: top" home.xdg.configFile."devenv/config.yaml".text
+        ) "Shared workstations must provide devenv 2.4 or newer with a top-aligned TUI";
         assert lib.assertMsg (
           builtins.elem "workmux" homePackageNames
           && builtins.elem "pi-coding-agent" homePackageNames
@@ -302,6 +304,7 @@
         pkgs.writeText "water-seven-tmux.conf"
           home.xdg.configFile."water-seven/generated/tmux.conf".text;
       gitConfig = home.xdg.configFile."git/config".source;
+      devenvConfig = home.xdg.configFile."devenv/config.yaml".source;
       miseConfig = home.xdg.configFile."mise/config.toml".source;
       workmuxConfig =
         pkgs.writeText "water-seven-workmux.yaml"
@@ -370,6 +373,7 @@
             bash -n "$source/native/bash/bashrc"
             grep -F 'eval "$(devenv hook bash)"' "$source/native/bash/bashrc"
             devenv hook bash >/dev/null
+            devenv --user-config ${devenvConfig} user-config validate
             bash -n "$source/scripts/bootstrap.sh"
             bash -n "$source/scripts/check-darwin-default-browser.sh"
             bash -n "$source/scripts/prepare-darwin-homebrew-taps.sh"
