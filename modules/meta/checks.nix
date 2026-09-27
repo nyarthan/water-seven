@@ -147,16 +147,22 @@
           && home.xdg.configFile ? "opencode/AGENTS.md"
         ) "Shared workstations must provide the declarative Workmux and agent workflow";
         assert lib.assertMsg (
+          pinnedPiDependencyVersions != [ ]
+          && lib.all (version: version == piPackage.version) pinnedPiDependencyVersions
+        ) "Pi resource dependencies must match pi-coding-agent ${piPackage.version}";
+        assert lib.assertMsg (
           representativeHost.role != "personal"
           || (
-            builtins.elem "twg" homePackageNames
+            lib.any (
+              package: lib.getName package == "twg" && lib.versionAtLeast (package.version or "0") "1.3.1"
+            ) home.home.packages
             && lib.any (
               package:
               (package.pname or (lib.getName package)) == "pi-coding-agent"
               && lib.versionAtLeast (package.version or "0") "0.85.1"
             ) home.home.packages
           )
-        ) "Personal hosts must preserve TWG and pi-coding-agent without downgrading pi";
+        ) "Personal hosts must provide TWG 1.3.1 or newer and pi-coding-agent without downgrading pi";
         assert lib.assertMsg (
           representativeHostName != "baratie"
           || (
@@ -320,6 +326,11 @@
       piPackage = lib.findFirst (
         package: lib.getName package == "pi-coding-agent"
       ) null home.home.packages;
+      piManifest = builtins.fromJSON (builtins.readFile ../../native/pi/package.json);
+      pinnedPiDependencies = lib.filterAttrs (name: _: lib.hasPrefix "@earendil-works/pi-" name);
+      pinnedPiDependencyVersions =
+        lib.attrValues (pinnedPiDependencies (piManifest.dependencies or { }))
+        ++ lib.attrValues (pinnedPiDependencies (piManifest.devDependencies or { }));
       workmuxPackage = lib.findFirst (package: lib.getName package == "workmux") null home.home.packages;
       ghosttyFacts = pkgs.writeText "water-seven-ghostty.conf" ''
         config-file = ${source}/native/ghostty/linux.conf

@@ -7,6 +7,7 @@ let
     "orbstack"
     "raycast"
     "slack"
+    "twg"
   ];
 
   packagePolicy = {

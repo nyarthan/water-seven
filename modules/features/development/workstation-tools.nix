@@ -58,23 +58,13 @@
         };
 
       role-personal =
-        { pkgs, ... }:
+        { config, pkgs, ... }:
         let
           unstable = import inputs.nixpkgs-unstable {
             inherit (pkgs.stdenv.hostPlatform) system;
             config.allowUnfreePredicate = package: lib.getName package == "sonarqube-cli";
           };
-          twg = pkgs.writeShellApplication {
-            name = "twg";
-            text = ''
-              twg_binary="$HOME/.local/share/mise/installs/twg/latest/twg"
-              if [[ ! -x "$twg_binary" ]]; then
-                echo "error: vendor-managed TWG is unavailable at $twg_binary" >&2
-                exit 127
-              fi
-              exec "$twg_binary" "$@"
-            '';
-          };
+          twg = pkgs.callPackage ../../../packages/twg.nix { };
         in
         {
           home.packages = [
@@ -94,6 +84,30 @@
             (pkgs.callPackage ../../../packages/opencode-v2.nix { })
             twg
           ];
+
+          home.sessionVariables = {
+            DO_NOT_TRACK = "1";
+            TWG_BACKGROUND_UPDATE_CHECK = "0";
+            TWG_COMMAND_SURFACE_RESTRICTION = "basic-v1";
+            TWG_SKIP_BITBUCKET = "1";
+          };
+
+          launchd.agents.twg-upkeep = lib.mkIf pkgs.stdenv.isDarwin {
+            enable = true;
+            config = {
+              Label = "com.atlassian.twg.upkeep";
+              ProgramArguments = [
+                "${twg}/bin/twg"
+                "upkeep"
+                "run"
+                "--scheduled"
+              ];
+              EnvironmentVariables.TWG_CONFIG_DIR = "${config.home.homeDirectory}/.config/twg";
+              ProcessType = "Background";
+              RunAtLoad = true;
+              StartInterval = 720;
+            };
+          };
         };
     };
   };

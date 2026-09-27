@@ -44,8 +44,8 @@ The rejected global npm packages `ccstatusline` and `eas-cli` and the dangling `
 
 The private Git identity was copied locally from the effective Tendril identity into mode-0600 `~/.config/git/identity`; no identity values entered Water Seven. The differing Atuin and Git-ignore files were preserved as adjacent `.before-water-seven` backups and replaced with their candidate contents so Home Manager will not fail after Homebrew activation. Atuin retains `enter_accept = true`; the old Claude-specific global ignore pattern was intentionally not migrated.
 
-## Vendor-managed TWG and deferred cleanup
+## Nix-managed TWG cleanup
 
-TWG remains vendor/updater-managed on `baratie`. Preserve `~/mise.toml`, `~/.config/twg`, the installation under `~/.local/share/mise/installs/twg`, and `com.atlassian.twg.upkeep`. Water Seven exposes only a narrow `twg` wrapper for the updater-managed `latest/twg` executable; it does not expose `~/.local/bin` or the full Mise installation tree.
+Water Seven owns the TWG executable and its scheduled upkeep job while preserving TWG's mutable state under `~/.config/twg`. After activating and verifying the Nix package, remove TWG's declaration from `~/mise.toml` and uninstall the Mise-managed TWG versions. Home Manager replaces `com.atlassian.twg.upkeep` with a job that runs the Nix package, so do not delete the resulting managed plist.
 
-Preserve unreferenced Mise installation caches through initial activation; prune only after representative project-owned toolchains have been exercised. The npm prefix can be removed only after every remaining package is either migrated or explicitly rejected.
+Preserve unrelated Mise installation caches through initial activation; prune only after representative project-owned toolchains have been exercised. The npm prefix can be removed only after every remaining package is either migrated or explicitly rejected.
