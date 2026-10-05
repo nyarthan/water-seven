@@ -62,6 +62,7 @@
       personalCaskNames = [
         "affinity"
         "ausweisapp"
+        "blender"
         "chatgpt"
         "libreoffice"
         "microsoft-teams"
@@ -163,6 +164,14 @@
             ) home.home.packages
           )
         ) "Personal hosts must provide TWG 1.3.1 or newer and pi-coding-agent without downgrading pi";
+        assert lib.assertMsg (
+          representativeHost.role != "personal"
+          || (
+            builtins.elem "uv" homePackageNames
+            && home.home.sessionVariables.UV_TOOL_BIN_DIR == "$HOME/.local/share/uv/bin"
+            && builtins.elem "$HOME/.local/share/uv/bin" home.home.sessionPath
+          )
+        ) "Personal hosts must provide uv and expose uv-installed tools on PATH";
         assert lib.assertMsg (
           representativeHostName != "baratie"
           || (

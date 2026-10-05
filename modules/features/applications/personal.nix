@@ -79,6 +79,7 @@
         casks = [
           "affinity"
           "ausweisapp"
+          "blender"
           "chatgpt"
           "libreoffice"
           "microsoft-teams"

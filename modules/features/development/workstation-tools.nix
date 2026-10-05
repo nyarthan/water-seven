@@ -80,13 +80,17 @@
             unstable.sonarqube-cli
             pkgs.trufflehog
             pkgs.typos
+            pkgs.uv
             (pkgs.callPackage ../../../packages/linearis.nix { })
             (pkgs.callPackage ../../../packages/opencode-v2.nix { })
             twg
           ];
 
+          home.sessionPath = [ "$HOME/.local/share/uv/bin" ];
+
           home.sessionVariables = {
             DO_NOT_TRACK = "1";
+            UV_TOOL_BIN_DIR = "$HOME/.local/share/uv/bin";
             TWG_BACKGROUND_UPDATE_CHECK = "0";
             TWG_COMMAND_SURFACE_RESTRICTION = "basic-v1";
             TWG_SKIP_BITBUCKET = "1";
