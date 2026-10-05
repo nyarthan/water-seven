@@ -11,23 +11,31 @@ import {
   wrapTextWithAnsi,
 } from "@earendil-works/pi-tui";
 import { Effect, Schema } from "effect";
+import { prepareAskUserQuestionArguments } from "./shared/ask-user-question-input.js";
 import { icons } from "./shared/icons.js";
 
-const SuggestedAnswer = Schema.NonEmptyString.annotate({
-  description: "A concise answer that the user is likely to choose verbatim",
+const AnswerOption = Schema.Struct({
+  label: Schema.NonEmptyString.annotate({
+    description: "A concise answer that the user is likely to choose verbatim",
+  }),
+  description: Schema.optionalKey(
+    Schema.NonEmptyString.annotate({
+      description: "Optional context that helps the user distinguish this option",
+    }),
+  ),
 });
 
 const Question = Schema.Struct({
-  label: Schema.optionalKey(
+  header: Schema.optionalKey(
     Schema.NonEmptyString.annotate({
-      description: "A short tab label, such as 'Scope' or 'Database'",
+      description: "A short tab heading, such as 'Scope' or 'Database'",
     }),
   ),
   question: Schema.NonEmptyString.annotate({
     description: "The specific question to show the user",
   }),
-  suggestions: Schema.optionalKey(
-    Schema.Array(SuggestedAnswer).check(Schema.isMaxLength(8)).annotate({
+  options: Schema.optionalKey(
+    Schema.Array(AnswerOption).check(Schema.isMaxLength(8)).annotate({
       description:
         "Suggested answers. Omit this unless the choices are genuinely useful and the user is more likely to choose one than write a different answer.",
     }),
@@ -42,7 +50,6 @@ const AskUserQuestions = Schema.Struct({
 });
 
 type AskUserQuestions = Schema.Schema.Type<typeof AskUserQuestions>;
-type Question = Schema.Schema.Type<typeof Question>;
 
 // Pi's tool API infers an unsafe JSON Schema through this structural marker.
 // Effect Schema remains the source of truth for generation and runtime decoding.
@@ -63,7 +70,10 @@ interface AnswerDetails {
   readonly questions: ReadonlyArray<{
     readonly label: string;
     readonly question: string;
-    readonly suggestions: ReadonlyArray<string>;
+    readonly options: ReadonlyArray<{
+      readonly label: string;
+      readonly description?: string;
+    }>;
   }>;
   readonly answers: ReadonlyArray<Answer>;
   readonly cancelled: boolean;
@@ -90,22 +100,7 @@ export default function askUserQuestion(pi: ExtensionAPI) {
       "For ask_user_question, omit suggestions unless they are genuinely valuable and the user is more likely to choose one verbatim than provide a free-text answer.",
     ],
     parameters,
-    prepareArguments(args) {
-      if (!args || typeof args !== "object") return args as AskUserQuestions;
-      const input = args as {
-        questions?: ReadonlyArray<Question>;
-        question?: string;
-        suggestions?: ReadonlyArray<string>;
-      };
-      if (input.questions) return input as AskUserQuestions;
-      if (typeof input.question === "string") {
-        const question: Question = input.suggestions
-          ? { question: input.question, suggestions: input.suggestions }
-          : { question: input.question };
-        return { questions: [question] };
-      }
-      return args as AskUserQuestions;
-    },
+    prepareArguments: (args) => prepareAskUserQuestionArguments(args) as AskUserQuestions,
     executionMode: "sequential",
 
     execute(_toolCallId, untrustedParams, _signal, _onUpdate, ctx) {
@@ -113,9 +108,9 @@ export default function askUserQuestion(pi: ExtensionAPI) {
         Effect.gen(function* () {
           const params = yield* Schema.decodeUnknownEffect(AskUserQuestions)(untrustedParams);
           const questions = params.questions.map((question, index) => ({
-            label: question.label ?? `Q${index + 1}`,
+            label: question.header ?? `Q${index + 1}`,
             question: question.question,
-            suggestions: [...(question.suggestions ?? [])],
+            options: [...(question.options ?? [])],
           }));
 
           if (ctx.mode !== "tui") {
@@ -134,13 +129,13 @@ export default function askUserQuestion(pi: ExtensionAPI) {
             ctx.ui.custom<DialogResult>((tui, theme, _keybindings, done) => {
               const isMulti = questions.length > 1;
               let currentTab = 0;
-              let inputMode = questions[0]!.suggestions.length === 0;
+              let inputMode = questions[0]!.options.length === 0;
               let focused = false;
               let validationMessage: string | undefined;
               let cachedWidth: number | undefined;
               let cachedLines: string[] | undefined;
               const selectedIndices = questions.map((question) =>
-                question.suggestions.length === 0 ? question.suggestions.length : 0,
+                question.options.length === 0 ? question.options.length : 0,
               );
               const drafts = questions.map(() => "");
               const answers: Array<Answer | undefined> = questions.map(() => undefined);
@@ -164,7 +159,7 @@ export default function askUserQuestion(pi: ExtensionAPI) {
               };
 
               const currentQuestion = () => questions[currentTab]!;
-              const freeFormIndex = () => currentQuestion().suggestions.length;
+              const freeFormIndex = () => currentQuestion().options.length;
               const completedAnswers = () => answers.filter((answer): answer is Answer => !!answer);
 
               const enterInputMode = (initialText?: string) => {
@@ -185,7 +180,7 @@ export default function askUserQuestion(pi: ExtensionAPI) {
                 if (inputMode) drafts[currentTab] = editor.getText();
                 currentTab = (nextTab + questions.length) % questions.length;
                 validationMessage = undefined;
-                inputMode = currentQuestion().suggestions.length === 0;
+                inputMode = currentQuestion().options.length === 0;
                 const answer = answers[currentTab];
                 const customAnswer =
                   answer && answer.suggestionIndex === undefined ? answer.answer : "";
@@ -216,7 +211,7 @@ export default function askUserQuestion(pi: ExtensionAPI) {
                 answers[currentTab] = {
                   questionIndex: currentTab + 1,
                   label: question.label,
-                  answer: question.suggestions[index]!,
+                  answer: question.options[index]!.label,
                   suggestionIndex: index + 1,
                 };
                 selectedIndices[currentTab] = index;
@@ -234,7 +229,7 @@ export default function askUserQuestion(pi: ExtensionAPI) {
                   label: question.label,
                   answer: value,
                 };
-                selectedIndices[currentTab] = question.suggestions.length;
+                selectedIndices[currentTab] = question.options.length;
                 inputMode = false;
                 editor.focused = false;
                 validationMessage = undefined;
@@ -275,7 +270,7 @@ export default function askUserQuestion(pi: ExtensionAPI) {
                     return;
                   }
                   if (matchesKey(data, Key.escape)) {
-                    if (!isMulti && currentQuestion().suggestions.length === 0) {
+                    if (!isMulti && currentQuestion().options.length === 0) {
                       done({ _tag: "Cancelled", answers: completedAnswers() });
                     } else {
                       drafts[currentTab] = editor.getText();
@@ -300,13 +295,13 @@ export default function askUserQuestion(pi: ExtensionAPI) {
                   return;
                 }
                 if (matchesKey(data, Key.up)) {
-                  const count = currentQuestion().suggestions.length + 1;
+                  const count = currentQuestion().options.length + 1;
                   selectedIndices[currentTab] = (selectedIndices[currentTab]! - 1 + count) % count;
                   refresh();
                   return;
                 }
                 if (matchesKey(data, Key.down)) {
-                  const count = currentQuestion().suggestions.length + 1;
+                  const count = currentQuestion().options.length + 1;
                   selectedIndices[currentTab] = (selectedIndices[currentTab]! + 1) % count;
                   refresh();
                   return;
@@ -406,16 +401,19 @@ export default function askUserQuestion(pi: ExtensionAPI) {
                 addWrapped(" ", theme.fg("accent", theme.bold(question.question)));
                 lines.push("");
 
-                question.suggestions.forEach((suggestion, index) => {
+                question.options.forEach((option, index) => {
                   const selected = selectedIndices[currentTab] === index;
                   const number = theme.fg(selected ? "accent" : "dim", `${index + 1}. `);
                   const label = selected
-                    ? theme.fg("accent", theme.bold(suggestion))
-                    : theme.fg("text", suggestion);
+                    ? theme.fg("accent", theme.bold(option.label))
+                    : theme.fg("text", option.label);
                   addWrapped("  ", number + label);
+                  if (option.description) {
+                    addWrapped("     ", theme.fg("muted", option.description));
+                  }
                 });
 
-                const otherIndex = question.suggestions.length;
+                const otherIndex = question.options.length;
                 const freeFormSelected = selectedIndices[currentTab] === otherIndex;
                 if (inputMode) {
                   const prefix = `  ${theme.fg("accent", `${otherIndex + 1}. `)}`;
