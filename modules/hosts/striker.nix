@@ -7,7 +7,7 @@ in
     platform = "nixos";
     system = "x86_64-linux";
     role = "work";
-    deploymentReady = false;
+    deploymentReady = true;
 
     os.imports = [
       modules.nixos.shared-workstation

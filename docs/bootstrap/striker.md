@@ -34,7 +34,7 @@ export NIX_CONFIG="experimental-features = nix-command flakes"
 nix run .#bootstrap -- striker
 ```
 
-Bootstrap remains blocked by `deploymentReady = false` until company authorization for reinstalling the company-owned device is explicit. Once authorized and re-enabled, it performs a complete host build before asking for erasure approval. Check that its disk report identifies `/dev/nvme0n1` as the 512 GB NVMe device. To authorize destruction, type `striker` exactly, then enter a new LUKS passphrase twice. Later, set the independent login password for `jannis`.
+Bootstrap is enabled following explicit company authorization to install NixOS on the company-owned device. It performs a complete host build before asking for erasure approval. Check that its disk report identifies `/dev/nvme0n1` as the 512 GB NVMe device. To authorize destruction, type `striker` exactly, then enter a new LUKS passphrase twice. Later, set the independent login password for `jannis`.
 
 An interrupted run recognizes only a LUKS partition carrying Water Seven's declared GPT partition label as resumable. Unrelated pre-existing encrypted disks are treated as destructive installation targets and still require explicit authorization.
 
