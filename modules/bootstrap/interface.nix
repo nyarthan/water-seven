@@ -23,10 +23,10 @@ in
           pkgs.gnugrep
           pkgs.nix
           pkgs.nixos-anywhere
-          pkgs.openssh
         ]
         ++ lib.optionals pkgs.stdenv.isLinux [
           pkgs.disko
+          pkgs.openssh
           pkgs.util-linux
         ];
         text = ''
@@ -34,6 +34,17 @@ in
           ${builtins.readFile ../../scripts/bootstrap.sh}
         '';
       };
+      # Apple's signed SSH binary has Local Network permission on macOS;
+      # ad-hoc-signed Nix store binaries are denied access to LAN hosts.
+      sshRuntimeCheck =
+        if pkgs.stdenv.isDarwin then
+          "! grep -F '${lib.getBin pkgs.openssh}/bin' '${bootstrap}/bin/bootstrap' "
+        else
+          "grep -F '${lib.getBin pkgs.openssh}/bin' '${bootstrap}/bin/bootstrap' ";
+      bootstrapSshRuntime = pkgs.runCommand "bootstrap-ssh-runtime" { } ''
+        ${sshRuntimeCheck}
+        touch "$out"
+      '';
     in
     {
       apps.bootstrap = {
@@ -42,6 +53,7 @@ in
         meta.description = "Guided, resumable Water Seven host convergence";
       };
 
+      checks.bootstrap-ssh-runtime = bootstrapSshRuntime;
       packages.bootstrap = bootstrap;
     };
 
