@@ -1,6 +1,6 @@
 # Bootstrap `striker`
 
-`striker` is a company-owned Lenovo ThinkPad E14 Gen 6 (`x86_64-linux`) work workstation. Its reviewed installation target is the single 512 GB NVMe disk at `/dev/nvme0n1`. The installer USB appears separately as `/dev/sda`.
+`striker` is the company-owned (`x86_64-linux`) work workstation identity and is being moved to a replacement notebook. The checked-in hardware configuration still describes the retired Lenovo ThinkPad E14 Gen 6 and must not be installed on the replacement notebook.
 
 The installation destroys the entire NVMe disk and creates:
 
@@ -9,7 +9,7 @@ The installation destroys the entire NVMe disk and creates:
 
 Disk encryption and the `jannis` login use separate interactive secrets. Neither belongs in the repository.
 
-## Reviewed hardware facts
+## Retired hardware facts
 
 The live NixOS installer confirmed:
 
@@ -34,7 +34,7 @@ export NIX_CONFIG="experimental-features = nix-command flakes"
 nix run .#bootstrap -- striker
 ```
 
-Bootstrap is enabled following explicit company authorization to install NixOS on the company-owned device. It performs a complete host build before asking for erasure approval. Check that its disk report identifies `/dev/nvme0n1` as the 512 GB NVMe device. To authorize destruction, type `striker` exactly, then enter a new LUKS passphrase twice. Later, set the independent login password for `jannis`.
+Bootstrap is blocked while the replacement company notebook's hardware configuration and installation target are reviewed. Once the host definition is updated and re-enabled, bootstrap performs a complete host build before asking for erasure approval. Check its disk report against the reviewed hardware facts before authorizing destruction.
 
 An interrupted run recognizes only a LUKS partition carrying Water Seven's declared GPT partition label as resumable. Unrelated pre-existing encrypted disks are treated as destructive installation targets and still require explicit authorization.
 

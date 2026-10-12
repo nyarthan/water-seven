@@ -119,9 +119,8 @@
             "baratie"
             "mini-merry"
             "mini-sunny"
-            "striker"
           ]
-        ) "Only reviewed hosts may be deployment-ready";
+        ) "Only reviewed hosts may be deployment-ready during migration";
         assert lib.assertMsg home.programs.atuin.settings.enter_accept
           "Atuin must retain enter_accept behavior during migration";
         assert lib.assertMsg (lib.versionAtLeast home.programs.mise.package.version "2026.7.0")
