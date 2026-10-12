@@ -396,6 +396,7 @@
             devenv hook bash >/dev/null
             devenv --user-config ${devenvConfig} user-config validate
             bash -n "$source/scripts/bootstrap.sh"
+            grep -F 'COPYFILE_DISABLE=1 tar -C "$CHECKOUT_TRANSFER"' "$source/scripts/bootstrap.sh"
             bash -n "$source/scripts/check-darwin-default-browser.sh"
             bash -n "$source/scripts/prepare-darwin-homebrew-taps.sh"
 
