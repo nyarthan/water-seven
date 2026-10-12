@@ -3,6 +3,8 @@ let
   allowedUnfreePackages = [
     "google-chrome"
     "mos"
+    "nvidia-settings"
+    "nvidia-x11"
     "obsidian"
     "orbstack"
     "raycast"

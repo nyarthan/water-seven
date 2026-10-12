@@ -1,5 +1,7 @@
 # Secure Boot and transparent TPM unlock for `striker`
 
+> **Historical hardware scope:** This design was written for the retired Lenovo ThinkPad E14 Gen 6. The replacement TUXEDO InfinityBook Max 16 Intel Gen10 has not passed these preflight and recovery gates. Do not use this document as an activation procedure for the replacement notebook.
+
 ## Question
 
 How can `striker` use transparent TPM2-assisted LUKS2 unlock without reducing the machine to effectively unencrypted storage, while preserving NixOS generations, rollback, firmware updates, and blank-machine recovery?

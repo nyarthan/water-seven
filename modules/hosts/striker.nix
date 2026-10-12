@@ -7,7 +7,7 @@ in
     platform = "nixos";
     system = "x86_64-linux";
     role = "work";
-    deploymentReady = false;
+    deploymentReady = true;
 
     os.imports = [
       modules.nixos.shared-workstation
@@ -39,6 +39,7 @@ in
           "nvme"
           "uas"
           "sd_mod"
+          "sdhci_pci"
         ];
         kernelModules = [ "kvm-intel" ];
         loader = {
@@ -89,6 +90,20 @@ in
           updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
         };
         enableRedistributableFirmware = true;
+        nvidia = {
+          modesetting.enable = true;
+          open = true;
+          powerManagement.enable = true;
+          prime = {
+            intelBusId = "PCI:0@0:2:0";
+            nvidiaBusId = "PCI:2@0:0:0";
+            offload = {
+              enable = true;
+              enableOffloadCmd = true;
+            };
+          };
+        };
+        tuxedo-drivers.enable = true;
       };
 
       services = {
@@ -96,6 +111,7 @@ in
         fwupd.enable = true;
         power-profiles-daemon.enable = true;
         thermald.enable = true;
+        xserver.videoDrivers = [ "nvidia" ];
       };
     };
 
