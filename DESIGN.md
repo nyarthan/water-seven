@@ -354,7 +354,7 @@ Shell history uses the same tool/configuration but does not synchronize between 
 
 Mise is installed and activated as a compatibility mechanism for projects that declare it. Its Home Manager-owned global tool table is intentionally empty. Devenv is installed on every workstation, its TUI uses the top-aligned viewport, and its native Bash hook activates project environments after an explicit `devenv allow`. Prefer Nix development shells in projects under personal control. One project owns its toolchain; do not combine Nix, devenv, and mise ownership for the same tools.
 
-The personal role uses the Nix-owned Earendil pi fork and must not downgrade the version that preceded migration. Water Seven packages TWG from Atlassian's signed release binary and requires version 1.3.1 or newer. Nix owns the executable and scheduled upkeep job; TWG continues to own its credentials and mutable configuration.
+Every workstation uses the Nix-owned Earendil Pi release and must not downgrade the version that preceded migration. Pi exposes role-scoped first-party MCP servers through codemode and deferred tool search so their schemas do not occupy every model request. Personal hosts use Atlassian and Linear OAuth MCP servers; personal and work hosts use GitHub MCP with the existing GitHub CLI login as a local credential broker. OAuth tokens and GitHub CLI credentials remain application-owned mutable state. Test hosts receive no MCP servers or real credentials.
 
 Direnv activation requires `direnv allow` once per checkout. After trust is granted, entering a supported project activates its declared environment automatically. Projects without environment declarations are left alone.
 

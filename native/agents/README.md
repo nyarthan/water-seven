@@ -51,8 +51,6 @@ Code review and behavioral evaluation of the agent setup are intentionally defer
 
 Third-party provenance is recorded in [`SOURCES.json`](SOURCES.json), with retained licenses under [`licenses/`](licenses/). Locally maintained derivatives preserve attribution whenever source wording or substantial structure remains. Independently authored replacements are recorded as Water Seven sources rather than being presented as upstream copies.
 
-TWG's vendor-provided skills remain excluded because their license prohibits retained and modified copies. Water Seven may contain independently authored TWG workflows based on user requirements, public documentation, and live CLI help, but not copies or derivatives of vendor skills.
-
 Run `ruby scripts/check-skills.rb skills` to validate frontmatter, names, uniqueness, invocation metadata, and relative Markdown links.
 
 ## Context

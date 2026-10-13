@@ -1,10 +1,16 @@
 {
+  "$schema": "https://pi.dev/schemas/settings.schema.json",
   "lastChangelogVersion": "0.85.1",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
   "theme": "vesper",
   "defaultThinkingLevel": "high",
   "enabledModels": ["openai-codex/gpt-5.6-sol", "openai-codex-work/gpt-5.6-sol"],
+  "defaultTools": ["+codemode", "+tool_search"],
+  "codemode": {
+    "mode": "on",
+    "inlineBudget": 1500
+  },
   "terminal": {
     "showTerminalProgress": true
   },

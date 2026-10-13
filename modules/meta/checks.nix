@@ -18,6 +18,7 @@
           config.flake.darwinConfigurations.${representativeHostName};
       home = representativeSystem.config.home-manager.users.${config.waterSeven.username};
       homePackageNames = map (package: package.pname or (lib.getName package)) home.home.packages;
+      mcpServerNames = lib.attrNames home.waterSeven.pi.mcpServers;
       darwinSystemPackages = representativeSystem.config.environment.systemPackages;
       darwinPackageNames = map (package: package.pname or (lib.getName package)) darwinSystemPackages;
       browserHandlers = lib.attrByPath [
@@ -133,7 +134,7 @@
         ) "Shared workstations must provide devenv 2.4 or newer with a top-aligned TUI";
         assert lib.assertMsg (
           builtins.elem "workmux" homePackageNames
-          && builtins.elem "pi-coding-agent" homePackageNames
+          && piPackage != null
           && home.programs.bash.shellAliases.wm == "workmux"
           && lib.hasInfix "agent: pi" home.xdg.configFile."workmux/config.yaml".text
           && lib.hasInfix "mode: window" home.xdg.configFile."workmux/config.yaml".text
@@ -142,6 +143,7 @@
             lib.hasInfix "/${config.waterSeven.projectsDirectory}/worktrees/{project}"
               home.xdg.configFile."workmux/config.yaml".text
           && home.home.file ? ".pi/agent/settings.json"
+          && (representativeHost.role == "egghead" || home.home.file ? ".pi/agent/mcp.json")
           && home.home.file ? ".pi/agent/extensions"
           && home.home.file ? ".pi/agent/node_modules"
           && home.home.file ? ".pi/agent/AGENTS.md"
@@ -153,18 +155,25 @@
           && lib.all (version: version == piPackage.version) pinnedPiDependencyVersions
         ) "Pi resource dependencies must match pi-coding-agent ${piPackage.version}";
         assert lib.assertMsg (
-          representativeHost.role != "personal"
-          || (
-            lib.any (
-              package: lib.getName package == "twg" && lib.versionAtLeast (package.version or "0") "1.3.1"
-            ) home.home.packages
-            && lib.any (
-              package:
-              (package.pname or (lib.getName package)) == "pi-coding-agent"
-              && lib.versionAtLeast (package.version or "0") "0.85.1"
-            ) home.home.packages
+          piPackage != null && lib.versionAtLeast (piPackage.version or "0") "1.2.0"
+        ) "Shared workstations must provide Pi 1.2.0 or newer";
+        assert lib.assertMsg (
+          mcpServerNames == (
+            if representativeHost.role == "personal" then
+              [
+                "atlassian"
+                "github"
+                "linear"
+              ]
+            else if representativeHost.role == "work" then
+              [ "github" ]
+            else
+              [ ]
           )
-        ) "Personal hosts must provide TWG 1.3.1 or newer and pi-coding-agent without downgrading pi";
+        ) "Pi MCP servers must follow host roles without exposing credentials to test hosts";
+        assert lib.assertMsg (lib.all (
+          package: lib.getName package != "twg"
+        ) home.home.packages) "Atlassian MCP must replace the retired TWG package";
         assert lib.assertMsg (
           representativeHost.role != "personal"
           || (
@@ -326,15 +335,18 @@
         pkgs.writeText "water-seven-workmux.yaml"
           home.xdg.configFile."workmux/config.yaml".text;
       piSettings = home.home.file.".pi/agent/settings.json".source;
+      piKeybindings = home.home.file.".pi/agent/keybindings.json".source;
+      piMcp = lib.attrByPath [ ".pi/agent/mcp.json" "source" ] null home.home.file;
       piExtensions = home.home.file.".pi/agent/extensions".source;
       piNodeModules = home.home.file.".pi/agent/node_modules".source;
+      piThemes = home.home.file.".pi/agent/themes".source;
       agentSkills = home.home.file.".agents/skills".source;
       piAgentPolicy = home.home.file.".pi/agent/AGENTS.md".source;
       openCodeAgentPolicy = home.xdg.configFile."opencode/AGENTS.md".source;
       workmuxExtension = "${piExtensions}/workmux-status.ts";
       devenvPackage = lib.findFirst (package: lib.getName package == "devenv") null home.home.packages;
       piPackage = lib.findFirst (
-        package: lib.getName package == "pi-coding-agent"
+        package: (package.meta.mainProgram or null) == "pi"
       ) null home.home.packages;
       piManifest = builtins.fromJSON (builtins.readFile ../../native/pi/package.json);
       pinnedPiDependencies = lib.filterAttrs (name: _: lib.hasPrefix "@earendil-works/pi-" name);
@@ -437,10 +449,18 @@
             grep -Fx 'worktree_dir: "${home.home.homeDirectory}/${config.waterSeven.projectsDirectory}/worktrees/{project}"' ${workmuxConfig}
             test "$(jq -r .lastChangelogVersion ${piSettings})" = "${piPackage.version}"
             test "$(jq -r .theme ${piSettings})" = vesper
+            test "$(jq -r '."$schema"' ${piSettings})" = https://pi.dev/schemas/settings.schema.json
+            test "$(jq -r '."$schema"' ${piKeybindings})" = https://pi.dev/schemas/keybindings.schema.json
+            test "$(jq -r '."$schema"' ${piThemes}/vesper.json)" = https://pi.dev/schemas/theme.schema.json
             jq -e '.enabledModels | index("openai-codex-work/gpt-5.6-sol")' ${piSettings} >/dev/null
+            jq -e '.defaultTools == ["+codemode", "+tool_search"]' ${piSettings} >/dev/null
+            jq -e '.codemode == {"inlineBudget": 1500, "mode": "on"}' ${piSettings} >/dev/null
+            ${lib.optionalString (piMcp != null) ''
+              jq -e '.mcpServers | type == "object" and length > 0' ${piMcp} >/dev/null
+              jq -e '[.mcpServers[].exposure] | all(. == "codemode")' ${piMcp} >/dev/null
+            ''}
             grep -F 'from "effect"' ${piExtensions}/ask-user-question.ts
             grep -F 'pi.registerProvider(createCodexProvider("work"))' ${piExtensions}/codex-accounts.ts
-            test -f ${piNodeModules}/@earendil-works/pi-ai/package.json
             test -f ${piNodeModules}/effect/package.json
             grep -F 'pi.exec("workmux", ["register-agent"])' ${workmuxExtension}
             grep -F 'pi.on("ui_prompt_start"' ${workmuxExtension}
@@ -456,7 +476,9 @@
 
             mkdir -p "$HOME/.pi/agent" "$HOME/.agents" "$XDG_CONFIG_HOME/opencode"
             ln -s ${piExtensions} "$HOME/.pi/agent/extensions"
+            ln -s ${piKeybindings} "$HOME/.pi/agent/keybindings.json"
             ln -s ${piNodeModules} "$HOME/.pi/agent/node_modules"
+            ln -s ${piThemes} "$HOME/.pi/agent/themes"
             ln -s ${piAgentPolicy} "$HOME/.pi/agent/AGENTS.md"
             ln -s ${agentSkills} "$HOME/.agents/skills"
             ln -s ${openCodeAgentPolicy} "$XDG_CONFIG_HOME/opencode/AGENTS.md"

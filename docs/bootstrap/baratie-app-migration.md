@@ -87,7 +87,7 @@ Keep:
 - OrbStack privileged helper
 - ProtonVPN network extension
 - Steam support and cleanup processes required by the selected games
-- TWG's mutable state; Water Seven owns the executable and `com.atlassian.twg.upkeep` while leaving credentials and configuration application-owned
+- TWG's mutable state until Atlassian MCP has been authenticated and verified; Water Seven no longer installs the executable or `com.atlassian.twg.upkeep`
 
 Retire:
 

@@ -165,6 +165,22 @@
         "type": "github"
       }
     },
+    "pi-nixpkgs": {
+      "locked": {
+        "lastModified": 1791849372,
+        "narHash": "sha256-l+ML3lPLw06nVO8mwKjknQpeAVNdugKD7ptfvA/U8aw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "bfdd9822dda7084114bd0b04b45cd90af05b032b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "bfdd9822dda7084114bd0b04b45cd90af05b032b",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "disko": "disko",
@@ -175,6 +191,7 @@
         "nix-homebrew": "nix-homebrew",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "pi-nixpkgs": "pi-nixpkgs",
         "sops-nix": "sops-nix",
         "workmux": "workmux"
       }

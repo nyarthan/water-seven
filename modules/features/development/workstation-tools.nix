@@ -58,13 +58,12 @@
         };
 
       role-personal =
-        { config, pkgs, ... }:
+        { pkgs, ... }:
         let
           unstable = import inputs.nixpkgs-unstable {
             inherit (pkgs.stdenv.hostPlatform) system;
             config.allowUnfreePredicate = package: lib.getName package == "sonarqube-cli";
           };
-          twg = pkgs.callPackage ../../../packages/twg.nix { };
         in
         {
           home.packages = [
@@ -83,7 +82,6 @@
             pkgs.uv
             (pkgs.callPackage ../../../packages/linearis.nix { })
             (pkgs.callPackage ../../../packages/opencode-v2.nix { })
-            twg
           ];
 
           home.sessionPath = [ "$HOME/.local/share/uv/bin" ];
@@ -91,26 +89,6 @@
           home.sessionVariables = {
             DO_NOT_TRACK = "1";
             UV_TOOL_BIN_DIR = "$HOME/.local/share/uv/bin";
-            TWG_BACKGROUND_UPDATE_CHECK = "0";
-            TWG_COMMAND_SURFACE_RESTRICTION = "basic-v1";
-            TWG_SKIP_BITBUCKET = "1";
-          };
-
-          launchd.agents.twg-upkeep = lib.mkIf pkgs.stdenv.isDarwin {
-            enable = true;
-            config = {
-              Label = "com.atlassian.twg.upkeep";
-              ProgramArguments = [
-                "${twg}/bin/twg"
-                "upkeep"
-                "run"
-                "--scheduled"
-              ];
-              EnvironmentVariables.TWG_CONFIG_DIR = "${config.home.homeDirectory}/.config/twg";
-              ProcessType = "Background";
-              RunAtLoad = true;
-              StartInterval = 720;
-            };
           };
         };
     };

@@ -13,7 +13,7 @@ linearis --version
 pi --version
 ```
 
-Water Seven declares Linearis and pi for the personal role. Pi comes from the localized unstable package because stable nixpkgs would downgrade the pre-migration 0.85.1 installation. Their mutable authentication and user state remain outside the Nix store; in particular, `~/.linearis/token` must not enter public configuration.
+Water Seven declares Linearis and Pi for the personal role. Pi comes from a package-specific pinned Nixpkgs snapshot because the fleet's general package set can lag upstream releases. Their mutable authentication and user state remain outside the Nix store; in particular, `~/.linearis/token` must not enter public configuration.
 
 ## Retire work-only tools from `baratie`
 
@@ -44,8 +44,15 @@ The rejected global npm packages `ccstatusline` and `eas-cli` and the dangling `
 
 The private Git identity was copied locally from the effective Tendril identity into mode-0600 `~/.config/git/identity`; no identity values entered Water Seven. The differing Atuin and Git-ignore files were preserved as adjacent `.before-water-seven` backups and replaced with their candidate contents so Home Manager will not fail after Homebrew activation. Atuin retains `enter_accept = true`; the old Claude-specific global ignore pattern was intentionally not migrated.
 
-## Nix-managed TWG cleanup
+## Atlassian MCP migration
 
-Water Seven owns the TWG executable and its scheduled upkeep job while preserving TWG's mutable state under `~/.config/twg`. After activating and verifying the Nix package, remove TWG's declaration from `~/mise.toml` and uninstall the Mise-managed TWG versions. Home Manager replaces `com.atlassian.twg.upkeep` with a job that runs the Nix package, so do not delete the resulting managed plist.
+Water Seven replaces the TWG executable and scheduled upkeep job with Atlassian's first-party remote MCP server. After activation, authenticate interactively and verify the connection:
+
+```bash
+pi mcp login atlassian
+pi mcp list
+```
+
+Only after the MCP workflow succeeds, remove TWG's declaration from `~/mise.toml`, uninstall Mise-managed TWG versions, and remove any obsolete `com.atlassian.twg.upkeep` job left by an older generation. Preserve `~/.config/twg` until its mutable state is confirmed unnecessary; migration does not authorize deleting credential or application state.
 
 Preserve unrelated Mise installation caches through initial activation; prune only after representative project-owned toolchains have been exercised. The npm prefix can be removed only after every remaining package is either migrated or explicitly rejected.

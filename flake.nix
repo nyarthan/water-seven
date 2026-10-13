@@ -5,6 +5,8 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+    pi-nixpkgs.url = "github:NixOS/nixpkgs/bfdd9822dda7084114bd0b04b45cd90af05b032b";
+
     workmux.url = "github:raine/workmux/v0.1.263";
     workmux.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
