@@ -97,6 +97,15 @@ in
 
     role-personal.waterSeven.pi.mcpServers = {
       github = githubMcp;
+      kibana = {
+        url = "https://bm-serverless-ff1baa.kb.eu-central-1.aws.elastic.cloud/api/agent_builder/mcp";
+        oauth = {
+          clientId = "7gIO4d6GQtGxGFEz7zNNOA";
+          callbackPort = 8765;
+        };
+        description = "Search and analyze data with Elastic Agent Builder tools in the bm-serverless project";
+        exposure = "codemode";
+      };
       atlassian = {
         url = "https://mcp.atlassian.com/v2/mcp";
         description = "Search and manage Jira and Confluence through Atlassian OAuth";

@@ -163,6 +163,7 @@
               [
                 "atlassian"
                 "github"
+                "kibana"
                 "linear"
               ]
             else if representativeHost.role == "work" then
